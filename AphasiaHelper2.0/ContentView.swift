@@ -89,7 +89,7 @@ struct ContentView: View {
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
                                         ForEach(subjects, id: \.id) { word in
-                                            WordBtnView(word: word)
+                                            WordBtnView(word: word, sentance: self.$sentance)
                                         }
                                     }
                                 }
@@ -107,7 +107,7 @@ struct ContentView: View {
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
                                         ForEach(predicates, id: \.id) { word in
-                                            WordBtnView(word: word)
+                                            WordBtnView(word: word, sentance: self.$sentance)
                                         }
                                     }
                                 }
@@ -125,7 +125,7 @@ struct ContentView: View {
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
                                         ForEach(objects, id: \.id) { word in
-                                            WordBtnView(word: word)
+                                            WordBtnView(word: word, sentance: self.$sentance)
                                         }
                                     }
                                 }
@@ -143,7 +143,7 @@ struct ContentView: View {
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
                                         ForEach(activities, id: \.id) { word in
-                                            WordBtnView(word: word)
+                                            WordBtnView(word: word, sentance: self.$sentance)
                                         }
                                     }
                                 }
@@ -152,7 +152,6 @@ struct ContentView: View {
                             .background(Color.green)
                         }
                         .frame(width: (geo.size.width - 110) * 0.75, height: geo.size.height * 0.8)
-                        //.offset(x: 50, y: 20)
                         .background(Color.pink)
                         
                         VStack {
@@ -162,11 +161,13 @@ struct ContentView: View {
                         .background(Color.gray)
                     }
                     HStack {
-                        Text("完整的一句话")
-                            .background(Color.pink)
+                        Text(self.sentance)
                             .font(.largeTitle)
+                            .frame(width: (geo.size.width - 110 - geo.size.height * 0.2 * 0.6 * 2 - 120), height: geo.size.height * 0.2 * 0.6, alignment: .center)
+                            .background(Color.pink)
+                            .padding(10)
                         Button(action: {
-                            //TODO
+                            read(text: self.sentance)
                         }){
                             Image(systemName: "play.fill")
                                 .font(.system(size: 60, weight: .bold))
@@ -176,9 +177,9 @@ struct ContentView: View {
                         .background(Color.green)
                         .cornerRadius(25)
                         .shadow(color: .gray, radius: 5, x: 2, y: 2)
-                        .padding(6)
+                        .padding(10)
                         Button(action: {
-                            //TODO
+                            self.sentance = ""
                         }){
                             Image(systemName: "clear.fill")
                                 .font(.system(size: 60, weight: .bold))
@@ -188,7 +189,7 @@ struct ContentView: View {
                         .background(Color.secondary)
                         .cornerRadius(25)
                         .shadow(color: .gray, radius: 5, x: 2, y: 2)
-                        .padding(6)
+                        .padding(10)
                     }
                     .frame(width: geo.size.width - 110, height: geo.size.height * 0.2, alignment: .center)
                     .background(Color.orange)
