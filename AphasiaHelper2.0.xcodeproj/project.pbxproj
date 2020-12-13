@@ -14,6 +14,8 @@
 		F4C5AEAA257CDF49008C2D4A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4C5AEA9257CDF49008C2D4A /* Preview Assets.xcassets */; };
 		F4C5AEB8257D00BC008C2D4A /* WordBtnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C5AEB7257D00BC008C2D4A /* WordBtnView.swift */; };
 		F4C5AEBC257D0D57008C2D4A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4C5AEBB257D0D57008C2D4A /* AVFoundation.framework */; };
+		F4F7C1E42586308E002D9330 /* CategoryBtnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F7C1E32586308E002D9330 /* CategoryBtnView.swift */; };
+		F4F7C1E725863F4E002D9330 /* PhraseBtnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F7C1E625863F4E002D9330 /* PhraseBtnView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		F4C5AEAB257CDF49008C2D4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F4C5AEB7257D00BC008C2D4A /* WordBtnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordBtnView.swift; sourceTree = "<group>"; };
 		F4C5AEBB257D0D57008C2D4A /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		F4F7C1E32586308E002D9330 /* CategoryBtnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryBtnView.swift; sourceTree = "<group>"; };
+		F4F7C1E625863F4E002D9330 /* PhraseBtnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhraseBtnView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,8 +69,10 @@
 				F4C5AEA6257CDF49008C2D4A /* Assets.xcassets */,
 				F4C5AEAB257CDF49008C2D4A /* Info.plist */,
 				F4C5AEA8257CDF49008C2D4A /* Preview Content */,
-				F4C5AEB7257D00BC008C2D4A /* WordBtnView.swift */,
 				F4457240257DDB9A00E4A509 /* functions.swift */,
+				F4C5AEB7257D00BC008C2D4A /* WordBtnView.swift */,
+				F4F7C1E32586308E002D9330 /* CategoryBtnView.swift */,
+				F4F7C1E625863F4E002D9330 /* PhraseBtnView.swift */,
 			);
 			path = AphasiaHelper2.0;
 			sourceTree = "<group>";
@@ -156,9 +162,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4F7C1E725863F4E002D9330 /* PhraseBtnView.swift in Sources */,
 				F4C5AEA5257CDF48008C2D4A /* ContentView.swift in Sources */,
 				F4C5AEB8257D00BC008C2D4A /* WordBtnView.swift in Sources */,
 				F4C5AEA3257CDF48008C2D4A /* AphasiaHelper2_0App.swift in Sources */,
+				F4F7C1E42586308E002D9330 /* CategoryBtnView.swift in Sources */,
 				F4457241257DDB9A00E4A509 /* functions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

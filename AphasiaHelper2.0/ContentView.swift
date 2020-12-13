@@ -34,17 +34,35 @@ struct ContentView: View {
             Word(id: 2, name: "苹果"),
             Word(id: 3, name: "洗手间"),
             Word(id: 4, name: "笔记本"),
-            Word(id: 5, name: "花")
+            Word(id: 5, name: "花"),
+            Word(id: 6, name: "医院"),
+            Word(id: 7, name: "女儿"),
         ]
     
-    // 常用动作
-    let activities: [Word] = [
-            Word(id: 1, name: "回家"),
-            Word(id: 2, name: "洗澡"),
-            Word(id: 3, name: "画画"),
-            Word(id: 4, name: "睡觉")
+    // 二级宾语分类
+    let categories: [Category] = [
+            Category(id: 1, name: "食物"),
+            Category(id: 2, name: "饮料"),
+            Category(id: 3, name: "身体"),
+            Category(id: 4, name: "日用品"),
+            Category(id: 5, name: "家具"),
+            Category(id: 6, name: "感受"),
+            Category(id: 7, name: "人物"),
+            Category(id: 8, name: "地点")
         ]
-
+    
+    // 常用短语
+    let phrases: [Phrase] = [
+            Phrase(id: 1, name: "我要吃饭"),
+            Phrase(id: 2, name: "我要喝水"),
+            Phrase(id: 3, name: "我想去厕所"),
+            Phrase(id: 4, name: "我不知道"),
+            Phrase(id: 5, name: "我感觉不舒服"),
+            Phrase(id: 6, name: "我需要帮助"),
+            Phrase(id: 7, name: "谢谢"),
+            Phrase(id: 8, name: "这是什么")
+        ]
+    
     
     
         
@@ -224,7 +242,7 @@ struct ContentView: View {
                     Spacer()
                     
                     // 宾语
-                    HStack{
+                    HStack {
                         
                         Spacer()
                         
@@ -236,46 +254,91 @@ struct ContentView: View {
                             
                             HStack {
                                 
-                            }
-                            
-                            VStack {
-                                
-                                HStack(alignment: .firstTextBaseline) {
-                                    Text("宾语")
-                                        .font(.title2)
-                                        .bold()
-                                    Text("  常用词")
-                                        .font(.body)
-                                    Spacer()
-                                }
-                                .padding(.leading, 15)
-                                
-                                ScrollView(.horizontal, showsIndicators: true) {
-                                    HStack {
-                                        ForEach(objects, id: \.id) { word in
-                                            WordBtnView(word: word, sentance: self.$sentance)
-                                        }
+                                VStack {
+                                    
+                                    HStack(alignment: .firstTextBaseline) {
+                                        Text("宾语")
+                                            .font(.title2)
+                                            .bold()
+                                        Text("  常用词")
+                                            .font(.body)
+                                        Spacer()
                                     }
-                                }.padding(.leading, 15)
+                                    .padding(.leading, 15)
+                                    
+                                    ScrollView(.horizontal, showsIndicators: true) {
+                                        HStack {
+                                            ForEach(objects, id: \.id) { word in
+                                                WordBtnView(word: word, sentance: self.$sentance)
+                                            }
+                                        }
+                                    }.padding(.leading, 15)
 
-                                ScrollView(.horizontal, showsIndicators: true) {
-                                    HStack {
-                                        ForEach(objects, id: \.id) { word in
-                                            WordBtnView(word: word, sentance: self.$sentance)
+                                    ScrollView(.horizontal, showsIndicators: true) {
+                                        HStack {
+                                            ForEach(objects, id: \.id) { word in
+                                                WordBtnView(word: word, sentance: self.$sentance)
+                                            }
                                         }
-                                    }
-                                }.padding(.leading, 15)
+                                    }.padding(.leading, 15)
+                                    
+                                    ScrollView(.horizontal, showsIndicators: true) {
+                                        HStack {
+                                            ForEach(objects, id: \.id) { word in
+                                                WordBtnView(word: word, sentance: self.$sentance)
+                                            }
+                                        }
+                                    }.padding(.leading, 15)
+                                }
+                                .frame(width: (geo.size.width - 40) / 2 - 15, height: (geo.size.height - 180 - 60) / 2)
                                 
-                                ScrollView(.horizontal, showsIndicators: true) {
-                                    HStack {
-                                        ForEach(objects, id: \.id) { word in
-                                            WordBtnView(word: word, sentance: self.$sentance)
+                                Spacer()
+                                
+                                Rectangle()
+                                    .fill(Color.gray.opacity(0.5))
+                                    .frame(width: 2)
+                                    .padding(.trailing, 5)
+                                
+                                VStack {
+
+                                    // 宾语二级分类
+                                    ScrollView(.horizontal, showsIndicators: true) {
+                                        HStack {
+                                            ForEach(categories, id: \.id) { category in
+                                                CategoryBtnView(category: category)
+                                                    .padding(.trailing, 10)
+                                            }
+                                        }
+                                    }.padding(.leading, 60)
+                                    
+                                    ScrollView(.horizontal, showsIndicators: true) {
+                                        HStack {
+                                            ForEach(objects, id: \.id) { word in
+                                                WordBtnView(word: word, sentance: self.$sentance)
+                                            }
                                         }
                                     }
-                                }.padding(.leading, 15)
+
+                                    ScrollView(.horizontal, showsIndicators: true) {
+                                        HStack {
+                                            ForEach(objects, id: \.id) { word in
+                                                WordBtnView(word: word, sentance: self.$sentance)
+                                            }
+                                        }
+                                    }
+                                    
+                                    ScrollView(.horizontal, showsIndicators: true) {
+                                        HStack {
+                                            ForEach(objects, id: \.id) { word in
+                                                WordBtnView(word: word, sentance: self.$sentance)
+                                            }
+                                        }
+                                    }
+                                }
+                                .frame(width: (geo.size.width - 40) / 2, height: (geo.size.height - 180 - 60) / 2)
                             }
                         }
-
+                        
                         Spacer()
                     }
                     .frame(width: geo.size.width, height: (geo.size.height - 180 - 60) / 2)
@@ -284,25 +347,39 @@ struct ContentView: View {
                     
                     // 常用短语
                     HStack {
-                        VStack {
-                            HStack {
-                                Text("常用短语")
-                                    .font(.title2)
-                                    .bold()
-                                Spacer()
-                            }
-                            ScrollView(.horizontal, showsIndicators: true) {
+                        
+                        Spacer()
+                        
+                        ZStack {
+                            
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(Color.white)
+                                .shadow(radius: 2)
+                            
+                            VStack {
+                                
                                 HStack {
-                                    ForEach(activities, id: \.id) { word in
-                                        WordBtnView(word: word, sentance: self.$sentance)
-                                    }
+                                    Text("常用短语")
+                                        .font(.title3)
+                                        .bold()
+                                        .padding(.leading, 15)
+                                    Spacer()
                                 }
+                                
+                                ScrollView(.horizontal, showsIndicators: true) {
+                                    HStack {
+                                        ForEach(phrases, id: \.id) { phrase in
+                                            PhraseBtnView(phrase: phrase)
+                                                .padding(.trailing, 5)
+                                        }
+                                    }
+                                }.padding(.leading, 15)
                             }
                         }
+                        
+                        Spacer()
                     }
-                    .background(Color.green)
-                    .frame(width: geo.size.width - 30, height: (geo.size.height - 180 - 60) / 6)
-                    .shadow(radius: 2)
+                    .frame(width: geo.size.width, height: (geo.size.height - 180 - 60) / 6)
                     
                     Spacer()
                 }
