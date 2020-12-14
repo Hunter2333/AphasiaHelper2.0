@@ -17,7 +17,7 @@ struct WordBtnView: View {
     var image: UIImage?
     var word: Word
     
-    @EnvironmentObject var makeUpSentance: MakeUpSentance
+    @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
     
     @State var isSelected: Bool = false
     
@@ -26,8 +26,8 @@ struct WordBtnView: View {
         Button(action: {
             isSelected = true
             read(text: "\(word.name)")
-            self.makeUpSentance.sentance.append("\(word.name)")
-            self.makeUpSentance.componentWords.append(self.word)
+            // TODO........crash 写
+            makeUpSentanceManager.addWord(word: word)
             // TODO: 词频加一
         }){
             if(isSelected) {
@@ -41,7 +41,7 @@ struct WordBtnView: View {
                         .font(.caption)
                         .bold()
                 }
-                .frame(width: 60, height: 80, alignment: .center)
+                .frame(width: 60, height: 80)
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
                         .stroke(Color(red: 61/255, green: 141/255, blue: 136/255), lineWidth: 8)
@@ -60,7 +60,7 @@ struct WordBtnView: View {
                         .font(.caption)
                         .bold()
                 }
-                .frame(width: 60, height: 80, alignment: .center)
+                .frame(width: 60, height: 80)
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
                         .stroke(Color.gray.opacity(0.3), lineWidth: 2)

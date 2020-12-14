@@ -27,7 +27,7 @@ struct PhraseBtnView: View {
                 .bold()
                 .padding()
                 .overlay(
-                    RoundedRectangle(cornerRadius: 6)
+                    RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.gray.opacity(0.3), lineWidth: 2)
                         .shadow(color: Color.gray, radius: 2)
                 )

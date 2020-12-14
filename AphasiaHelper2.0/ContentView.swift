@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @EnvironmentObject var makeUpSentance: MakeUpSentance
+    @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
     
     // 主语
     let subjects: [Word] = [
@@ -64,13 +64,12 @@ struct ContentView: View {
         ]
     
     
-    
         
     var body: some View {
         
         GeometryReader { geo in
             
-            VStack {
+            VStack(spacing: 0) {
                 
                 // 标题
                 HStack {
@@ -81,8 +80,8 @@ struct ContentView: View {
                     Spacer()
                 }
                 .foregroundColor(Color.white)
-                .background(Color(red: 59/255, green: 142/255, blue: 136/255).frame(width: geo.size.width, height: 60))
-                .frame(width: geo.size.width, height: 60, alignment: .center)
+                .frame(width: geo.size.width, height: 60)
+                .background(Color(red: 59/255, green: 142/255, blue: 136/255))
                 
                 
                 // 组成的一句话
@@ -90,14 +89,17 @@ struct ContentView: View {
                     
                     Spacer()
                     HStack {
-                        HStack {
-                            // TODO ............
-                            Text(self.makeUpSentance.sentance)
-                                .font(.title2)
-                                .foregroundColor(Color.black)
+                        // TODO.......crash 读: 更新视图
+                        ScrollView(.horizontal, showsIndicators: true) {
+                            HStack {
+                                ForEach(makeUpSentanceManager.componentWords, id: \.id) { componentWord in
+                                    ComponentWordView(word: componentWord)
+                                }
+                            }
                         }
-                        .frame(width: geo.size.width * 0.6 - 70, height: 60, alignment: .leading)
-                        .offset(x: 50)
+                        .padding(.leading, 50)
+                        .frame(width: geo.size.width * 0.6 - 70, height: 60)
+                        
                         
                         Button(action: {
                             // TODO 智能识别
@@ -105,17 +107,17 @@ struct ContentView: View {
                             Image(systemName: "camera").font(.system(size: 28, weight: .bold))
                         }
                         .foregroundColor(Color(red: 59/255, green: 142/255, blue: 136/255))
-                        .frame(width: 70, height: 60, alignment: .center)
+                        .frame(width: 70, height: 60)
                         .offset(x: -12)
                     }
-                    .background(Color.white.frame(width: geo.size.width * 0.6, height: 60))
                     .frame(width: geo.size.width * 0.6, height: 60)
+                    .background(Color.white)
                     .cornerRadius(30)
                     
                     
                     Spacer()
                     Button(action: {
-                        read(text: self.makeUpSentance.sentance)
+                        read(text: makeUpSentanceManager.sentance)
                         // TODO: 添加到常用短语
                     }){
                         Image(systemName: "speaker.wave.2").font(.system(size: 28, weight: .bold))
@@ -128,12 +130,9 @@ struct ContentView: View {
                     
                     Button(action: {
                         // 一次只清除一个词
+                        // TODO.......crash 写
+                        makeUpSentanceManager.removeLastWord()
                         // TODO.......更改WordBtn样式
-                        self.makeUpSentance.componentWords.removeLast()
-                        self.makeUpSentance.sentance = ""
-                        for componentWord in self.makeUpSentance.componentWords {
-                            self.makeUpSentance.sentance.append(componentWord.name)
-                        }
                     }){
                         Image(systemName: "clear").font(.system(size: 32, weight: .bold))
                     }
@@ -155,10 +154,10 @@ struct ContentView: View {
                         .background(Color.white)
                         .clipShape(Circle())
                     }
-                    .frame(width: 120, height: 120, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                    .frame(width: 120, height: 120)
                 }
-                .background(Color(red: 59/255, green: 142/255, blue: 136/255).frame(width: geo.size.width, height: 120))
                 .frame(width: geo.size.width, height: 120)
+                .background(Color(red: 59/255, green: 142/255, blue: 136/255))
                 
                 
                 // 选词区域
@@ -390,8 +389,8 @@ struct ContentView: View {
                     
                     Spacer()
                 }
-                .background(Color(red: 249/255, green: 247/255, blue: 243/255).frame(width: geo.size.width, height: geo.size.height - 180))
                 .frame(width: geo.size.width, height: geo.size.height - 180)
+                .background(Color(red: 249/255, green: 247/255, blue: 243/255))
             }
         }
     }
@@ -400,6 +399,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     
     static var previews: some View {
-        ContentView().environmentObject(MakeUpSentance())
+        ContentView().environmentObject(MakeUpSentanceManager())
     }
 }
