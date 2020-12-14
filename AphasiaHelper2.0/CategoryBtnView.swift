@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Category {
-    var id: Int
+    var id = UUID()
     var name: String
 }
 
@@ -58,6 +58,6 @@ struct CategoryBtnView: View {
 
 struct CategoryBtnView_Previews: PreviewProvider {
     static var previews: some View {
-        CategoryBtnView(category: Category(id: 0, name: "null"))
+        CategoryBtnView(category: Category(name: "null"))
     }
 }

@@ -13,54 +13,54 @@ struct ContentView: View {
     
     // 主语
     let subjects: [Word] = [
-            Word(id: 1, name: "你"),
-            Word(id: 2, name: "我"),
-            Word(id: 3, name: "他"),
-            Word(id: 4, name: "这些")
+            Word(name: "你"),
+            Word(name: "我"),
+            Word(name: "他"),
+            Word(name: "这些")
         ]
     
     // 谓语
     let predicates: [Word] = [
-            Word(id: 1, name: "是"),
-            Word(id: 2, name: "要"),
-            Word(id: 3, name: "吃"),
-            Word(id: 4, name: "喝"),
-            Word(id: 5, name: "去")
+            Word(name: "是"),
+            Word(name: "要"),
+            Word(name: "吃"),
+            Word(name: "喝"),
+            Word(name: "去")
         ]
     
     // 宾语
     let objects: [Word] = [
-            Word(id: 1, name: "咖啡"),
-            Word(id: 2, name: "苹果"),
-            Word(id: 3, name: "洗手间"),
-            Word(id: 4, name: "笔记本"),
-            Word(id: 5, name: "花"),
-            Word(id: 6, name: "医院"),
-            Word(id: 7, name: "女儿"),
+            Word(name: "咖啡"),
+            Word(name: "苹果"),
+            Word(name: "洗手间"),
+            Word(name: "笔记本"),
+            Word(name: "花"),
+            Word(name: "医院"),
+            Word(name: "女儿"),
         ]
     
     // 二级宾语分类
     let categories: [Category] = [
-            Category(id: 1, name: "食物"),
-            Category(id: 2, name: "饮料"),
-            Category(id: 3, name: "身体"),
-            Category(id: 4, name: "日用品"),
-            Category(id: 5, name: "家具"),
-            Category(id: 6, name: "感受"),
-            Category(id: 7, name: "人物"),
-            Category(id: 8, name: "地点")
+            Category(name: "食物"),
+            Category(name: "饮料"),
+            Category(name: "身体"),
+            Category(name: "日用品"),
+            Category(name: "家具"),
+            Category(name: "感受"),
+            Category(name: "人物"),
+            Category(name: "地点")
         ]
     
     // 常用短语
     let phrases: [Phrase] = [
-            Phrase(id: 1, name: "我要吃饭"),
-            Phrase(id: 2, name: "我要喝水"),
-            Phrase(id: 3, name: "我想去厕所"),
-            Phrase(id: 4, name: "我不知道"),
-            Phrase(id: 5, name: "我感觉不舒服"),
-            Phrase(id: 6, name: "我需要帮助"),
-            Phrase(id: 7, name: "谢谢"),
-            Phrase(id: 8, name: "这是什么")
+            Phrase(name: "我要吃饭"),
+            Phrase(name: "我要喝水"),
+            Phrase(name: "我想去厕所"),
+            Phrase(name: "我不知道"),
+            Phrase(name: "我感觉不舒服"),
+            Phrase(name: "我需要帮助"),
+            Phrase(name: "谢谢"),
+            Phrase(name: "这是什么")
         ]
     
     

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Word {
-    var id: Int
+    var id = UUID()
     var name: String
 }
 
@@ -76,6 +76,6 @@ struct WordBtnView: View {
 struct WordBtnView_Previews: PreviewProvider {
     static var previews: some View {
 
-        WordBtnView(word: Word(id: 0, name: "null"))
+        WordBtnView(word: Word(name: "null"))
     }
 }

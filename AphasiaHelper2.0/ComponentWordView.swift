@@ -30,6 +30,6 @@ struct ComponentWordView: View {
 struct ComponentWordView_Previews: PreviewProvider {
     static var previews: some View {
         
-        ComponentWordView(word: Word(id: 0, name: "null"))
+        ComponentWordView(word: Word(name: "null"))
     }
 }
