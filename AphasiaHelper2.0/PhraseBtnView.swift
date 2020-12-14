@@ -19,7 +19,7 @@ struct PhraseBtnView: View {
     var body: some View {
         Button(action: {
             read(text: "\(phrase.name)")
-            // TODO: 词频加一
+            // TODO: 后端词频加一
         }){
             Text("\(phrase.name)")
                 .foregroundColor(Color.black)

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Word {
+struct Word: Hashable {
     var id = UUID()
     var name: String
 }
@@ -26,9 +26,8 @@ struct WordBtnView: View {
         Button(action: {
             isSelected = true
             read(text: "\(word.name)")
-            // TODO........crash 写
             makeUpSentanceManager.addWord(word: word)
-            // TODO: 词频加一
+            // TODO: 后端词频加一
         }){
             if(isSelected) {
                 // 选中

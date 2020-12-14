@@ -16,13 +16,12 @@ struct CategoryBtnView: View {
     
     var category: Category
     
-    // TODO
+    // TODO 同时只能有一个二级分类标签被选中, 默认为第一个
     @State var isSelected: Bool = false
     
     var body: some View {
         Button(action: {
             isSelected.toggle()
-            //read(text: "\(word.name)")
             // TODO 更新二级分类下的words
         }){
             if(isSelected) {

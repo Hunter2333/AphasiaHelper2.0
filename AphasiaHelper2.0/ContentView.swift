@@ -12,24 +12,24 @@ struct ContentView: View {
     @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
     
     // 主语
-    let subjects: [Word] = [
+    @State var subjects: [Word] = [
             Word(name: "你"),
             Word(name: "我"),
             Word(name: "他"),
-            Word(name: "这些")
+            Word(name: "这些"),
         ]
     
     // 谓语
-    let predicates: [Word] = [
+    @State var predicates: [Word] = [
             Word(name: "是"),
             Word(name: "要"),
             Word(name: "吃"),
             Word(name: "喝"),
-            Word(name: "去")
+            Word(name: "去"),
         ]
     
-    // 宾语
-    let objects: [Word] = [
+    // 宾语常用词
+    @State var frequentObjects: [Word] = [
             Word(name: "咖啡"),
             Word(name: "苹果"),
             Word(name: "洗手间"),
@@ -39,8 +39,19 @@ struct ContentView: View {
             Word(name: "女儿"),
         ]
     
-    // 二级宾语分类
-    let categories: [Category] = [
+    // 二级分类下的宾语词
+    @State var lv2Objects: [Word] = [
+            Word(name: "米饭"),
+            Word(name: "蛋糕"),
+            Word(name: "鸡蛋"),
+            Word(name: "鸡肉"),
+            Word(name: "羊肉"),
+            Word(name: "茄子"),
+            Word(name: "土豆"),
+        ]
+    
+    // 二级宾语分类标签
+    @State var categories: [Category] = [
             Category(name: "食物"),
             Category(name: "饮料"),
             Category(name: "身体"),
@@ -48,20 +59,34 @@ struct ContentView: View {
             Category(name: "家具"),
             Category(name: "感受"),
             Category(name: "人物"),
-            Category(name: "地点")
+            Category(name: "地点"),
         ]
     
     // 常用短语
-    let phrases: [Phrase] = [
-            Phrase(name: "我要吃饭"),
-            Phrase(name: "我要喝水"),
-            Phrase(name: "我想去厕所"),
+    @State var phrases: [Phrase] = [
             Phrase(name: "我不知道"),
             Phrase(name: "我感觉不舒服"),
             Phrase(name: "我需要帮助"),
             Phrase(name: "谢谢"),
-            Phrase(name: "这是什么")
         ]
+    
+    
+    // 词语分页
+    func splitArr(step: Int, arr: [Word]) -> [[Word]] {
+        
+        var result = [[Word]]()
+        var itemsRemaining: Int = arr.count
+        var j = 0
+        while(itemsRemaining > 0) {
+            let endIndex = j + min(step, itemsRemaining)
+            let increment = endIndex - j
+            let itemArr = [Word](arr[j..<endIndex])
+            itemsRemaining -= increment
+            j += increment
+            result.append(itemArr)
+        }
+        return result
+    }
     
     
         
@@ -89,7 +114,7 @@ struct ContentView: View {
                     
                     Spacer()
                     HStack {
-                        // TODO.......crash 读: 更新视图
+                        
                         ScrollView(.horizontal, showsIndicators: true) {
                             HStack {
                                 ForEach(makeUpSentanceManager.componentWords, id: \.id) { componentWord in
@@ -117,8 +142,11 @@ struct ContentView: View {
                     
                     Spacer()
                     Button(action: {
-                        read(text: makeUpSentanceManager.sentance)
-                        // TODO: 添加到常用短语
+                        if(makeUpSentanceManager.sentance.count > 0) {
+                            read(text: makeUpSentanceManager.sentance)
+                            phrases.append(Phrase(name: makeUpSentanceManager.sentance))
+                            // TODO 新建该常用短语到后端, 词频置为1
+                        }
                     }){
                         Image(systemName: "speaker.wave.2").font(.system(size: 28, weight: .bold))
                     }
@@ -130,7 +158,6 @@ struct ContentView: View {
                     
                     Button(action: {
                         // 一次只清除一个词
-                        // TODO.......crash 写
                         makeUpSentanceManager.removeLastWord()
                         // TODO.......更改WordBtn样式
                     }){
@@ -188,19 +215,19 @@ struct ContentView: View {
                                 
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
-                                        ForEach(subjects, id: \.id) { word in
-                                            WordBtnView(word: word)
+                                        ForEach(splitArr(step: 2, arr: subjects), id: \.self) {
+                                            arrSlice in
+                                            VStack {
+                                                ForEach(arrSlice, id: \.id) {
+                                                    word in WordBtnView(word: word)
+                                                }
+                                                Spacer()
+                                            }
                                         }
                                     }
-                                }.padding(.leading, 15)
-
-                                ScrollView(.horizontal, showsIndicators: true) {
-                                    HStack {
-                                        ForEach(subjects, id: \.id) { word in
-                                            WordBtnView(word: word)
-                                        }
-                                    }
-                                }.padding(.leading, 15)
+                                }
+                                .padding(.leading, 15)
+                                .frame(height: 180)
                             }
                         }
                         
@@ -225,19 +252,19 @@ struct ContentView: View {
                                 
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
-                                        ForEach(predicates, id: \.id) { word in
-                                            WordBtnView(word: word)
+                                        ForEach(splitArr(step: 2, arr: predicates), id: \.self) {
+                                            arrSlice in
+                                            VStack {
+                                                ForEach(arrSlice, id: \.id) {
+                                                    word in WordBtnView(word: word)
+                                                }
+                                                Spacer()
+                                            }
                                         }
                                     }
-                                }.padding(.leading, 15)
-
-                                ScrollView(.horizontal, showsIndicators: true) {
-                                    HStack {
-                                        ForEach(predicates, id: \.id) { word in
-                                            WordBtnView(word: word)
-                                        }
-                                    }
-                                }.padding(.leading, 15)
+                                }
+                                .padding(.leading, 15)
+                                .frame(height: 180)
                             }
                         }
                         
@@ -274,27 +301,19 @@ struct ContentView: View {
                                     
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
-                                            ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word)
+                                            ForEach(splitArr(step: 3, arr: frequentObjects), id: \.self) {
+                                                arrSlice in
+                                                VStack {
+                                                    ForEach(arrSlice, id: \.id) {
+                                                        word in WordBtnView(word: word)
+                                                    }
+                                                    Spacer()
+                                                }
                                             }
                                         }
-                                    }.padding(.leading, 15)
-
-                                    ScrollView(.horizontal, showsIndicators: true) {
-                                        HStack {
-                                            ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word)
-                                            }
-                                        }
-                                    }.padding(.leading, 15)
-                                    
-                                    ScrollView(.horizontal, showsIndicators: true) {
-                                        HStack {
-                                            ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word)
-                                            }
-                                        }
-                                    }.padding(.leading, 15)
+                                    }
+                                    .padding(.leading, 15)
+                                    .frame(height: 270)
                                 }
                                 .frame(width: (geo.size.width - 40) / 2 - 15, height: (geo.size.height - 180 - 60) / 2)
                                 
@@ -319,27 +338,18 @@ struct ContentView: View {
                                     
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
-                                            ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word)
+                                            ForEach(splitArr(step: 3, arr: lv2Objects), id: \.self) {
+                                                arrSlice in
+                                                VStack {
+                                                    ForEach(arrSlice, id: \.id) {
+                                                        word in WordBtnView(word: word)
+                                                    }
+                                                    Spacer()
+                                                }
                                             }
                                         }
                                     }
-
-                                    ScrollView(.horizontal, showsIndicators: true) {
-                                        HStack {
-                                            ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word)
-                                            }
-                                        }
-                                    }
-                                    
-                                    ScrollView(.horizontal, showsIndicators: true) {
-                                        HStack {
-                                            ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word)
-                                            }
-                                        }
-                                    }
+                                    .frame(height: 270)
                                 }
                                 .frame(width: (geo.size.width - 40) / 2, height: (geo.size.height - 180 - 60) / 2)
                             }
