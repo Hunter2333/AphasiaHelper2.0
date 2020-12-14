@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State var sentance: String = ""
+    @EnvironmentObject var makeUpSentance: MakeUpSentance
     
     // 主语
     let subjects: [Word] = [
@@ -91,7 +91,8 @@ struct ContentView: View {
                     Spacer()
                     HStack {
                         HStack {
-                            Text(self.sentance)
+                            // TODO ............
+                            Text(self.makeUpSentance.sentance)
                                 .font(.title2)
                                 .foregroundColor(Color.black)
                         }
@@ -114,7 +115,8 @@ struct ContentView: View {
                     
                     Spacer()
                     Button(action: {
-                        read(text: self.sentance)
+                        read(text: self.makeUpSentance.sentance)
+                        // TODO: 添加到常用短语
                     }){
                         Image(systemName: "speaker.wave.2").font(.system(size: 28, weight: .bold))
                     }
@@ -125,8 +127,13 @@ struct ContentView: View {
                     
                     
                     Button(action: {
-                        // TODO
-                        self.sentance = ""
+                        // 一次只清除一个词
+                        // TODO.......更改WordBtn样式
+                        self.makeUpSentance.componentWords.removeLast()
+                        self.makeUpSentance.sentance = ""
+                        for componentWord in self.makeUpSentance.componentWords {
+                            self.makeUpSentance.sentance.append(componentWord.name)
+                        }
                     }){
                         Image(systemName: "clear").font(.system(size: 32, weight: .bold))
                     }
@@ -183,7 +190,7 @@ struct ContentView: View {
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
                                         ForEach(subjects, id: \.id) { word in
-                                            WordBtnView(word: word, sentance: self.$sentance)
+                                            WordBtnView(word: word)
                                         }
                                     }
                                 }.padding(.leading, 15)
@@ -191,7 +198,7 @@ struct ContentView: View {
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
                                         ForEach(subjects, id: \.id) { word in
-                                            WordBtnView(word: word, sentance: self.$sentance)
+                                            WordBtnView(word: word)
                                         }
                                     }
                                 }.padding(.leading, 15)
@@ -220,7 +227,7 @@ struct ContentView: View {
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
                                         ForEach(predicates, id: \.id) { word in
-                                            WordBtnView(word: word, sentance: self.$sentance)
+                                            WordBtnView(word: word)
                                         }
                                     }
                                 }.padding(.leading, 15)
@@ -228,7 +235,7 @@ struct ContentView: View {
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
                                         ForEach(predicates, id: \.id) { word in
-                                            WordBtnView(word: word, sentance: self.$sentance)
+                                            WordBtnView(word: word)
                                         }
                                     }
                                 }.padding(.leading, 15)
@@ -269,7 +276,7 @@ struct ContentView: View {
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
                                             ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word, sentance: self.$sentance)
+                                                WordBtnView(word: word)
                                             }
                                         }
                                     }.padding(.leading, 15)
@@ -277,7 +284,7 @@ struct ContentView: View {
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
                                             ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word, sentance: self.$sentance)
+                                                WordBtnView(word: word)
                                             }
                                         }
                                     }.padding(.leading, 15)
@@ -285,7 +292,7 @@ struct ContentView: View {
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
                                             ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word, sentance: self.$sentance)
+                                                WordBtnView(word: word)
                                             }
                                         }
                                     }.padding(.leading, 15)
@@ -314,7 +321,7 @@ struct ContentView: View {
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
                                             ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word, sentance: self.$sentance)
+                                                WordBtnView(word: word)
                                             }
                                         }
                                     }
@@ -322,7 +329,7 @@ struct ContentView: View {
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
                                             ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word, sentance: self.$sentance)
+                                                WordBtnView(word: word)
                                             }
                                         }
                                     }
@@ -330,7 +337,7 @@ struct ContentView: View {
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
                                             ForEach(objects, id: \.id) { word in
-                                                WordBtnView(word: word, sentance: self.$sentance)
+                                                WordBtnView(word: word)
                                             }
                                         }
                                     }
@@ -391,7 +398,8 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    
     static var previews: some View {
-        ContentView()
+        ContentView().environmentObject(MakeUpSentance())
     }
 }

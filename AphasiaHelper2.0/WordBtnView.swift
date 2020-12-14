@@ -17,15 +17,17 @@ struct WordBtnView: View {
     var image: UIImage?
     var word: Word
     
+    @EnvironmentObject var makeUpSentance: MakeUpSentance
+    
     @State var isSelected: Bool = false
     
-    @Binding var sentance: String
     
     var body: some View {
         Button(action: {
-            isSelected.toggle()
+            isSelected = true
             read(text: "\(word.name)")
-            sentance.append("\(word.name) ")
+            self.makeUpSentance.sentance.append("\(word.name)")
+            self.makeUpSentance.componentWords.append(self.word)
             // TODO: 词频加一
         }){
             if(isSelected) {
@@ -71,9 +73,9 @@ struct WordBtnView: View {
     }
 }
 
-//struct WordBtnView_Previews: PreviewProvider {
-//    static var previews: some View {
-//
-//        WordBtnView(word: Word(id: 0, name: "null"))
-//    }
-//}
+struct WordBtnView_Previews: PreviewProvider {
+    static var previews: some View {
+
+        WordBtnView(word: Word(id: 0, name: "null"))
+    }
+}
