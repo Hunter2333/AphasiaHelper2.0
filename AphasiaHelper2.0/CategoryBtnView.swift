@@ -10,21 +10,20 @@ import SwiftUI
 struct Category {
     var id = UUID()
     var name: String
+    var isSelected: Bool
 }
 
 struct CategoryBtnView: View {
     
     var category: Category
     
-    // TODO 同时只能有一个二级分类标签被选中, 默认为第一个
-    @State var isSelected: Bool = false
+    @EnvironmentObject var selectCategoryManager: SelectCategoryManager
     
     var body: some View {
         Button(action: {
-            isSelected.toggle()
-            // TODO 更新二级分类下的words
+            selectCategoryManager.updateCategoryBtnViews(selectedCategoryName: category.name)
         }){
-            if(isSelected) {
+            if(category.isSelected) {
                 // 选中
                 Text("\(category.name)")
                     .font(.body)
@@ -57,6 +56,6 @@ struct CategoryBtnView: View {
 
 struct CategoryBtnView_Previews: PreviewProvider {
     static var previews: some View {
-        CategoryBtnView(category: Category(name: "null"))
+        CategoryBtnView(category: Category(name: "null", isSelected: false))
     }
 }

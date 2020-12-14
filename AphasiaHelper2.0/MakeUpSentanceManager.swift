@@ -29,4 +29,5 @@ class MakeUpSentanceManager: ObservableObject {
             return
         }
     }
+    
 }

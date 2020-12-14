@@ -11,6 +11,8 @@ struct ContentView: View {
     
     @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
     
+    @EnvironmentObject var selectCategoryManager: SelectCategoryManager
+    
     // 主语
     @State var subjects: [Word] = [
             Word(name: "你"),
@@ -48,18 +50,6 @@ struct ContentView: View {
             Word(name: "羊肉"),
             Word(name: "茄子"),
             Word(name: "土豆"),
-        ]
-    
-    // 二级宾语分类标签
-    @State var categories: [Category] = [
-            Category(name: "食物"),
-            Category(name: "饮料"),
-            Category(name: "身体"),
-            Category(name: "日用品"),
-            Category(name: "家具"),
-            Category(name: "感受"),
-            Category(name: "人物"),
-            Category(name: "地点"),
         ]
     
     // 常用短语
@@ -329,7 +319,7 @@ struct ContentView: View {
                                     // 宾语二级分类
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
-                                            ForEach(categories, id: \.id) { category in
+                                            ForEach(selectCategoryManager.categories, id: \.id) { category in
                                                 CategoryBtnView(category: category)
                                                     .padding(.trailing, 10)
                                             }
@@ -409,6 +399,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     
     static var previews: some View {
-        ContentView().environmentObject(MakeUpSentanceManager())
+        ContentView().environmentObject(MakeUpSentanceManager()).environmentObject(SelectCategoryManager())
     }
 }
