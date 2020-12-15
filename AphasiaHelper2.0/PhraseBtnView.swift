@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-struct Phrase {
-    var id = UUID()
-    var name: String
-}
 
 struct PhraseBtnView: View {
     
@@ -40,6 +36,6 @@ struct PhraseBtnView: View {
 
 struct PhraseBtnView_Previews: PreviewProvider {
     static var previews: some View {
-        PhraseBtnView(phrase: Phrase(name: "null"))
+        PhraseBtnView(phrase: Phrase(DBKey: 0, name: "null"))
     }
 }

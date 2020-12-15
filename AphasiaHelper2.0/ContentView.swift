@@ -13,51 +13,12 @@ struct ContentView: View {
     
     @EnvironmentObject var selectCategoryManager: SelectCategoryManager
     
-    // 主语
-    @State var subjects: [Word] = [
-            Word(name: "你"),
-            Word(name: "我"),
-            Word(name: "他"),
-            Word(name: "这些"),
-        ]
-    
-    // 谓语
-    @State var predicates: [Word] = [
-            Word(name: "是"),
-            Word(name: "要"),
-            Word(name: "吃"),
-            Word(name: "喝"),
-            Word(name: "去"),
-        ]
-    
-    // 宾语常用词
-    @State var frequentObjects: [Word] = [
-            Word(name: "咖啡"),
-            Word(name: "苹果"),
-            Word(name: "洗手间"),
-            Word(name: "笔记本"),
-            Word(name: "花"),
-            Word(name: "医院"),
-            Word(name: "女儿"),
-        ]
-    
-    // 二级分类下的宾语词
-    @State var lv2Objects: [Word] = [
-            Word(name: "米饭"),
-            Word(name: "蛋糕"),
-            Word(name: "鸡蛋"),
-            Word(name: "鸡肉"),
-            Word(name: "羊肉"),
-            Word(name: "茄子"),
-            Word(name: "土豆"),
-        ]
-    
     // 常用短语
     @State var phrases: [Phrase] = [
-            Phrase(name: "我不知道"),
-            Phrase(name: "我感觉不舒服"),
-            Phrase(name: "我需要帮助"),
-            Phrase(name: "谢谢"),
+            Phrase(DBKey: 1, name: "我不知道"),
+            Phrase(DBKey: 2, name: "我感觉不舒服"),
+            Phrase(DBKey: 3, name: "我需要帮助"),
+            Phrase(DBKey: 4, name: "谢谢"),
         ]
     
     
@@ -134,8 +95,10 @@ struct ContentView: View {
                     Button(action: {
                         if(makeUpSentanceManager.sentance.count > 0) {
                             read(text: makeUpSentanceManager.sentance)
-                            phrases.append(Phrase(name: makeUpSentanceManager.sentance))
-                            // TODO 新建该常用短语到后端, 词频置为1
+                            // TODO 新建该常用短语到后端, 重新获取phrases
+                            // Test Start
+                            phrases.append(Phrase(DBKey: phrases.count + 1, name: makeUpSentanceManager.sentance))
+                            // Test End
                         }
                     }){
                         Image(systemName: "speaker.wave.2").font(.system(size: 28, weight: .bold))
@@ -149,7 +112,6 @@ struct ContentView: View {
                     Button(action: {
                         // 一次只清除一个词
                         makeUpSentanceManager.removeLastWord()
-                        // TODO.......更改WordBtn样式
                     }){
                         Image(systemName: "clear").font(.system(size: 32, weight: .bold))
                     }
@@ -205,7 +167,7 @@ struct ContentView: View {
                                 
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
-                                        ForEach(splitArr(step: 2, arr: subjects), id: \.self) {
+                                        ForEach(splitArr(step: 2, arr: makeUpSentanceManager.subjects), id: \.self) {
                                             arrSlice in
                                             VStack {
                                                 ForEach(arrSlice, id: \.id) {
@@ -242,7 +204,7 @@ struct ContentView: View {
                                 
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
-                                        ForEach(splitArr(step: 2, arr: predicates), id: \.self) {
+                                        ForEach(splitArr(step: 2, arr: makeUpSentanceManager.predicates), id: \.self) {
                                             arrSlice in
                                             VStack {
                                                 ForEach(arrSlice, id: \.id) {
@@ -291,7 +253,7 @@ struct ContentView: View {
                                     
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
-                                            ForEach(splitArr(step: 3, arr: frequentObjects), id: \.self) {
+                                            ForEach(splitArr(step: 3, arr: makeUpSentanceManager.frequentObjects), id: \.self) {
                                                 arrSlice in
                                                 VStack {
                                                     ForEach(arrSlice, id: \.id) {
@@ -328,7 +290,7 @@ struct ContentView: View {
                                     
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
-                                            ForEach(splitArr(step: 3, arr: lv2Objects), id: \.self) {
+                                            ForEach(splitArr(step: 3, arr: makeUpSentanceManager.lv2Objects), id: \.self) {
                                                 arrSlice in
                                                 VStack {
                                                     ForEach(arrSlice, id: \.id) {

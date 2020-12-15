@@ -7,11 +7,6 @@
 
 import SwiftUI
 
-struct Category {
-    var id = UUID()
-    var name: String
-    var isSelected: Bool
-}
 
 struct CategoryBtnView: View {
     
@@ -21,7 +16,7 @@ struct CategoryBtnView: View {
     
     var body: some View {
         Button(action: {
-            selectCategoryManager.updateCategoryBtnViews(selectedCategoryName: category.name)
+            selectCategoryManager.updateCategoryBtnViews(selectedCategoryDBKey: category.DBKey)
         }){
             if(category.isSelected) {
                 // 选中
@@ -56,6 +51,6 @@ struct CategoryBtnView: View {
 
 struct CategoryBtnView_Previews: PreviewProvider {
     static var previews: some View {
-        CategoryBtnView(category: Category(name: "null", isSelected: false))
+        CategoryBtnView(category: Category(DBKey: 0, name: "null", isSelected: false))
     }
 }

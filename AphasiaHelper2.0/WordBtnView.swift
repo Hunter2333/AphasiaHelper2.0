@@ -7,29 +7,22 @@
 
 import SwiftUI
 
-struct Word: Hashable {
-    var id = UUID()
-    var name: String
-}
 
 struct WordBtnView: View {
     
+    // TODO: 根据URL加载图片 -> image
     var image: UIImage?
     var word: Word
     
     @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
     
-    @State var isSelected: Bool = false
-    
     
     var body: some View {
         Button(action: {
-            isSelected = true
             read(text: "\(word.name)")
-            makeUpSentanceManager.addWord(word: word)
-            // TODO: 后端词频加一
+            makeUpSentanceManager.addWord(type: word.type, DBKey: word.DBKey)
         }){
-            if(isSelected) {
+            if(word.isSelected) {
                 // 选中
                 VStack {
                     Image(uiImage: image ?? UIImage(named: "PlaceHolder")!)
@@ -75,6 +68,6 @@ struct WordBtnView: View {
 struct WordBtnView_Previews: PreviewProvider {
     static var previews: some View {
 
-        WordBtnView(word: Word(name: "null"))
+        WordBtnView(word: Word(DBKey: 0, name: "null", url: "", type: WordType.Subject, isSelected: false))
     }
 }
