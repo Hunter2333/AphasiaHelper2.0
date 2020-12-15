@@ -10,56 +10,40 @@ import Foundation
 class MakeUpSentanceManager: ObservableObject {
     
     // 主语
-    @Published var subjects: [Word] = [
-            Word(DBKey: 1, name: "你", url: "", type: WordType.Subject, isSelected: false),
-            Word(DBKey: 2, name: "我", url: "", type: WordType.Subject, isSelected: false),
-            Word(DBKey: 3, name: "他", url: "", type: WordType.Subject, isSelected: false),
-            Word(DBKey: 4, name: "这些", url: "", type: WordType.Subject, isSelected: false),
-        ]
+    @Published var subjects = [Word]()
     
     // 谓语
-    @Published var predicates: [Word] = [
-            Word(DBKey: 1, name: "是", url: "", type: WordType.Predicate, isSelected: false),
-            Word(DBKey: 2, name: "要", url: "", type: WordType.Predicate, isSelected: false),
-            Word(DBKey: 3, name: "吃", url: "", type: WordType.Predicate, isSelected: false),
-            Word(DBKey: 4, name: "喝", url: "", type: WordType.Predicate, isSelected: false),
-            Word(DBKey: 5, name: "去", url: "", type: WordType.Predicate, isSelected: false),
-        ]
+    @Published var predicates = [Word]()
     
     // 宾语常用词
-    @Published var frequentObjects: [Word] = [
-            Word(DBKey: 1, name: "咖啡", url: "", type: WordType.Object, isSelected: false),
-            // Test Start
-            Word(DBKey: 2, name: "苹果", url: "", type: WordType.Object, isSelected: false),
-            // Test End
-            Word(DBKey: 3, name: "洗手间", url: "", type: WordType.Object, isSelected: false),
-            Word(DBKey: 4, name: "笔记本", url: "", type: WordType.Object, isSelected: false),
-            Word(DBKey: 5, name: "花", url: "", type: WordType.Object, isSelected: false),
-            Word(DBKey: 6, name: "医院", url: "", type: WordType.Object, isSelected: false),
-            Word(DBKey: 7, name: "女儿", url: "", type: WordType.Object, isSelected: false),
-        ]
+    @Published var frequentObjects = [Word]()
+    
+    // 当前选中的那个宾语二级分类标签在categories中的下标
+    @Published var selectedCategoryIndex: Int = 0
+    // 宾语二级分类的所有标签
+    @Published var categories = [Category]()
     
     // 二级分类下的宾语词
-    @Published var lv2Objects: [Word] = [
-            Word(DBKey: 8, name: "米饭", url: "", type: WordType.Object, isSelected: false),
-            Word(DBKey: 9, name: "蛋糕", url: "", type: WordType.Object, isSelected: false),
-            Word(DBKey: 10, name: "鸡蛋", url: "", type: WordType.Object, isSelected: false),
-            // Test Start
-            Word(DBKey: 2, name: "苹果", url: "", type: WordType.Object, isSelected: false),
-            // Test End
-            Word(DBKey: 11, name: "羊肉", url: "", type: WordType.Object, isSelected: false),
-            Word(DBKey: 12, name: "茄子", url: "", type: WordType.Object, isSelected: false),
-            Word(DBKey: 13, name: "土豆", url: "", type: WordType.Object, isSelected: false),
-        ]
+    @Published var lv2Objects = [Word]()
+    
+    // 常用短语
+    @Published var phrases = [Phrase]()
     
     // 组成的一句话
     @Published var sentance: String = ""
     @Published var componentWords = [Word]()
     
     
+    
     // 注意赋值 Word 对象的 type & isSelected (检查 ComponentWords) 属性
+    // 打开App时加载全部数据
+    func loadAll() {
+        
+    }
     // TODO 从后台获取所有主语的方法 -> subjects
-    //................
+    func getAllSubjects() {
+        
+    }
     
     // TODO 从后台获取所有谓语的方法 -> predicates
     //................
@@ -67,9 +51,31 @@ class MakeUpSentanceManager: ObservableObject {
     // TODO 从后台获取所有宾语常用词的方法 -> frequentObjects
     //................
     
+    // TODO 从后台获取所有宾语二级分类标签的方法 -> categories (注意赋值Category对象的isSelected属性)
+    //................
+    
     // TODO 从后台获取指定标签下所有二级宾语词的方法 -> lv2Objects
     //................
     // 注意赋值 Word 对象的 type & isSelected (检查 ComponentWords) 属性
+    
+    
+    // 切换标签: 同时只能有一个二级分类标签被选中, 初次打开页面时默认为第一个
+    func updateCategoryBtnViews(selectedCategoryDBKey: Int) -> Void {
+        
+        if(categories[selectedCategoryIndex].DBKey != selectedCategoryDBKey) {
+            
+            categories[selectedCategoryIndex].isSelected = false
+            
+            for i in 0..<categories.count {
+                if(categories[i].DBKey == selectedCategoryDBKey) {
+                    categories[i].isSelected = true
+                    selectedCategoryIndex = i
+                    // TODO 更新二级分类下words的方法
+                    break
+                }
+            }
+        }
+    }
     
     
     // 向组成的句子末添加词语
@@ -184,5 +190,15 @@ class MakeUpSentanceManager: ObservableObject {
             }
         }
     }
+    
+    
+    // TODO 从后台获取所有常用短语的方法 -> phrases
+    //................
+    
+    // TODO 向后端插入新生成的常用短语
+    //................
+    
+    // TODO 在后端给指定常用短语的频率加一
+    //................
     
 }

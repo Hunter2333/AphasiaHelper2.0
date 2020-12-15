@@ -68,6 +68,6 @@ struct WordBtnView: View {
 struct WordBtnView_Previews: PreviewProvider {
     static var previews: some View {
 
-        WordBtnView(word: Word(DBKey: 0, name: "null", url: "", type: WordType.Subject, isSelected: false))
+        WordBtnView(word: Word(DBKey: 0, name: "null", url: "", type: WordType.Subject, isSelected: true))
     }
 }

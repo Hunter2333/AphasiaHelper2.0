@@ -11,10 +11,6 @@ struct ContentView: View {
     
     @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
     
-    @EnvironmentObject var selectCategoryManager: SelectCategoryManager
-    
-    @EnvironmentObject var phraseManager: PhraseManager
-    
     
     // 词语分页
     func splitArr(step: Int, arr: [Word]) -> [[Word]] {
@@ -272,7 +268,7 @@ struct ContentView: View {
                                     // 宾语二级分类
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
-                                            ForEach(selectCategoryManager.categories, id: \.id) { category in
+                                            ForEach(makeUpSentanceManager.categories, id: \.id) { category in
                                                 CategoryBtnView(category: category)
                                                     .padding(.trailing, 10)
                                             }
@@ -327,7 +323,7 @@ struct ContentView: View {
                                 
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
-                                        ForEach(phraseManager.phrases, id: \.id) { phrase in
+                                        ForEach(makeUpSentanceManager.phrases, id: \.id) { phrase in
                                             PhraseBtnView(phrase: phrase)
                                                 .padding(.trailing, 5)
                                         }
@@ -344,6 +340,7 @@ struct ContentView: View {
                 }
                 .frame(width: geo.size.width, height: geo.size.height - 180)
                 .background(Color(red: 249/255, green: 247/255, blue: 243/255))
+                //.onAppear(perform: makeUpSentanceManager.loadData)
             }
         }
     }
@@ -352,6 +349,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     
     static var previews: some View {
-        ContentView().environmentObject(MakeUpSentanceManager()).environmentObject(SelectCategoryManager()).environmentObject(PhraseManager())
+        ContentView().environmentObject(MakeUpSentanceManager())
     }
 }

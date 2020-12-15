@@ -12,10 +12,7 @@ struct AphasiaHelper2_0App: App {
     var body: some Scene {
         
         WindowGroup {
-            ContentView()
-                .environmentObject(MakeUpSentanceManager())
-                .environmentObject(SelectCategoryManager())
-                .environmentObject(PhraseManager())
+            ContentView().environmentObject(MakeUpSentanceManager())
         }
     }
 }

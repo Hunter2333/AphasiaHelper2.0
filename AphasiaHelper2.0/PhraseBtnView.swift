@@ -12,6 +12,8 @@ struct PhraseBtnView: View {
     
     var phrase: Phrase
     
+    @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
+    
     var body: some View {
         Button(action: {
             read(text: "\(phrase.name)")
