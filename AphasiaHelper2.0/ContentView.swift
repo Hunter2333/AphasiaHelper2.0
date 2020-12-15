@@ -13,13 +13,7 @@ struct ContentView: View {
     
     @EnvironmentObject var selectCategoryManager: SelectCategoryManager
     
-    // 常用短语
-    @State var phrases: [Phrase] = [
-            Phrase(DBKey: 1, name: "我不知道"),
-            Phrase(DBKey: 2, name: "我感觉不舒服"),
-            Phrase(DBKey: 3, name: "我需要帮助"),
-            Phrase(DBKey: 4, name: "谢谢"),
-        ]
+    @EnvironmentObject var phraseManager: PhraseManager
     
     
     // 词语分页
@@ -96,9 +90,6 @@ struct ContentView: View {
                         if(makeUpSentanceManager.sentance.count > 0) {
                             read(text: makeUpSentanceManager.sentance)
                             // TODO 新建该常用短语到后端, 重新获取phrases
-                            // Test Start
-                            phrases.append(Phrase(DBKey: phrases.count + 1, name: makeUpSentanceManager.sentance))
-                            // Test End
                         }
                     }){
                         Image(systemName: "speaker.wave.2").font(.system(size: 28, weight: .bold))
@@ -336,7 +327,7 @@ struct ContentView: View {
                                 
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
-                                        ForEach(phrases, id: \.id) { phrase in
+                                        ForEach(phraseManager.phrases, id: \.id) { phrase in
                                             PhraseBtnView(phrase: phrase)
                                                 .padding(.trailing, 5)
                                         }
@@ -361,6 +352,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     
     static var previews: some View {
-        ContentView().environmentObject(MakeUpSentanceManager()).environmentObject(SelectCategoryManager())
+        ContentView().environmentObject(MakeUpSentanceManager()).environmentObject(SelectCategoryManager()).environmentObject(PhraseManager())
     }
 }
