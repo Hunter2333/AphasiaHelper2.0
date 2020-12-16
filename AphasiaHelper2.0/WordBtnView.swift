@@ -12,13 +12,13 @@ struct WordBtnView: View {
     
     var word: Word
     
-    @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
+    @EnvironmentObject var mainController: MainController
     
     
     var body: some View {
         Button(action: {
             read(text: "\(word.name)")
-            makeUpSentanceManager.addWord(type: word.type, DBKey: word.DBKey)
+            mainController.addWord(type: word.type, DBKey: word.DBKey)
         }){
             if(word.isSelected) {
                 // 选中

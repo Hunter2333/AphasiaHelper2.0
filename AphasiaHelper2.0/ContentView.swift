@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
+    @EnvironmentObject var mainController: MainController
     
     
     // 词语分页
@@ -58,7 +58,7 @@ struct ContentView: View {
                         
                         ScrollView(.horizontal, showsIndicators: true) {
                             HStack {
-                                ForEach(makeUpSentanceManager.componentWords, id: \.id) { componentWord in
+                                ForEach(mainController.componentWords, id: \.id) { componentWord in
                                     ComponentWordView(word: componentWord)
                                 }
                             }
@@ -68,7 +68,8 @@ struct ContentView: View {
                         
                         
                         Button(action: {
-                            // TODO 智能识别
+                            // 智能识别
+                            //................
                         }){
                             Image(systemName: "camera").font(.system(size: 28, weight: .bold))
                         }
@@ -83,9 +84,12 @@ struct ContentView: View {
                     
                     Spacer()
                     Button(action: {
-                        if(makeUpSentanceManager.sentance.count > 0) {
-                            read(text: makeUpSentanceManager.sentance)
-                            // TODO 新建该常用短语到后端, 重新获取phrases
+                        if(mainController.sentence.count > 0) {
+                            read(text: mainController.sentence)
+//                            DispatchQueue.main.sync {
+//                                // TODO 新建该常用短语到后端
+//                                mainController.loadAllPhrases()
+//                            }
                         }
                     }){
                         Image(systemName: "speaker.wave.2").font(.system(size: 28, weight: .bold))
@@ -98,7 +102,7 @@ struct ContentView: View {
                     
                     Button(action: {
                         // 一次只清除一个词
-                        makeUpSentanceManager.removeLastWord()
+                        mainController.removeLastWord()
                     }){
                         Image(systemName: "clear").font(.system(size: 32, weight: .bold))
                     }
@@ -111,7 +115,8 @@ struct ContentView: View {
                     Spacer()
                     HStack {
                         Button(action: {
-                            // TODO 添加词语
+                            // 添加词语
+                            //................
                         }){
                             Image(systemName: "plus").font(.system(size: 34, weight: .bold))
                         }
@@ -154,7 +159,7 @@ struct ContentView: View {
                                 
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
-                                        ForEach(splitArr(step: 2, arr: makeUpSentanceManager.subjects), id: \.self) {
+                                        ForEach(splitArr(step: 2, arr: mainController.subjects), id: \.self) {
                                             arrSlice in
                                             VStack {
                                                 ForEach(arrSlice, id: \.id) {
@@ -191,7 +196,7 @@ struct ContentView: View {
                                 
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
-                                        ForEach(splitArr(step: 2, arr: makeUpSentanceManager.predicates), id: \.self) {
+                                        ForEach(splitArr(step: 2, arr: mainController.predicates), id: \.self) {
                                             arrSlice in
                                             VStack {
                                                 ForEach(arrSlice, id: \.id) {
@@ -240,7 +245,7 @@ struct ContentView: View {
                                     
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
-                                            ForEach(splitArr(step: 3, arr: makeUpSentanceManager.frequentObjects), id: \.self) {
+                                            ForEach(splitArr(step: 3, arr: mainController.frequentObjects), id: \.self) {
                                                 arrSlice in
                                                 VStack {
                                                     ForEach(arrSlice, id: \.id) {
@@ -268,7 +273,7 @@ struct ContentView: View {
                                     // 宾语二级分类
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
-                                            ForEach(makeUpSentanceManager.categories, id: \.id) { category in
+                                            ForEach(mainController.categories, id: \.id) { category in
                                                 CategoryBtnView(category: category)
                                                     .padding(.trailing, 10)
                                             }
@@ -277,7 +282,7 @@ struct ContentView: View {
                                     
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         HStack {
-                                            ForEach(splitArr(step: 3, arr: makeUpSentanceManager.lv2Objects), id: \.self) {
+                                            ForEach(splitArr(step: 3, arr: mainController.lv2Objects), id: \.self) {
                                                 arrSlice in
                                                 VStack {
                                                     ForEach(arrSlice, id: \.id) {
@@ -323,7 +328,7 @@ struct ContentView: View {
                                 
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
-                                        ForEach(makeUpSentanceManager.phrases, id: \.id) { phrase in
+                                        ForEach(mainController.phrases, id: \.id) { phrase in
                                             PhraseBtnView(phrase: phrase)
                                                 .padding(.trailing, 5)
                                         }
@@ -340,7 +345,7 @@ struct ContentView: View {
                 }
                 .frame(width: geo.size.width, height: geo.size.height - 180)
                 .background(Color(red: 249/255, green: 247/255, blue: 243/255))
-                .onAppear(perform: self.makeUpSentanceManager.loadAll)
+                .onAppear(perform: self.mainController.loadAll)
             }
         }
     }
@@ -349,6 +354,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     
     static var previews: some View {
-        ContentView().environmentObject(MakeUpSentanceManager())
+        ContentView().environmentObject(MainController())
     }
 }

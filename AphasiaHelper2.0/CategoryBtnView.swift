@@ -12,11 +12,11 @@ struct CategoryBtnView: View {
     
     var category: Category
     
-    @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
+    @EnvironmentObject var mainController: MainController
     
     var body: some View {
         Button(action: {
-            makeUpSentanceManager.updateCategoryBtnViews(selectedCategoryDBKey: category.DBKey)
+            mainController.updateCategoryBtnViews(selectedCategoryDBKey: category.DBKey)
         }){
             if(category.isSelected) {
                 // 选中

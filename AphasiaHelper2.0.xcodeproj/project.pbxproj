@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		F4457241257DDB9A00E4A509 /* functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4457240257DDB9A00E4A509 /* functions.swift */; };
-		F449B62D25876BD70034C7AE /* MakeUpSentanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F449B62C25876BD70034C7AE /* MakeUpSentanceManager.swift */; };
 		F45080CC25885718007892E3 /* DataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45080CB25885718007892E3 /* DataModels.swift */; };
+		F46124DF258A4FB8009139CE /* MainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46124DE258A4FB8009139CE /* MainController.swift */; };
 		F4831E9A2586EE39008D04C4 /* ComponentWordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4831E992586EE39008D04C4 /* ComponentWordView.swift */; };
 		F4C5AEA3257CDF48008C2D4A /* AphasiaHelper2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C5AEA2257CDF48008C2D4A /* AphasiaHelper2_0App.swift */; };
 		F4C5AEA5257CDF48008C2D4A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C5AEA4257CDF48008C2D4A /* ContentView.swift */; };
@@ -23,8 +23,8 @@
 
 /* Begin PBXFileReference section */
 		F4457240257DDB9A00E4A509 /* functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = functions.swift; sourceTree = "<group>"; };
-		F449B62C25876BD70034C7AE /* MakeUpSentanceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MakeUpSentanceManager.swift; sourceTree = "<group>"; };
 		F45080CB25885718007892E3 /* DataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModels.swift; sourceTree = "<group>"; };
+		F46124DE258A4FB8009139CE /* MainController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainController.swift; sourceTree = "<group>"; };
 		F4831E992586EE39008D04C4 /* ComponentWordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentWordView.swift; sourceTree = "<group>"; };
 		F4C5AE9F257CDF48008C2D4A /* AphasiaHelper2.0.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AphasiaHelper2.0.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4C5AEA2257CDF48008C2D4A /* AphasiaHelper2_0App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AphasiaHelper2_0App.swift; sourceTree = "<group>"; };
@@ -77,7 +77,7 @@
 				F4C5AEA8257CDF49008C2D4A /* Preview Content */,
 				F45080CB25885718007892E3 /* DataModels.swift */,
 				F4457240257DDB9A00E4A509 /* functions.swift */,
-				F449B62C25876BD70034C7AE /* MakeUpSentanceManager.swift */,
+				F46124DE258A4FB8009139CE /* MainController.swift */,
 				F4C5AEB7257D00BC008C2D4A /* WordBtnView.swift */,
 				F4F7C1E32586308E002D9330 /* CategoryBtnView.swift */,
 				F4F7C1E625863F4E002D9330 /* PhraseBtnView.swift */,
@@ -171,10 +171,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F449B62D25876BD70034C7AE /* MakeUpSentanceManager.swift in Sources */,
 				F4F7C1E725863F4E002D9330 /* PhraseBtnView.swift in Sources */,
 				F4C5AEA5257CDF48008C2D4A /* ContentView.swift in Sources */,
 				F4C5AEB8257D00BC008C2D4A /* WordBtnView.swift in Sources */,
+				F46124DF258A4FB8009139CE /* MainController.swift in Sources */,
 				F4C5AEA3257CDF48008C2D4A /* AphasiaHelper2_0App.swift in Sources */,
 				F4831E9A2586EE39008D04C4 /* ComponentWordView.swift in Sources */,
 				F4F7C1E42586308E002D9330 /* CategoryBtnView.swift in Sources */,

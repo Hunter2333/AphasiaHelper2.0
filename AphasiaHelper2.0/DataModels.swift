@@ -16,6 +16,12 @@ enum WordType: String, Codable {
     case Object = "宾语"
 }
 
+// 可更新频率的类型
+enum FrequencyUpdateType: String {
+    case object = "object"
+    case phrase = "sentence"
+}
+
 // 词语
 struct Word: Hashable, Codable {
     var id = UUID()
