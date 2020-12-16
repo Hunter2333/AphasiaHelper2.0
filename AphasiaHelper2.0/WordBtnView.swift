@@ -10,8 +10,6 @@ import SwiftUI
 
 struct WordBtnView: View {
     
-    // TODO: 根据URL加载图片 -> image
-    var image: UIImage?
     var word: Word
     
     @EnvironmentObject var makeUpSentanceManager: MakeUpSentanceManager
@@ -25,7 +23,7 @@ struct WordBtnView: View {
             if(word.isSelected) {
                 // 选中
                 VStack {
-                    Image(uiImage: image ?? UIImage(named: "PlaceHolder")!)
+                    Image(uiImage: word.image ?? UIImage(named: "PlaceHolder")!)
                         .resizable()
                         .frame(width: 50, height: 50)
                     Text("\(word.name)")
@@ -44,7 +42,7 @@ struct WordBtnView: View {
             else {
                 // 未选中
                 VStack {
-                    Image(uiImage: image ?? UIImage(named: "PlaceHolder")!)
+                    Image(uiImage: word.image ?? UIImage(named: "PlaceHolder")!)
                         .resizable()
                         .frame(width: 50, height: 50)
                     Text("\(word.name)")

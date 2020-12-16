@@ -340,7 +340,7 @@ struct ContentView: View {
                 }
                 .frame(width: geo.size.width, height: geo.size.height - 180)
                 .background(Color(red: 249/255, green: 247/255, blue: 243/255))
-                //.onAppear(perform: makeUpSentanceManager.loadData)
+                .onAppear(perform: self.makeUpSentanceManager.loadAll)
             }
         }
     }

@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import SwiftUI
+
 
 class MakeUpSentanceManager: ObservableObject {
     
@@ -35,11 +37,98 @@ class MakeUpSentanceManager: ObservableObject {
     
     
     
-    // 注意赋值 Word 对象的 type & isSelected (检查 ComponentWords) 属性
     // 打开App时加载全部数据
     func loadAll() {
         
+        guard let url = URL(string: "http://47.102.158.185:8899/word/all?categorySize=19&preSize=59&secObjSize=4&subSize=15&usualObjSize=363&usualSenSize=5") else {
+            print("Invalid URL")
+            return
+        }
+        let request = URLRequest(url: url)
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let data = data {
+                if var decodedResponse = try? JSONDecoder().decode(AllData.self, from: data) {
+                    
+                    DispatchQueue.main.async {
+                        
+                        self.subjects = decodedResponse.subject.list
+                        self.predicates = decodedResponse.predicate.list
+                        self.frequentObjects = decodedResponse.usualObject.list
+                        self.categories = decodedResponse.categoryList.list
+                        self.lv2Objects = decodedResponse.curCategory._item.list
+                        self.phrases = decodedResponse.usualSentence.list
+                        
+                        if(self.categories.count > 0) {
+                            self.categories[self.selectedCategoryIndex].isSelected = true
+                        }
+                        
+                        for i in 0..<self.subjects.count {
+                            guard let imageUrl = URL(string: (self.subjects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)) else {
+                                    print("Invalid Image URL")
+                                    return
+                                }
+                            URLSession.shared.dataTask(with: imageUrl){ (data, response, error) in
+                                if let image = UIImage(data: data!){
+                                    self.subjects[i].image = image
+                                } else {
+                                    print(error ?? "")
+                                }
+                            }.resume()
+                        }
+                        for i in 0..<self.predicates.count {
+                            self.predicates[i].type = WordType.Predicate
+                            guard let imageUrl = URL(string: (self.predicates[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)) else {
+                                    print("Invalid Image URL")
+                                    return
+                                }
+                            URLSession.shared.dataTask(with: imageUrl){ (data, response, error) in
+                                if let image = UIImage(data: data!){
+                                    self.predicates[i].image = image
+                                } else {
+                                    print(error ?? "")
+                                }
+                            }.resume()
+                        }
+                        for i in 0..<self.frequentObjects.count {
+                            self.frequentObjects[i].type = WordType.Object
+                            guard let imageUrl = URL(string: (self.frequentObjects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)) else {
+                                    print("Invalid Image URL")
+                                    return
+                                }
+                            URLSession.shared.dataTask(with: imageUrl){ (data, response, error) in
+                                if let image = UIImage(data: data!){
+                                    self.frequentObjects[i].image = image
+                                } else {
+                                    print(error ?? "")
+                                }
+                            }.resume()
+                        }
+                        for i in 0..<self.lv2Objects.count {
+                            self.lv2Objects[i].type = WordType.Object
+                            guard let imageUrl = URL(string: (self.lv2Objects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)) else {
+                                    print("Invalid Image URL")
+                                    return
+                                }
+                            URLSession.shared.dataTask(with: imageUrl){ (data, response, error) in
+                                if let image = UIImage(data: data!){
+                                    self.lv2Objects[i].image = image
+                                } else {
+                                    print(error ?? "")
+                                }
+                            }.resume()
+                        }
+                        
+                    }
+                }
+            } else {
+                print(error ?? "")
+            }
+        }.resume()
+        
     }
+    
+    
+    // 注意赋值 Word 对象的 type & isSelected (检查 ComponentWords) 属性
     // TODO 从后台获取所有主语的方法 -> subjects
     func getAllSubjects() {
         

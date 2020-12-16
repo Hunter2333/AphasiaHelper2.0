@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 // -------------------基础类型-------------------
 // 词语类型
@@ -22,6 +23,8 @@ struct Word: Hashable, Codable {
     var DBKey: Int
     var name: String
     var url: String
+    
+    var image: UIImage? = nil  // ...........
     
     var type: WordType = WordType.Subject  //..........
     
@@ -68,5 +71,30 @@ struct Phrase: Codable {
 
 // -------------------网络请求 JSON -> Object 类型-------------------
 struct AllData: Codable {
-    
+    var subject: WordList
+    var predicate: WordList
+    var usualObject: WordList
+    var categoryList: CategoryList
+    var curCategory: CurCategory
+    var usualSentence: PhraseList
+}
+
+struct WordList: Codable {
+    var total: Int
+    var list: [Word]
+}
+
+struct CategoryList: Codable {
+    var total: Int
+    var list: [Category]
+}
+
+struct CurCategory: Codable {
+    var _category: String
+    var _item: WordList
+}
+
+struct PhraseList: Codable {
+    var total: Int
+    var list: [Phrase]
 }
