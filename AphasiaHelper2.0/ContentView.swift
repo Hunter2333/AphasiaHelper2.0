@@ -86,10 +86,13 @@ struct ContentView: View {
                     Button(action: {
                         if(mainController.sentence.count > 0) {
                             read(text: mainController.sentence)
-//                            DispatchQueue.main.sync {
-//                                // TODO 新建该常用短语到后端
-//                                mainController.loadAllPhrases()
-//                            }
+                            let serialQueue = DispatchQueue(label: "serial")
+                            serialQueue.sync {
+                                mainController.addPhrase(phrase: mainController.sentence)
+                            }
+                            serialQueue.sync {
+                                mainController.loadAllPhrases()
+                            }
                         }
                     }){
                         Image(systemName: "speaker.wave.2").font(.system(size: 28, weight: .bold))

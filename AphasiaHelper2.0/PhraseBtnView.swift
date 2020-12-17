@@ -17,8 +17,8 @@ struct PhraseBtnView: View {
     var body: some View {
         Button(action: {
             read(text: "\(phrase.name)")
-            // To Test 后端频率加一
-            mainController.addFrequency(type: FrequencyUpdateType.phrase, DBKey: phrase.DBKey)
+            // 后端频率加一
+            mainController.addFrequency(type: FrequencyUpdateType.sentence, DBKey: phrase.DBKey)
         }){
             Text("\(phrase.name)")
                 .foregroundColor(Color.black)

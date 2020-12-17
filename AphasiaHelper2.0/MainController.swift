@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 // TODO: (多线程 返回Word的顺序应与JSON保持一致、数据加载速度优化) & 图片缓存
+// TODO: lv2Objects合并到categories中存储, 对已请求过的分类标签下的词语列表不用重复请求
 class MainController: ObservableObject {
     
     // 主语
@@ -47,7 +48,9 @@ class MainController: ObservableObject {
         let request = URLRequest(url: url)
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
-                if var decodedResponse = try? JSONDecoder().decode(AllData.self, from: data) {
+                if let decodedResponse = try? JSONDecoder().decode(AllData.self, from: data) {
+                    
+                    //print(decodedResponse)
                     
                     DispatchQueue.main.sync { // 串行执行, 代码块顺序轻微可调
                         
@@ -63,7 +66,7 @@ class MainController: ObservableObject {
                         }
                         
                         for i in 0..<self.subjects.count {
-                            guard let imageUrl = URL(string: (self.subjects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)) else {
+                            guard let imageUrl = URL(string: self.subjects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) else {
                                     print("Invalid Image URL")
                                     return
                                 }
@@ -77,7 +80,7 @@ class MainController: ObservableObject {
                         }
                         for i in 0..<self.predicates.count {
                             self.predicates[i].type = WordType.Predicate
-                            guard let imageUrl = URL(string: (self.predicates[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)) else {
+                            guard let imageUrl = URL(string: self.predicates[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) else {
                                     print("Invalid Image URL")
                                     return
                                 }
@@ -91,7 +94,7 @@ class MainController: ObservableObject {
                         }
                         for i in 0..<self.frequentObjects.count {
                             self.frequentObjects[i].type = WordType.Object
-                            guard let imageUrl = URL(string: (self.frequentObjects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)) else {
+                            guard let imageUrl = URL(string: self.frequentObjects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) else {
                                     print("Invalid Image URL")
                                     return
                                 }
@@ -105,7 +108,7 @@ class MainController: ObservableObject {
                         }
                         for i in 0..<self.lv2Objects.count {
                             self.lv2Objects[i].type = WordType.Object
-                            guard let imageUrl = URL(string: (self.lv2Objects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)) else {
+                            guard let imageUrl = URL(string: self.lv2Objects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) else {
                                     print("Invalid Image URL")
                                     return
                                 }
@@ -156,7 +159,7 @@ class MainController: ObservableObject {
         let request = URLRequest(url: url)
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
-                if var decodedResponse = try? JSONDecoder().decode(WordList.self, from: data) {
+                if let decodedResponse = try? JSONDecoder().decode(WordList.self, from: data) {
                     
                     DispatchQueue.main.sync { // 串行执行, 代码块顺序不可颠倒
                         
@@ -164,7 +167,7 @@ class MainController: ObservableObject {
                         
                         for i in 0..<self.lv2Objects.count {
                             self.lv2Objects[i].type = WordType.Object
-                            guard let imageUrl = URL(string: (self.lv2Objects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)) else {
+                            guard let imageUrl = URL(string: self.lv2Objects[i].url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) else {
                                     print("Invalid Image URL")
                                     return
                                 }
@@ -264,7 +267,7 @@ class MainController: ObservableObject {
                                 break
                             }
                         }
-                        // To Test 后端词频加一 (对于用户点击前为未选中状态的宾语词)
+                        // 后端词频加一 (对于用户点击前为未选中状态的宾语词)
                         self.addFrequency(type: FrequencyUpdateType.object, DBKey: DBKey)
                     }
                     break
@@ -348,8 +351,10 @@ class MainController: ObservableObject {
         let request = URLRequest(url: url)
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
-                if var decodedResponse = try? JSONDecoder().decode(PhraseList.self, from: data) {
-                    self.phrases = decodedResponse.list
+                if let decodedResponse = try? JSONDecoder().decode(PhraseList.self, from: data) {
+                    DispatchQueue.main.async {
+                        self.phrases = decodedResponse.list
+                    }
                 }
             } else {
                 print(error ?? "")
@@ -358,39 +363,49 @@ class MainController: ObservableObject {
     }
     
     
-    // TODO 向后端插入新生成的常用短语
-    //................
-    
-    // TODO 后端频率加一
-    func addFrequency(type: FrequencyUpdateType, DBKey: Int) {
-//        guard let url = URL(string: "https://jsonplaceholder.typicode.com/todos") else {
-//            print("Invalid URL")
-//            return
-//        }
-//        var request = URLRequest(url: url)
-//        //request.httpMethod = "POST"
-//        request.httpMethod = "PUT"
-//
-//        let postString = "userId=300&title=My urgent task&completed=false";
-//        // Set HTTP Request Body
-//        request.httpBody = postString.data(using: String.Encoding.utf8);
-//
-//        URLSession.shared.dataTask(with: request) { (data, response, error) in
-//            // Convert HTTP Response Data to a String
-//            if let data = data, let dataString = String(data: data, encoding: .utf8) {
-//                print("Response data string:\n \(dataString)")
-//            } else {
-//                print(error ?? "")
-//            }
-//        }.resume()
+    // 向后端插入新生成的常用短语
+    func addPhrase(phrase: String) {
         
-        /*"Response data string:
-        {
-          "userId": "300",
-          "title": "My urgent task",
-          "completed": "false",
-          "id": 201
-        }*/
+        print("插入常用短语: \(phrase)")
+        
+        guard let url = URL(string: "http://47.102.158.185:8899/word/insert/sentence?sentence=\(phrase)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) else {
+            print("Invalid Insert URL")
+            return
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let httpResponse = response as? HTTPURLResponse, let data = data, let dataString = String(data: data, encoding: .utf8) {
+                print("Response Status Code: \(httpResponse.statusCode)")
+                print("Response Body: \(dataString)")
+            } else {
+                print(error ?? "")
+            }
+        }.resume()
+    }
+    
+    
+    // 后端频率加一
+    func addFrequency(type: FrequencyUpdateType, DBKey: Int) {
+        
+        print("更新频率: \(type), \(DBKey)")
+        
+        guard let url = URL(string: "http://47.102.158.185:8899/word/frequency/\(type)?id=\(DBKey)") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let httpResponse = response as? HTTPURLResponse {
+                print("Response Status Code: \(httpResponse.statusCode)")
+            } else {
+                print(error ?? "")
+            }
+        }.resume()
     }
     
 }

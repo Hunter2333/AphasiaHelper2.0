@@ -11,15 +11,15 @@ import SwiftUI
 // -------------------基础类型-------------------
 // 词语类型
 enum WordType: String, Codable {
-    case Subject = "主语"
-    case Predicate = "谓语"
-    case Object = "宾语"
+    case Subject
+    case Predicate
+    case Object
 }
 
 // 可更新频率的类型
 enum FrequencyUpdateType: String {
-    case object = "object"
-    case phrase = "sentence"
+    case object
+    case sentence  // phrase
 }
 
 // 词语

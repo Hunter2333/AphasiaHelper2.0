@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-
+// TODO word.name最多显示得下四个中文字符, 五个中文字符就会被折叠 (e.g. 笔记本电脑 -> 笔记本...) -> 改字号或卡片大小
 struct WordBtnView: View {
     
     var word: Word
