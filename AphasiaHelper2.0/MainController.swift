@@ -41,7 +41,7 @@ class MainController: ObservableObject {
     // 打开App时加载全部数据
     func loadAll() {
         // TODO: url中的参数写成活的(来自DataModel中的total)以应对词库变更
-        guard let url = URL(string: "http://47.102.158.185:8899/word/all?categorySize=19&preSize=59&secObjSize=4&subSize=15&usualObjSize=363&usualSenSize=5") else {
+        guard let url = URL(string: "http://47.102.158.185:8899/word/all?categorySize=19&preSize=19&secObjSize=4&subSize=15&usualObjSize=36&usualSenSize=5") else {
             print("Invalid URL")
             return
         }
@@ -333,6 +333,37 @@ class MainController: ObservableObject {
             for componentWord in componentWords {
                 sentence.append(componentWord.name)
             }
+        }
+    }
+    
+    
+    // 清空组成的句子
+    func removeAllWords() -> Void {
+        
+        if(componentWords.count > 0) {
+            for i in 0..<subjects.count {
+                if(subjects[i].isSelected) {
+                    subjects[i].isSelected = false
+                }
+            }
+            for i in 0..<predicates.count {
+                if(predicates[i].isSelected) {
+                    predicates[i].isSelected = false
+                }
+            }
+            for i in 0..<frequentObjects.count {
+                if(frequentObjects[i].isSelected) {
+                    frequentObjects[i].isSelected = false
+                }
+            }
+            for i in 0..<lv2Objects.count {
+                if(lv2Objects[i].isSelected) {
+                    lv2Objects[i].isSelected = false
+                }
+            }
+            
+            componentWords.removeAll()
+            sentence = ""
         }
     }
     

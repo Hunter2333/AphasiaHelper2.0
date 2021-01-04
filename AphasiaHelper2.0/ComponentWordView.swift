@@ -15,15 +15,13 @@ struct ComponentWordView: View {
         
         Text("\(word.name)")
             .foregroundColor(Color.black)
-            .font(.title2)
+            .font(.caption)
             .bold()
-            .padding(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color(red: 198/255, green: 224/255, blue: 212/255), lineWidth: 6))
-            .background(Color(red: 249/255, green: 247/255, blue: 241/255))
-            .cornerRadius(8)
-        
+            .padding(.vertical, 4)
+            .padding(.horizontal, 18)
+            .background(Color(red: 233/255, green: 238/255, blue: 251/255))
+            .cornerRadius(5)
+            .padding(.trailing, 2)
     }
 }
 

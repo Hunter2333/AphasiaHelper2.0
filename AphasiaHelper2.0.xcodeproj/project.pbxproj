@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F418BF0825A086A10042B65B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F418BF0725A086A10042B65B /* MainView.swift */; };
 		F4457241257DDB9A00E4A509 /* functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4457240257DDB9A00E4A509 /* functions.swift */; };
 		F45080CC25885718007892E3 /* DataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45080CB25885718007892E3 /* DataModels.swift */; };
 		F46124DF258A4FB8009139CE /* MainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46124DE258A4FB8009139CE /* MainController.swift */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F418BF0725A086A10042B65B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		F4457240257DDB9A00E4A509 /* functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = functions.swift; sourceTree = "<group>"; };
 		F45080CB25885718007892E3 /* DataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModels.swift; sourceTree = "<group>"; };
 		F46124DE258A4FB8009139CE /* MainController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainController.swift; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 			children = (
 				F4C5AEA2257CDF48008C2D4A /* AphasiaHelper2_0App.swift */,
 				F4C5AEA4257CDF48008C2D4A /* ContentView.swift */,
+				F418BF0725A086A10042B65B /* MainView.swift */,
 				F4C5AEA6257CDF49008C2D4A /* Assets.xcassets */,
 				F4C5AEAB257CDF49008C2D4A /* Info.plist */,
 				F4C5AEA8257CDF49008C2D4A /* Preview Content */,
@@ -174,6 +177,7 @@
 				F4F7C1E725863F4E002D9330 /* PhraseBtnView.swift in Sources */,
 				F4C5AEA5257CDF48008C2D4A /* ContentView.swift in Sources */,
 				F4C5AEB8257D00BC008C2D4A /* WordBtnView.swift in Sources */,
+				F418BF0825A086A10042B65B /* MainView.swift in Sources */,
 				F46124DF258A4FB8009139CE /* MainController.swift in Sources */,
 				F4C5AEA3257CDF48008C2D4A /* AphasiaHelper2_0App.swift in Sources */,
 				F4831E9A2586EE39008D04C4 /* ComponentWordView.swift in Sources */,

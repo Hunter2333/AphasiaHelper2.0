@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// TODO word.name最多显示得下四个中文字符, 五个中文字符就会被折叠 (e.g. 笔记本电脑 -> 笔记本...) -> 改字号或卡片大小
+
 struct WordBtnView: View {
     
     var word: Word
@@ -16,6 +16,7 @@ struct WordBtnView: View {
     
     
     var body: some View {
+        
         Button(action: {
             read(text: "\(word.name)")
             mainController.addWord(type: word.type, DBKey: word.DBKey)
@@ -25,41 +26,31 @@ struct WordBtnView: View {
                 VStack {
                     Image(uiImage: word.image ?? UIImage(named: "PlaceHolder")!)
                         .resizable()
-                        .frame(width: 50, height: 50)
+                        .frame(width: 60, height: 60)
                     Text("\(word.name)")
                         .foregroundColor(Color.black)
                         .font(.caption)
                         .bold()
                 }
-                .frame(width: 60, height: 80)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color(red: 61/255, green: 141/255, blue: 136/255), lineWidth: 8)
-                )
-                .background(Color.white)
-                .cornerRadius(6)
+                .frame(width: 60, height: 90)
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2))
             }
             else {
                 // 未选中
                 VStack {
                     Image(uiImage: word.image ?? UIImage(named: "PlaceHolder")!)
                         .resizable()
-                        .frame(width: 50, height: 50)
+                        .frame(width: 60, height: 60)
                     Text("\(word.name)")
                         .foregroundColor(Color.black)
                         .font(.caption)
                         .bold()
                 }
-                .frame(width: 60, height: 80)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color.gray.opacity(0.3), lineWidth: 2)
-                        .shadow(color: Color.gray, radius: 2)
-                )
-                .background(Color.white)
-                .cornerRadius(6)
+                .frame(width: 60, height: 90)
+                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
             }
-        }
+        }.padding(10)
     }
 }
 

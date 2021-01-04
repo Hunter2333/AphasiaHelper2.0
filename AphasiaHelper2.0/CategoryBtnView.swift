@@ -21,30 +21,24 @@ struct CategoryBtnView: View {
             if(category.isSelected) {
                 // 选中
                 Text("\(category.name)")
-                    .font(.body)
-                    .bold()
-                    .padding(.leading, 10)
-                    .padding(.trailing, 10)
-                    .padding(.top, 5)
-                    .padding(.bottom, 5)
+                    .font(.caption2)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 4)
                     .foregroundColor(Color.white)
-                    .background(Color(red: 59/255, green: 142/255, blue: 136/255))
+                    .background(Color.black)
                     .cornerRadius(5)
-                    .shadow(radius: 1)
             }
             else {
                 // 未选中
                 Text("\(category.name)")
-                    .font(.body)
-                    .padding(.leading, 10)
-                    .padding(.trailing, 10)
-                    .padding(.top, 5)
-                    .padding(.bottom, 5)
+                    .font(.caption2)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 4)
                     .foregroundColor(Color.black)
-                    .background(Color.white)
+                    .background(Color(red: 233/255, green: 238/255, blue: 251/255))
                     .cornerRadius(5)
             }
-        }
+        }.padding(5)
     }
     
 }

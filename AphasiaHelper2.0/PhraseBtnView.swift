@@ -22,16 +22,11 @@ struct PhraseBtnView: View {
         }){
             Text("\(phrase.name)")
                 .foregroundColor(Color.black)
-                .font(.title3)
+                .font(.caption)
                 .bold()
                 .padding()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.gray.opacity(0.3), lineWidth: 2)
-                        .shadow(color: Color.gray, radius: 2)
-                )
-                .background(Color.white)
-                .cornerRadius(8)
+                .background(Color(red: 233/255, green: 238/255, blue: 251/255))
+                .cornerRadius(10)
         }
     }
     
