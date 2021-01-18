@@ -201,6 +201,7 @@ class Categories: ObservableObject, RandomAccessCollection {
     var startIndex: Int { categories.startIndex }
     var endIndex: Int { categories.endIndex }
     var total = 19  //...........
+    var doneLoading = false // 用于确保加载完 categories 再加载 MainView->Lv2ObjectsView
     
     var urlBase = "http://47.102.158.185:8899/word/page/category_list?pageNum=1&pageSize="
     
@@ -237,11 +238,10 @@ class Categories: ObservableObject, RandomAccessCollection {
             if(decodedResponse.list.count > 0) {
                 // 初次打开App时默认第一个分类标签被选中
                 decodedResponse.list[0].isSelected = true
-                // TODO: 改成类似词语图片的二级宾语加载模式
-                
             }
             DispatchQueue.main.async {
                 self.categories = decodedResponse.list
+                self.doneLoading = true
             }
         } else {
             print(error ?? "")
@@ -440,8 +440,6 @@ extension ImageCache {
         return imageCache
     }
 }
-
-// TODO: 缓存已加载过的标签下二级宾语
 
 
 // 词语

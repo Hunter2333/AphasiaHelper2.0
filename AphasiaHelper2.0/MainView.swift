@@ -219,7 +219,12 @@ struct MainView: View {
                                 }
                             }
                         }
-                        Lv2ObjectsView(selectedCategoryDBKey: mainController.categories[mainController.selectedCategoryIndex].DBKey)
+                        // 确保加载完categories再加载Lv2ObjectsView
+                        if mainController.categories.doneLoading {
+                            Lv2ObjectsView(selectedCategoryDBKey: mainController.categories[mainController.selectedCategoryIndex].DBKey)
+                        } else {
+                            Spacer()
+                        }
                     }
                     .frame(alignment: .topLeading)
                 }
