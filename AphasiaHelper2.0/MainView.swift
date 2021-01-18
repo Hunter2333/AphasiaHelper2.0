@@ -66,13 +66,8 @@ struct MainView: View {
                             // 朗读句子 & 添加到常用短语
                             if(mainController.sentence.count > 0) {
                                 read(text: mainController.sentence)
-                                let serialQueue = DispatchQueue(label: "serial")
-                                serialQueue.sync {
-                                    mainController.addPhrase(phrase: mainController.sentence)
-                                }
-                                serialQueue.sync {
-                                    mainController.loadAllPhrases()
-                                }
+                                mainController.addPhrase(phrase: mainController.sentence)
+                                // TODO: 更新前端常用短语显示
                             }
                         }){
                             Image(systemName: "speaker.wave.2").font(.system(size: 22, weight: .regular))
@@ -144,9 +139,9 @@ struct MainView: View {
                     .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
                     
                     ScrollView(.horizontal, showsIndicators: true) {
-                        HStack {
+                        LazyHStack {
                             ForEach(mainController.subjects, id: \.id) {
-                                word in WordBtnView(word: word)
+                                word in WordBtnView(word: word).onAppear { mainController.subjects.loadMoreWords(currentItem: word) }
                             }
                         }
                     }
@@ -177,9 +172,9 @@ struct MainView: View {
                     .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
                     
                     ScrollView(.horizontal, showsIndicators: true) {
-                        HStack {
+                        LazyHStack {
                             ForEach(mainController.predicates, id: \.id) {
-                                word in WordBtnView(word: word)
+                                word in WordBtnView(word: word).onAppear { mainController.predicates.loadMoreWords(currentItem: word) }
                             }
                         }
                     }
@@ -211,9 +206,9 @@ struct MainView: View {
                     
                     VStack {
                         ScrollView(.horizontal, showsIndicators: true) {
-                            HStack {
+                            LazyHStack {
                                 ForEach(mainController.frequentObjects, id: \.id) {
-                                    word in WordBtnView(word: word)
+                                    word in WordBtnView(word: word).onAppear { mainController.frequentObjects.loadMoreWords(currentItem: word) }
                                 }
                             }
                         }.padding(.top, 15)
@@ -224,14 +219,7 @@ struct MainView: View {
                                 }
                             }
                         }
-                        ScrollView(.horizontal, showsIndicators: true) {
-                            HStack {
-                                ForEach(mainController.lv2Objects, id: \.id) {
-                                    word in WordBtnView(word: word)
-                                }
-                            }
-                            Spacer()
-                        }
+                        Lv2ObjectsView(selectedCategoryDBKey: mainController.categories[mainController.selectedCategoryIndex].DBKey)
                     }
                     .frame(alignment: .topLeading)
                 }
@@ -261,10 +249,9 @@ struct MainView: View {
                     .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 10, alignment: .topLeading)
                     
                     ScrollView(.horizontal, showsIndicators: true) {
-                        HStack {
+                        LazyHStack {
                             ForEach(mainController.phrases, id: \.id) { phrase in
-                                PhraseBtnView(phrase: phrase)
-                                    .padding(.trailing, 10)
+                                PhraseBtnView(phrase: phrase).padding(.trailing, 10).onAppear { mainController.phrases.loadMorePhrases(currentItem: phrase) }
                             }
                         }
                     }
@@ -274,7 +261,6 @@ struct MainView: View {
                 .cornerRadius(20)
                 .padding(.bottom, 20)
             }
-            .onAppear(perform: self.mainController.loadAll)
         }
     }
 }

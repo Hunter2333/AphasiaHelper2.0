@@ -24,9 +24,7 @@ struct WordBtnView: View {
             if(word.isSelected) {
                 // 选中
                 VStack {
-                    Image(uiImage: word.image ?? UIImage(named: "PlaceHolder")!)
-                        .resizable()
-                        .frame(width: 60, height: 60)
+                    UrlImageView(urlString: word.urlToImage)
                     Text("\(word.name)")
                         .foregroundColor(Color.black)
                         .font(.caption)
@@ -39,9 +37,7 @@ struct WordBtnView: View {
             else {
                 // 未选中
                 VStack {
-                    Image(uiImage: word.image ?? UIImage(named: "PlaceHolder")!)
-                        .resizable()
-                        .frame(width: 60, height: 60)
+                    UrlImageView(urlString: word.urlToImage)
                     Text("\(word.name)")
                         .foregroundColor(Color.black)
                         .font(.caption)
@@ -57,6 +53,6 @@ struct WordBtnView: View {
 struct WordBtnView_Previews: PreviewProvider {
     static var previews: some View {
 
-        WordBtnView(word: Word(DBKey: 0, name: "null", url: "", type: WordType.Subject, isSelected: true))
+        WordBtnView(word: Word(DBKey: 0, name: "null", urlToImage: "", type: WordType.Subject, isSelected: true))
     }
 }

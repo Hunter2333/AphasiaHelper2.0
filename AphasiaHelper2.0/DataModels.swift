@@ -22,15 +22,436 @@ enum FrequencyUpdateType: String {
     case sentence  // phrase
 }
 
+
+// 加载词语
+class Words: ObservableObject, RandomAccessCollection {
+    
+    typealias Element = Word
+    
+    @Published var words = [Word]()
+    
+    var startIndex: Int { words.startIndex }
+    var endIndex: Int { words.endIndex }
+    var nextPageToLoad = 1
+    var pageSize = 15
+    var currentlyLoading = false
+    var doneLoading = false
+    
+    var urlBase = "http://47.102.158.185:8899/word/page/"
+    
+    var wordType: WordType
+    
+    init(urlWordType: String, type: WordType) {
+        urlBase.append(urlWordType)
+        wordType = type
+        loadMoreWords()
+    }
+    
+    subscript(position: Int) -> Word {
+        return words[position]
+    }
+    
+    func setIsSelected(pos: Int, val: Bool) {
+        words[pos].isSelected = val
+    }
+    
+    func loadMoreWords(currentItem: Word? = nil) {
+        
+        if !shouldLoadMoreData(currentItem: currentItem) {
+            return
+        }
+        currentlyLoading = true
+        
+        let urlString = "\(urlBase)?pageNum=\(nextPageToLoad)&pageSize=\(pageSize)"
+        let url = URL(string: urlString)!
+        let task = URLSession.shared.dataTask(with: url, completionHandler: parseWordsFromResponse(data:response:error:))
+        task.resume()
+    }
+    
+    func shouldLoadMoreData(currentItem: Word? = nil) -> Bool {
+        if currentlyLoading || doneLoading {
+            return false
+        }
+        
+        guard let currentItem = currentItem else {
+            return true
+        }
+        
+        for n in (words.count - 4)...(words.count - 1) {
+            if n >= 0 && currentItem.id == words[n].id {
+                return true
+            }
+        }
+        return false
+    }
+    
+    func parseWordsFromResponse(data: Data?, response: URLResponse?, error: Error?) {
+        guard error == nil else {
+            print("Error: \(error!)")
+            currentlyLoading = false
+            return
+        }
+        guard let data = data else {
+            print("No data found")
+            currentlyLoading = false
+            return
+        }
+        if var decodedResponse = try? JSONDecoder().decode(WordList.self, from: data) {
+            for i in 0..<decodedResponse.list.count {
+                decodedResponse.list[i].type = wordType
+                // TODO: 检查是否在当前组成的一句话中，若在，修改isSelected为true (仅对宾语？)
+            }
+            DispatchQueue.main.async {
+                self.words.append(contentsOf: decodedResponse.list)
+                self.nextPageToLoad += 1
+                self.currentlyLoading = false
+                self.doneLoading = (decodedResponse.list.count == 0)
+            }
+        } else {
+            print(error ?? "")
+        }
+    }
+}
+
+// 加载常用短语
+class Phrases: ObservableObject, RandomAccessCollection {
+    
+    typealias Element = Phrase
+    
+    @Published var phrases = [Phrase]()
+    
+    var startIndex: Int { phrases.startIndex }
+    var endIndex: Int { phrases.endIndex }
+    var nextPageToLoad = 1
+    var pageSize = 15
+    var currentlyLoading = false
+    var doneLoading = false
+    
+    var urlBase = "http://47.102.158.185:8899/word/page/usual_sentence"
+    
+    init() {
+        loadMorePhrases()
+    }
+    
+    subscript(position: Int) -> Phrase {
+        return phrases[position]
+    }
+    
+    func loadMorePhrases(currentItem: Phrase? = nil) {
+        
+        if !shouldLoadMoreData(currentItem: currentItem) {
+            return
+        }
+        currentlyLoading = true
+        
+        let urlString = "\(urlBase)?pageNum=\(nextPageToLoad)&pageSize=\(pageSize)"
+        let url = URL(string: urlString)!
+        let task = URLSession.shared.dataTask(with: url, completionHandler: parsePhrasesFromResponse(data:response:error:))
+        task.resume()
+    }
+    
+    func shouldLoadMoreData(currentItem: Phrase? = nil) -> Bool {
+        if currentlyLoading || doneLoading {
+            return false
+        }
+        
+        guard let currentItem = currentItem else {
+            return true
+        }
+        
+        for n in (phrases.count - 4)...(phrases.count - 1) {
+            if n >= 0 && currentItem.id == phrases[n].id {
+                return true
+            }
+        }
+        return false
+    }
+    
+    func parsePhrasesFromResponse(data: Data?, response: URLResponse?, error: Error?) {
+        guard error == nil else {
+            print("Error: \(error!)")
+            currentlyLoading = false
+            return
+        }
+        guard let data = data else {
+            print("No data found")
+            currentlyLoading = false
+            return
+        }
+        if let decodedResponse = try? JSONDecoder().decode(PhraseList.self, from: data) {
+            DispatchQueue.main.async {
+                self.phrases.append(contentsOf: decodedResponse.list)
+                self.nextPageToLoad += 1
+                self.currentlyLoading = false
+                self.doneLoading = (decodedResponse.list.count == 0)
+            }
+        } else {
+            print(error ?? "")
+        }
+    }
+}
+
+// 加载宾语二级分类的所有标签
+class Categories: ObservableObject, RandomAccessCollection {
+    
+    typealias Element = Category
+    
+    @Published var categories = [Category]()
+    
+    var startIndex: Int { categories.startIndex }
+    var endIndex: Int { categories.endIndex }
+    var total = 19  //...........
+    
+    var urlBase = "http://47.102.158.185:8899/word/page/category_list?pageNum=1&pageSize="
+    
+    init() {
+        loadAllCategories()
+    }
+    
+    subscript(position: Int) -> Category {
+        return categories[position]
+    }
+    
+    func setIsSelected(pos: Int, val: Bool) {
+        categories[pos].isSelected = val
+    }
+    
+    func loadAllCategories() {
+        
+        let urlString = "\(urlBase)\(total)"
+        let url = URL(string: urlString)!
+        let task = URLSession.shared.dataTask(with: url, completionHandler: parseCategoriesFromResponse(data:response:error:))
+        task.resume()
+    }
+    
+    func parseCategoriesFromResponse(data: Data?, response: URLResponse?, error: Error?) {
+        guard error == nil else {
+            print("Error: \(error!)")
+            return
+        }
+        guard let data = data else {
+            print("No data found")
+            return
+        }
+        if var decodedResponse = try? JSONDecoder().decode(CategoryList.self, from: data) {
+            if(decodedResponse.list.count > 0) {
+                // 初次打开App时默认第一个分类标签被选中
+                decodedResponse.list[0].isSelected = true
+                // TODO: 改成类似词语图片的二级宾语加载模式
+                
+            }
+            DispatchQueue.main.async {
+                self.categories = decodedResponse.list
+            }
+        } else {
+            print(error ?? "")
+        }
+    }
+}
+
+// 主语
+class Subjects: Words {
+    
+    init() {
+        super.init(urlWordType: "subject", type: WordType.Subject)
+    }
+}
+
+// 谓语
+class Predicates: Words {
+    
+    init() {
+        super.init(urlWordType: "predicate", type: WordType.Predicate)
+    }
+}
+
+// 宾语常用词
+class FrequentObjects: Words {
+    
+    init() {
+        super.init(urlWordType: "usual_object", type: WordType.Object)
+    }
+}
+
+// 加载指定分类标签下的宾语词
+class Lv2Objects: ObservableObject, RandomAccessCollection {
+    typealias Element = Word
+    
+    @Published var lv2Objects = [Word]()
+    
+    var startIndex: Int { lv2Objects.startIndex }
+    var endIndex: Int { lv2Objects.endIndex }
+    var nextPageToLoad = 1
+    var pageSize = 15
+    var currentlyLoading = false
+    var doneLoading = false
+    
+    var categoryDBKey: Int
+    
+    var urlBase = "http://47.102.158.185:8899/word/page/second_object"
+    
+    init(category_dbkey: Int) {
+        categoryDBKey = category_dbkey
+        loadMoreLv2Objects()
+    }
+    
+    subscript(position: Int) -> Word {
+        return lv2Objects[position]
+    }
+    
+    func setIsSelected(pos: Int, val: Bool) {
+        lv2Objects[pos].isSelected = val
+    }
+    
+    func loadMoreLv2Objects(currentItem: Word? = nil) {
+        
+        if !shouldLoadMoreData(currentItem: currentItem) {
+            return
+        }
+        currentlyLoading = true
+        
+        let urlString = "\(urlBase)?id=\(categoryDBKey)&pageNum=\(nextPageToLoad)&pageSize=\(pageSize)"
+        let url = URL(string: urlString)!
+        let task = URLSession.shared.dataTask(with: url, completionHandler: parseWordsFromResponse(data:response:error:))
+        task.resume()
+    }
+    
+    func shouldLoadMoreData(currentItem: Word? = nil) -> Bool {
+        if currentlyLoading || doneLoading {
+            return false
+        }
+        
+        guard let currentItem = currentItem else {
+            return true
+        }
+        
+        for n in (lv2Objects.count - 4)...(lv2Objects.count - 1) {
+            if n >= 0 && currentItem.id == lv2Objects[n].id {
+                return true
+            }
+        }
+        return false
+    }
+    
+    func parseWordsFromResponse(data: Data?, response: URLResponse?, error: Error?) {
+        guard error == nil else {
+            print("Error: \(error!)")
+            currentlyLoading = false
+            return
+        }
+        guard let data = data else {
+            print("No data found")
+            currentlyLoading = false
+            return
+        }
+        if var decodedResponse = try? JSONDecoder().decode(WordList.self, from: data) {
+            for i in 0..<decodedResponse.list.count {
+                decodedResponse.list[i].type = WordType.Object
+                // TODO: 检查是否在当前组成的一句话中 (ComponentWords)，若在，修改isSelected为true
+            }
+            DispatchQueue.main.async {
+                self.lv2Objects.append(contentsOf: decodedResponse.list)
+                self.nextPageToLoad += 1
+                self.currentlyLoading = false
+                self.doneLoading = (decodedResponse.list.count == 0)
+            }
+        } else {
+            print(error ?? "")
+        }
+    }
+}
+
+// 加载词语图片
+class UrlImageModel: ObservableObject {
+    @Published var image: UIImage?
+    var urlString: String?
+    var imageCache = ImageCache.getImageCache()
+    
+    init(urlString: String?) {
+        self.urlString = urlString
+        loadImage()
+    }
+    
+    func loadImage() {
+        
+        if loadImageFromCache() {
+            print("Cache hit")
+            return
+        }
+        
+        print("Cache miss, loading from url")
+        loadImageFromUrl()
+    }
+    
+    func loadImageFromCache() -> Bool {
+        guard let urlString = urlString else {
+            return false
+        }
+        guard let cacheImage = imageCache.get(forKey: urlString) else {
+            return false
+        }
+        image = cacheImage
+        return true
+    }
+    
+    func loadImageFromUrl() {
+        guard let urlString = urlString else {
+            return
+        }
+        let url = URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
+        let task = URLSession.shared.dataTask(with: url, completionHandler: getImageFromResponse(data:response:error:))
+        task.resume()
+    }
+    
+    func getImageFromResponse(data: Data?, response: URLResponse?, error: Error?) {
+        guard error == nil else {
+            print("Error: \(error!)")
+            return
+        }
+        guard let data = data else {
+            print("No data found")
+            return
+        }
+        DispatchQueue.main.async {
+            guard let loadedImage = UIImage(data: data) else {
+                return
+            }
+            self.imageCache.set(forKey: self.urlString!, image: loadedImage)
+            self.image = loadedImage
+        }
+    }
+}
+
+//缓存已加载过的词语图片
+class ImageCache {
+    var cache = NSCache<NSString, UIImage>()
+    
+    func get(forKey: String) -> UIImage? {
+        return cache.object(forKey: NSString(string: forKey))
+    }
+    
+    func set(forKey: String, image: UIImage) {
+        cache.setObject(image, forKey: NSString(string: forKey))
+    }
+}
+extension ImageCache {
+    private static var imageCache = ImageCache()
+    static func getImageCache() -> ImageCache {
+        return imageCache
+    }
+}
+
+// TODO: 缓存已加载过的标签下二级宾语
+
+
 // 词语
 struct Word: Hashable, Codable {
+    
     var id = UUID()
     
     var DBKey: Int
     var name: String
-    var url: String
-    
-    var image: UIImage? = nil  //...........
+    var urlToImage: String?
     
     var type: WordType = WordType.Subject  //..........
     
@@ -39,7 +460,7 @@ struct Word: Hashable, Codable {
     enum CodingKeys: String, CodingKey {
         case DBKey = "_id"
         case name = "_name"
-        case url = "_url"
+        case urlToImage = "_url"
     }
 }
 
@@ -76,15 +497,6 @@ struct Phrase: Codable {
 
 
 // -------------------网络请求 JSON -> Object 类型-------------------
-struct AllData: Codable {
-    var subject: WordList
-    var predicate: WordList
-    var usualObject: WordList
-    var categoryList: CategoryList
-    var curCategory: CurCategory
-    var usualSentence: PhraseList
-}
-
 struct WordList: Codable {
     var total: Int
     var list: [Word]
@@ -93,11 +505,6 @@ struct WordList: Codable {
 struct CategoryList: Codable {
     var total: Int
     var list: [Category]
-}
-
-struct CurCategory: Codable {
-    var _category: String
-    var _item: WordList
 }
 
 struct PhraseList: Codable {
