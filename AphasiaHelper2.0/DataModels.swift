@@ -43,10 +43,13 @@ class Words: ObservableObject, RandomAccessCollection {
     
     var categoryDBKey: Int  // 二级宾语所属分类标签的DBKey, 当words是一级词语时设为默认值-1 (无分类)
     
-    init(urlWordType: String, type: WordType, category_dbkey: Int? = nil) {
+    var componentWords: [Word]  // mainController中组成的一句话
+    
+    init(urlWordType: String, type: WordType, category_dbkey: Int? = nil, component_words: [Word]? = nil) {
         urlBase.append(urlWordType)
         wordType = type
         categoryDBKey = category_dbkey ?? -1  // 一级词语默认分类标签DBKey为-1 (无分类)
+        componentWords = component_words ?? [Word]()
         loadMoreWords()
     }
     
@@ -110,7 +113,19 @@ class Words: ObservableObject, RandomAccessCollection {
         if var decodedResponse = try? JSONDecoder().decode(WordList.self, from: data) {
             for i in 0..<decodedResponse.list.count {
                 decodedResponse.list[i].type = wordType
-                // TODO: 检查是否在当前组成的一句话中，若在，修改isSelected为true (仅对二级宾语？)
+            }
+            // 检查是否在当前组成的一句话中，若在，修改isSelected为true (TODO: 仅对二级宾语？)
+            if(categoryDBKey != -1 && componentWords.count > 0) {
+                for i in 0..<componentWords.count {
+                    if(componentWords[i].type == WordType.Object) {
+                        for j in 0..<decodedResponse.list.count {
+                            if(decodedResponse.list[j].DBKey == componentWords[i].DBKey) {
+                                decodedResponse.list[j].isSelected = true
+                                break
+                            }
+                        }
+                    }
+                }
             }
             DispatchQueue.main.async {
                 self.words.append(contentsOf: decodedResponse.list)
@@ -287,8 +302,9 @@ class FrequentObjects: Words {
 // 二级宾语
 class Lv2Objects: Words {
     
-    init(category_dbkey: Int) {
-        super.init(urlWordType: "second_object", type: WordType.Object, category_dbkey: category_dbkey)
+    // 检查是否在当前组成的一句话中，若在，修改isSelected为true (TODO: 仅对二级宾语？)
+    init(category_dbkey: Int, component_words: [Word]) {
+        super.init(urlWordType: "second_object", type: WordType.Object, category_dbkey: category_dbkey, component_words: component_words)
     }
 }
 

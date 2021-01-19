@@ -29,7 +29,7 @@ class MainController: ObservableObject {
     
     // 二级宾语
     // TODO: default 80?
-    @ObservedObject var lv2Objects = Lv2Objects(category_dbkey: 80)
+    @ObservedObject var lv2Objects = Lv2Objects(category_dbkey: 80, component_words: [Word]())
     
     // 常用短语
     @ObservedObject var phrases = Phrases()
@@ -52,7 +52,7 @@ class MainController: ObservableObject {
                     selectedCategoryIndex = i
                     // 更新二级宾语
                     // TODO: 数据加载问题: 第一次不成功，旋转设备屏幕后(相当于第二次)才成功
-                    lv2Objects = Lv2Objects(category_dbkey: selectedCategoryDBKey)
+                    lv2Objects = Lv2Objects(category_dbkey: selectedCategoryDBKey, component_words: componentWords)
                     //print(lv2Objects.words.count)
                     break
                 }
