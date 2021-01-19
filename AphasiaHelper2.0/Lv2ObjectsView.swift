@@ -19,7 +19,7 @@ struct Lv2ObjectsView: View {
         ScrollView(.horizontal, showsIndicators: true) {
             LazyHStack {
                 ForEach(lv2Objects, id: \.id) {
-                    word in WordBtnView(word: word).onAppear { lv2Objects.loadMoreLv2Objects(currentItem: word) }
+                    word in WordBtnView(word: word).onAppear { lv2Objects.loadMoreWords(currentItem: word) }
                 }
             }
             Spacer()
@@ -29,6 +29,6 @@ struct Lv2ObjectsView: View {
 
 struct Lv2ObjectsView_Previews: PreviewProvider {
     static var previews: some View {
-        Lv2ObjectsView(selectedCategoryDBKey: 0)
+        Lv2ObjectsView(selectedCategoryDBKey: 80)
     }
 }

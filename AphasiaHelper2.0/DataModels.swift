@@ -41,9 +41,12 @@ class Words: ObservableObject, RandomAccessCollection {
     
     var wordType: WordType
     
-    init(urlWordType: String, type: WordType) {
+    var categoryDBKey: Int  // 二级宾语所属分类标签的DBKey, 当words是一级词语时设为默认值-1 (无分类)
+    
+    init(urlWordType: String, type: WordType, category_dbkey: Int? = nil) {
         urlBase.append(urlWordType)
         wordType = type
+        categoryDBKey = category_dbkey ?? -1  // 一级词语默认分类标签DBKey为-1 (无分类)
         loadMoreWords()
     }
     
@@ -62,7 +65,15 @@ class Words: ObservableObject, RandomAccessCollection {
         }
         currentlyLoading = true
         
-        let urlString = "\(urlBase)?pageNum=\(nextPageToLoad)&pageSize=\(pageSize)"
+        let urlString: String
+        if(categoryDBKey == -1) {
+            // 一级词语
+            urlString = "\(urlBase)?pageNum=\(nextPageToLoad)&pageSize=\(pageSize)"
+        } else {
+            // 二级宾语
+            urlString = "\(urlBase)?id=\(categoryDBKey)&pageNum=\(nextPageToLoad)&pageSize=\(pageSize)"
+        }
+        
         let url = URL(string: urlString)!
         let task = URLSession.shared.dataTask(with: url, completionHandler: parseWordsFromResponse(data:response:error:))
         task.resume()
@@ -273,91 +284,11 @@ class FrequentObjects: Words {
     }
 }
 
-// 加载指定分类标签下的宾语词
-class Lv2Objects: ObservableObject, RandomAccessCollection {
-    typealias Element = Word
-    
-    @Published var lv2Objects = [Word]()
-    
-    var startIndex: Int { lv2Objects.startIndex }
-    var endIndex: Int { lv2Objects.endIndex }
-    var nextPageToLoad = 1
-    var pageSize = 15
-    var currentlyLoading = false
-    var doneLoading = false
-    
-    var categoryDBKey: Int
-    
-    var urlBase = "http://47.102.158.185:8899/word/page/second_object"
+// 二级宾语
+class Lv2Objects: Words {
     
     init(category_dbkey: Int) {
-        categoryDBKey = category_dbkey
-        loadMoreLv2Objects()
-    }
-    
-    subscript(position: Int) -> Word {
-        return lv2Objects[position]
-    }
-    
-    func setIsSelected(pos: Int, val: Bool) {
-        lv2Objects[pos].isSelected = val
-    }
-    
-    func loadMoreLv2Objects(currentItem: Word? = nil) {
-        
-        if !shouldLoadMoreData(currentItem: currentItem) {
-            return
-        }
-        currentlyLoading = true
-        
-        let urlString = "\(urlBase)?id=\(categoryDBKey)&pageNum=\(nextPageToLoad)&pageSize=\(pageSize)"
-        let url = URL(string: urlString)!
-        let task = URLSession.shared.dataTask(with: url, completionHandler: parseWordsFromResponse(data:response:error:))
-        task.resume()
-    }
-    
-    func shouldLoadMoreData(currentItem: Word? = nil) -> Bool {
-        if currentlyLoading || doneLoading {
-            return false
-        }
-        
-        guard let currentItem = currentItem else {
-            return true
-        }
-        
-        for n in (lv2Objects.count - 4)...(lv2Objects.count - 1) {
-            if n >= 0 && currentItem.id == lv2Objects[n].id {
-                return true
-            }
-        }
-        return false
-    }
-    
-    func parseWordsFromResponse(data: Data?, response: URLResponse?, error: Error?) {
-        guard error == nil else {
-            print("Error: \(error!)")
-            currentlyLoading = false
-            return
-        }
-        guard let data = data else {
-            print("No data found")
-            currentlyLoading = false
-            return
-        }
-        if var decodedResponse = try? JSONDecoder().decode(WordList.self, from: data) {
-            for i in 0..<decodedResponse.list.count {
-                decodedResponse.list[i].type = WordType.Object
-                // TODO: 检查是否在当前组成的一句话中 (ComponentWords)，若在，修改isSelected为true
-            }
-            DispatchQueue.main.async {
-                self.lv2Objects.append(contentsOf: decodedResponse.list)
-                self.nextPageToLoad += 1
-                self.currentlyLoading = false
-                self.doneLoading = (decodedResponse.list.count == 0)
-            }
-        } else {
-            print(error ?? "")
-        }
+        super.init(urlWordType: "second_object", type: WordType.Object, category_dbkey: category_dbkey)
     }
 }
 
