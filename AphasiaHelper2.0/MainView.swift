@@ -67,7 +67,9 @@ struct MainView: View {
                             if(mainController.sentence.count > 0) {
                                 read(text: mainController.sentence)
                                 mainController.addPhrase(phrase: mainController.sentence)
-                                // TODO: 更新前端常用短语显示
+                                // 更新前端常用短语显示
+                                // TODO: 数据加载问题: 第一次不成功，旋转设备屏幕后(相当于第二次)才成功
+                                mainController.phrases = Phrases()
                             }
                         }){
                             Image(systemName: "speaker.wave.2").font(.system(size: 22, weight: .regular))
@@ -88,7 +90,6 @@ struct MainView: View {
                         
                         Button(action: {
                             // 清空组成的句子
-                            // Test
                             mainController.removeAllWords()
                         }){
                             Image(systemName: "arrow.triangle.2.circlepath").font(.system(size: 18, weight: .regular))
@@ -221,7 +222,14 @@ struct MainView: View {
                         }
                         // 确保加载完categories再加载Lv2ObjectsView
                         if mainController.categories.doneLoading {
-                            Lv2ObjectsView(selectedCategoryDBKey: mainController.categories[mainController.selectedCategoryIndex].DBKey)
+                            ScrollView(.horizontal, showsIndicators: true) {
+                                LazyHStack {
+                                    ForEach(mainController.lv2Objects, id: \.id) {
+                                        word in WordBtnView(word: word).onAppear { mainController.lv2Objects.loadMoreWords(currentItem: word) }
+                                    }
+                                }
+                                Spacer()
+                            }
                         } else {
                             Spacer()
                         }

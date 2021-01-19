@@ -110,7 +110,7 @@ class Words: ObservableObject, RandomAccessCollection {
         if var decodedResponse = try? JSONDecoder().decode(WordList.self, from: data) {
             for i in 0..<decodedResponse.list.count {
                 decodedResponse.list[i].type = wordType
-                // TODO: 检查是否在当前组成的一句话中，若在，修改isSelected为true (仅对宾语？)
+                // TODO: 检查是否在当前组成的一句话中，若在，修改isSelected为true (仅对二级宾语？)
             }
             DispatchQueue.main.async {
                 self.words.append(contentsOf: decodedResponse.list)
@@ -306,11 +306,11 @@ class UrlImageModel: ObservableObject {
     func loadImage() {
         
         if loadImageFromCache() {
-            print("Cache hit")
+            //print("Cache hit")
             return
         }
         
-        print("Cache miss, loading from url")
+        //print("Cache miss, loading from url")
         loadImageFromUrl()
     }
     

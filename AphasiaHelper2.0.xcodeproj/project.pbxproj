@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		F418BF0825A086A10042B65B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F418BF0725A086A10042B65B /* MainView.swift */; };
 		F430283C25B4816300D5A5FE /* UrlImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F430283B25B4816300D5A5FE /* UrlImageView.swift */; };
-		F430284025B545FC00D5A5FE /* Lv2ObjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F430283F25B545FC00D5A5FE /* Lv2ObjectsView.swift */; };
 		F4457241257DDB9A00E4A509 /* functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4457240257DDB9A00E4A509 /* functions.swift */; };
 		F45080CC25885718007892E3 /* DataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45080CB25885718007892E3 /* DataModels.swift */; };
 		F46124DF258A4FB8009139CE /* MainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46124DE258A4FB8009139CE /* MainController.swift */; };
@@ -26,7 +25,6 @@
 /* Begin PBXFileReference section */
 		F418BF0725A086A10042B65B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		F430283B25B4816300D5A5FE /* UrlImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlImageView.swift; sourceTree = "<group>"; };
-		F430283F25B545FC00D5A5FE /* Lv2ObjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lv2ObjectsView.swift; sourceTree = "<group>"; };
 		F4457240257DDB9A00E4A509 /* functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = functions.swift; sourceTree = "<group>"; };
 		F45080CB25885718007892E3 /* DataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModels.swift; sourceTree = "<group>"; };
 		F46124DE258A4FB8009139CE /* MainController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainController.swift; sourceTree = "<group>"; };
@@ -83,7 +81,6 @@
 				F4457240257DDB9A00E4A509 /* functions.swift */,
 				F46124DE258A4FB8009139CE /* MainController.swift */,
 				F430283B25B4816300D5A5FE /* UrlImageView.swift */,
-				F430283F25B545FC00D5A5FE /* Lv2ObjectsView.swift */,
 				F4C5AEB7257D00BC008C2D4A /* WordBtnView.swift */,
 				F4F7C1E32586308E002D9330 /* CategoryBtnView.swift */,
 				F4F7C1E625863F4E002D9330 /* PhraseBtnView.swift */,
@@ -178,7 +175,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4F7C1E725863F4E002D9330 /* PhraseBtnView.swift in Sources */,
-				F430284025B545FC00D5A5FE /* Lv2ObjectsView.swift in Sources */,
 				F4C5AEB8257D00BC008C2D4A /* WordBtnView.swift in Sources */,
 				F418BF0825A086A10042B65B /* MainView.swift in Sources */,
 				F46124DF258A4FB8009139CE /* MainController.swift in Sources */,

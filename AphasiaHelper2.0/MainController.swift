@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 
 
+// TODO: 数据加载问题: 第一次不成功，旋转设备屏幕后(相当于第二次)才成功
+// TODO: 数据加载问题: 旋转设备屏幕会造成 lazyHStack 数据加载出错 (词语数量大时有重复的) ---- 原因定位: lazy 或 cache
 class MainController: ObservableObject {
     
     // 主语
@@ -24,6 +26,10 @@ class MainController: ObservableObject {
     @Published var selectedCategoryIndex: Int = 0
     // 宾语二级分类的所有标签
     @ObservedObject var categories = Categories()
+    
+    // 二级宾语
+    // TODO: default 80?
+    @ObservedObject var lv2Objects = Lv2Objects(category_dbkey: 80)
     
     // 常用短语
     @ObservedObject var phrases = Phrases()
@@ -44,7 +50,10 @@ class MainController: ObservableObject {
                 if(categories[i].DBKey == selectedCategoryDBKey) {
                     categories.setIsSelected(pos: i, val: true)
                     selectedCategoryIndex = i
-                    // selectedCategoryIndex 已关联更新二级分类下的words
+                    // 更新二级宾语
+                    // TODO: 数据加载问题: 第一次不成功，旋转设备屏幕后(相当于第二次)才成功
+                    lv2Objects = Lv2Objects(category_dbkey: selectedCategoryDBKey)
+                    //print(lv2Objects.words.count)
                     break
                 }
             }
@@ -82,7 +91,7 @@ class MainController: ObservableObject {
 
             }
         case .Object:
-            // TODO: 宾语常用词和二级宾语 isSelected 联动
+            // 宾语常用词和二级宾语 isSelected 联动
             var objectInFrequent: Bool = false
             for i in 0..<frequentObjects.count {
                 if(frequentObjects[i].DBKey == DBKey) {
@@ -92,13 +101,13 @@ class MainController: ObservableObject {
                         frequentObjects.setIsSelected(pos: i, val: true)
                         sentence.append("\(frequentObjects[i].name)")
                         componentWords.append(frequentObjects[i])
-//                        // 检查当前二级宾语中是否有该词语, 保持 button 样式统一
-//                        for j in 0..<categories[selectedCategoryIndex].lv2Objects.count {
-//                            if(categories[selectedCategoryIndex].lv2Objects[j].DBKey == DBKey) {
-//                                categories[selectedCategoryIndex].lv2Objects.setIsSelected(pos: j, val: true)
-//                                break
-//                            }
-//                        }
+                        // 检查当前二级宾语中是否有该词语, 保持 button 样式统一
+                        for j in 0..<lv2Objects.count {
+                            if(lv2Objects[j].DBKey == DBKey) {
+                                lv2Objects.setIsSelected(pos: j, val: true)
+                                break
+                            }
+                        }
                         // 后端词频加一 (对于用户点击前为未选中状态的宾语词)
                         self.addFrequency(type: FrequencyUpdateType.object, DBKey: DBKey)
                     }
@@ -107,19 +116,19 @@ class MainController: ObservableObject {
             }
             // 用户点击的宾语词不在宾语常用词中, 在当前二级宾语中
             if(!objectInFrequent) {
-//                for i in 0..<categories[selectedCategoryIndex].lv2Objects.count {
-//                    if(categories[selectedCategoryIndex].lv2Objects[i].DBKey == DBKey) {
-//                        if(!categories[selectedCategoryIndex].lv2Objects[i].isSelected) {
-//                            // 该词语未被选中, 更改 button 样式
-//                            categories[selectedCategoryIndex].lv2Objects.setIsSelected(pos: i, val: true)
-//                            sentence.append("\(categories[selectedCategoryIndex].lv2Objects[i].name)")
-//                            componentWords.append(categories[selectedCategoryIndex].lv2Objects[i])
-//                            // To Test 后端词频加一 (对于用户点击前为未选中状态的宾语词)
-//                            self.addFrequency(type: FrequencyUpdateType.object, DBKey: DBKey)
-//                        }
-//                        break
-//                    }
-//                }
+                for i in 0..<lv2Objects.count {
+                    if(lv2Objects[i].DBKey == DBKey) {
+                        if(!lv2Objects[i].isSelected) {
+                            // 该词语未被选中, 更改 button 样式
+                            lv2Objects.setIsSelected(pos: i, val: true)
+                            sentence.append("\(lv2Objects[i].name)")
+                            componentWords.append(lv2Objects[i])
+                            // To Test 后端词频加一 (对于用户点击前为未选中状态的宾语词)
+                            self.addFrequency(type: FrequencyUpdateType.object, DBKey: DBKey)
+                        }
+                        break
+                    }
+                }
             }
         }
     }
@@ -145,19 +154,19 @@ class MainController: ObservableObject {
                     }
                 }
             case .Object:
-                // TODO: 宾语常用词和二级宾语 isSelected 联动
+                // 宾语常用词和二级宾语 isSelected 联动
                 for i in 0..<frequentObjects.count {
                     if(frequentObjects[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
                         frequentObjects.setIsSelected(pos: i, val: false)
                         break
                     }
                 }
-//                for i in 0..<categories[selectedCategoryIndex].lv2Objects.count {
-//                    if(categories[selectedCategoryIndex].lv2Objects[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
-//                        categories[selectedCategoryIndex].lv2Objects.setIsSelected(pos: i, val: false)
-//                        break
-//                    }
-//                }
+                for i in 0..<lv2Objects.count {
+                    if(lv2Objects[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        lv2Objects.setIsSelected(pos: i, val: false)
+                        break
+                    }
+                }
             }
             
             componentWords.removeLast()
@@ -188,11 +197,11 @@ class MainController: ObservableObject {
                     frequentObjects.setIsSelected(pos: i, val: false)
                 }
             }
-//            for i in 0..<categories[selectedCategoryIndex].lv2Objects.count {
-//                if(categories[selectedCategoryIndex].lv2Objects[i].isSelected) {
-//                    categories[selectedCategoryIndex].lv2Objects.setIsSelected(pos: i, val: false)
-//                }
-//            }
+            for i in 0..<lv2Objects.count {
+                if(lv2Objects[i].isSelected) {
+                    lv2Objects.setIsSelected(pos: i, val: false)
+                }
+            }
             
             componentWords.removeAll()
             sentence = ""
