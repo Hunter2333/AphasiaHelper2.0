@@ -104,7 +104,7 @@ struct MainView: View {
                     
                     
                     Button(action: {
-                        // 添加词语
+                        // 添加词语 & 待办事项
                         //................
                     }){
                         Image(systemName: "plus").font(.system(size: 36, weight: .regular))

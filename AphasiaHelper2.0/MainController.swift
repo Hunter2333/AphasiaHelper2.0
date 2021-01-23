@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 
-// TODO: 数据加载问题: 第一次不成功，旋转设备屏幕后(相当于第二次)才成功
+// TODO: 数据加载问题: 第一次不成功，旋转设备屏幕后(相当于第二次)才成功 (跟词语图片UrlImageView的加载无关)
 // TODO: 数据加载问题: 旋转设备屏幕会造成 lazyHStack 数据加载出错 (词语数量大时有重复的) ---- 原因定位: lazy 或 cache
 class MainController: ObservableObject {
     

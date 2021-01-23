@@ -8,7 +8,17 @@
 import Foundation
 import SwiftUI
 
-// -------------------基础类型-------------------
+
+// -------------------为实现视图控制而定义的枚举类型-------------------
+// AddView
+enum TabsInAdd: String {
+    case AddNewWord  // 添加词语
+    case AddTodoItem  // 待办事项
+}
+
+
+
+// -------------------为实现功能逻辑而定义的枚举类型-------------------
 // 词语类型
 enum WordType: String, Codable {
     case Subject
@@ -22,8 +32,19 @@ enum FrequencyUpdateType: String {
     case sentence  // phrase
 }
 
+// 可添加词语的类型
+enum AddableType: String {
+    case subject  // GET
+    case predicate  // GET
+    case second_object  // 添加宾语必须选定一个二级分类, GET
+    case sentence  // POST
+    case UNSET  // 用户未选定类别时
+}
 
-// 加载词语
+
+
+// -------------------用于数据加载的类型-------------------
+// 加载词语列表 (父类)
 class Words: ObservableObject, RandomAccessCollection {
     
     typealias Element = Word
@@ -139,7 +160,7 @@ class Words: ObservableObject, RandomAccessCollection {
     }
 }
 
-// 加载常用短语
+// 加载常用短语列表
 class Phrases: ObservableObject, RandomAccessCollection {
     
     typealias Element = Phrase
@@ -217,7 +238,7 @@ class Phrases: ObservableObject, RandomAccessCollection {
     }
 }
 
-// 加载宾语二级分类的所有标签
+// 加载二级宾语分类标签的列表
 class Categories: ObservableObject, RandomAccessCollection {
     
     typealias Element = Category
@@ -226,7 +247,7 @@ class Categories: ObservableObject, RandomAccessCollection {
     
     var startIndex: Int { categories.startIndex }
     var endIndex: Int { categories.endIndex }
-    var total = 19  //...........
+    var total = 19  // TODO: default 19?
     var doneLoading = false // 用于确保加载完 categories 再加载 MainView->Lv2ObjectsView
     
     var urlBase = "http://47.102.158.185:8899/word/page/category_list?pageNum=1&pageSize="
@@ -275,7 +296,7 @@ class Categories: ObservableObject, RandomAccessCollection {
     }
 }
 
-// 主语
+// 加载主语列表 (子类)
 class Subjects: Words {
     
     init() {
@@ -283,7 +304,7 @@ class Subjects: Words {
     }
 }
 
-// 谓语
+// 加载谓语列表 (子类)
 class Predicates: Words {
     
     init() {
@@ -291,7 +312,7 @@ class Predicates: Words {
     }
 }
 
-// 宾语常用词
+// 加载宾语常用词列表 (子类)
 class FrequentObjects: Words {
     
     init() {
@@ -299,7 +320,7 @@ class FrequentObjects: Words {
     }
 }
 
-// 二级宾语
+// 加载指定分类标签下的二级宾语列表 (子类)
 class Lv2Objects: Words {
     
     // 检查是否在当前组成的一句话中，若在，修改isSelected为true (TODO: 仅对二级宾语？)
@@ -389,6 +410,10 @@ extension ImageCache {
 }
 
 
+
+
+
+// -------------------基础数据类型-------------------
 // 词语
 struct Word: Hashable, Codable {
     

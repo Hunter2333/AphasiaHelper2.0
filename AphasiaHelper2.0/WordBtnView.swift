@@ -21,31 +21,16 @@ struct WordBtnView: View {
             read(text: "\(word.name)")
             mainController.addWord(type: word.type, DBKey: word.DBKey)
         }){
-            if(word.isSelected) {
-                // 选中
-                VStack {
-                    UrlImageView(urlString: word.urlToImage)
-                    Text("\(word.name)")
-                        .foregroundColor(Color.black)
-                        .font(.caption)
-                        .bold()
-                }
-                .frame(width: 60, height: 90)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
-                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2))
+            VStack {
+                UrlImageView(urlString: word.urlToImage)
+                Text("\(word.name)")
+                    .foregroundColor(Color.black)
+                    .font(.caption)
+                    .bold()
             }
-            else {
-                // 未选中
-                VStack {
-                    UrlImageView(urlString: word.urlToImage)
-                    Text("\(word.name)")
-                        .foregroundColor(Color.black)
-                        .font(.caption)
-                        .bold()
-                }
-                .frame(width: 60, height: 90)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
-            }
+            .frame(width: 60, height: 90)
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+            .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
         }.padding(10)
     }
 }
