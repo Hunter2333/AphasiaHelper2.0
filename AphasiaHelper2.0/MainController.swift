@@ -209,7 +209,31 @@ class MainController: ObservableObject {
     }
     
     
-    // 向后端插入新生成的常用短语
+    // TODO: 合并 addWordToDB(type, name, categoryDBKey) 和 addPhrase(phrase)
+    // 向后端插入词语 (主谓宾)
+    func addWordToDB(type: AddableType, name: String, categoryDBKey: Int) {
+        
+        print("请求添加词语: \(type), \(name), \(categoryDBKey)")
+        
+        let urlBase = "http://47.102.158.185:8899/word/insert/\(type)"
+        let urlString = (type == AddableType.second_object) ? "\(urlBase)?categoryId=\(categoryDBKey)&name=\(name)" : "\(urlBase)?name=\(name)"
+        
+        guard let url = URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) else {
+            print("Invalid Insert URL")
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let httpResponse = response as? HTTPURLResponse, let data = data, let dataString = String(data: data, encoding: .utf8) {
+                print("Response Status Code: \(httpResponse.statusCode)")
+                print(dataString)
+            } else {
+                print(error ?? "")
+            }
+        }.resume()
+    }
+    
+    // 向后端插入常用短语
     func addPhrase(phrase: String) {
         
         print("插入常用短语: \(phrase)")

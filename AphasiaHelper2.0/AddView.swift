@@ -9,16 +9,17 @@ import SwiftUI
 
 struct AddView: View {
     
-    //@EnvironmentObject var mainController: MainController
+    @EnvironmentObject var mainController: MainController
     
-    @State var categoriesExp: [String] = ["食物", "饮品", "家具", "电子产品与电器", "日用品", "地区/地点"]
+    @Binding var show: Bool
     
     @State var selectedTab: TabsInAdd = TabsInAdd.AddNewWord
     
     @State var name: String = ""
-    @State var type: AddableType = AddableType.second_object
+    @State var type: AddableType = AddableType.UNSET
     @State var expanded: Bool = false
-    @State var selectedCategoryName: String = ""
+    @State var selectedCategory: Category = Category(DBKey: -1, name: "null", isSelected: false)
+    
     
     var body: some View {
         VStack(spacing: 0) {
@@ -26,7 +27,8 @@ struct AddView: View {
             HStack {
                 Spacer()
                 Button(action: {
-                    // TODO: 关闭页面
+                    // TODO: Animation?
+                    show = false
                 }){
                     Image(systemName: "xmark").font(.system(size: 10, weight: .bold))
                         .padding(5)
@@ -158,75 +160,68 @@ struct AddView: View {
                                 .padding(.leading, 28)
                             Spacer()
                         }
-                        // TODO........
-                        VStack() {
-                            HStack {
-                                ZStack(alignment: .leading) {
-                                    if(selectedCategoryName == "") {
-                                        Text("选择子类别")
-                                            .padding(10)
-                                            .font(.caption)
-                                            .foregroundColor(Color.white.opacity(0.25))
-                                            
-                                    }
-                                    Text(selectedCategoryName)
-                                        .padding(10)
-                                        .font(.caption)
-                                        .foregroundColor(Color.white)
-                                }
-                                Spacer()
-                                Image(systemName: expanded ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
-                                    .resizable()
-                                    .frame(width: 10, height: 6)
-                                    .foregroundColor(Color.white.opacity(0.25))
-                                    .padding(12)
-                            }
-                            .onTapGesture {
-                                expanded.toggle()
-                            }
-                            .frame(width: 245, height: 32)
-                            .background(Color.white.opacity(0.1))
-                            .cornerRadius(8)
-                            if expanded {
-                                ForEach(categoriesExp, id: \.self) { category in
-                                    Button(action: {
-                                        expanded.toggle()
-                                        selectedCategoryName = category
-                                    }) {
-                                        HStack {
-                                            Text(category)
-                                                .padding(10)
-                                                .font(.caption)
-                                                .foregroundColor(Color.white)
-                                            Spacer()
+                        DisclosureGroup((selectedCategory.DBKey == -1) ? "选择子类别" : selectedCategory.name, isExpanded: $expanded) {
+                            ScrollView(.vertical, showsIndicators: true) {
+                                VStack {
+                                    if mainController.categories.doneLoading {
+                                        ForEach(mainController.categories, id: \.id) { category in
+                                            Button(action: {
+                                                selectedCategory = category
+                                                withAnimation {
+                                                    expanded.toggle()
+                                                }
+                                            }) {
+                                                HStack {
+                                                    Text(category.name)
+                                                        .padding(5)
+                                                        .font(.caption)
+                                                    Spacer()
+                                                }.frame(maxWidth: .infinity)
+                                            }
                                         }
-                                        .frame(width: 245, height: 26)
-                                        .background(Color(red: 26/255, green: 26/255, blue: 55/255))
+                                    } else {
+                                        Text("加载中...")
                                     }
-                                }
-                            }
-                        }//.animation(.spring())
+                                }.foregroundColor(Color.white)
+                            }.frame(height: 120)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4.75)
+                        .font(.caption)
+                        .frame(width: 245)
+                        .accentColor(Color.white.opacity(0.25))
+                        .foregroundColor((selectedCategory.DBKey == -1) ? Color.white.opacity(0.25) : Color.white)
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(8)
                     }.padding(.bottom, 20)
                 }
                 
                 if(selectedTab == TabsInAdd.AddTodoItem) {
                     // TODO: 上传照片
-                    Text("TODO: 上传照片").foregroundColor(Color.white)
+                    Text("上传照片: 建设中...")
+                        .foregroundColor(Color.white)
+                        .padding(.bottom, 80)
                 }
-                
+
                 Button(action: {
-                    // TODO: 完成
+                    if(type == AddableType.sentence) {
+                        mainController.addPhrase(phrase: name)
+                    } else {
+                        mainController.addWordToDB(type: type, name: name, categoryDBKey: selectedCategory.DBKey)
+                    }
                 }){
                     Text("完成")
                         .font(.caption)
                         .bold()
                         .frame(width: 245, height: 32, alignment: .center)
                         .foregroundColor(Color.white)
-                        .background(Color(red: 41/255, green: 118/255, blue: 224/255))
-                        .cornerRadius(8)
-                }.padding(.bottom, 30)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 41/255, green: 118/255, blue: 224/255)))
+                        .overlay(finishBtnIsDisabled ? RoundedRectangle(cornerRadius: 8).fill(Color.white.opacity(0.5)) : RoundedRectangle(cornerRadius: 8).fill(Color.white.opacity(0)))
+                }
+                .padding(.bottom, 30)
+                .disabled(finishBtnIsDisabled)
                 
-                // TODO: 显示添加词语结果
+                // TODO: 显示添加词语的结果
             }
             
         }
@@ -234,10 +229,8 @@ struct AddView: View {
         .background(Color(red: 26/255, green: 26/255, blue: 55/255))
         .cornerRadius(20)
     }
-}
-
-struct AddView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddView()
+    
+    var finishBtnIsDisabled: Bool {
+        return (selectedTab == TabsInAdd.AddNewWord) && ((name == "") || (type == AddableType.UNSET) || ((type == AddableType.second_object) && (selectedCategory.DBKey == -1)))
     }
 }

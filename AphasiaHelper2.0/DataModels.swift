@@ -337,6 +337,9 @@ class UrlImageModel: ObservableObject {
     
     init(urlString: String?) {
         self.urlString = urlString
+        if(urlString == "") {
+            return
+        }
         loadImage()
     }
     
@@ -480,4 +483,16 @@ struct CategoryList: Codable {
 struct PhraseList: Codable {
     var total: Int
     var list: [Phrase]
+}
+
+
+
+struct InsertItem: Codable {
+    var _id: Int
+    var _name: String
+    var _url: String
+}
+
+struct InsertNewWord: Codable {
+    var insertItem: InsertItem
 }
