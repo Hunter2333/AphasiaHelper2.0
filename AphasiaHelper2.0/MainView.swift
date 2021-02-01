@@ -71,7 +71,7 @@ struct MainView: View {
                                 // 朗读句子 & 添加到常用短语
                                 if(mainController.sentence.count > 0) {
                                     read(text: mainController.sentence)
-                                    mainController.addPhrase(phrase: mainController.sentence)
+                                    mainController.addItemToDB(type: AddableType.sentence, name: mainController.sentence, categoryDBKey: -1)
                                     // 更新前端常用短语显示
                                     // TODO: 数据加载问题: 第一次不成功，旋转设备屏幕后(相当于第二次)才成功
                                     mainController.phrases = Phrases()
@@ -246,6 +246,72 @@ struct MainView: View {
                     .frame(width: geo.size.width - 30, height: geo.size.height / 5 * 2 - 20)
                     .background(Color(red: 245/255, green: 246/255, blue: 251/255))
                     .cornerRadius(20)
+                    
+                    
+//                    Spacer()
+//
+//
+//                    // 形容词
+//                    HStack {
+//
+//                        HStack {
+//                            Text("形容词")
+//                                .font(.headline)
+//                                .bold()
+//                                .padding(.vertical, 6)
+//                                .padding(.horizontal, 16)
+//                                .foregroundColor(Color.white)
+//                                .background(Color.black)
+//                                .cornerRadius(15)
+//                                .padding(.leading, 10)
+//                                .padding(.top, 10)
+//                        }
+//                        .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
+//
+//                        ScrollView(.horizontal, showsIndicators: true) {
+//                            LazyHStack {
+//                                ForEach(mainController.adjectives, id: \.id) {
+//                                    word in WordBtnView(word: word).onAppear { mainController.adjectives.loadMoreWords(currentItem: word) }
+//                                }
+//                            }
+//                        }
+//                    }
+//                    .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
+//                    .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+//                    .cornerRadius(20)
+//
+//
+//                    Spacer()
+//
+//
+//                    // 其他词库词语
+//                    HStack {
+//
+//                        HStack {
+//                            Text("其他词库词语")
+//                                .font(.headline)
+//                                .bold()
+//                                .padding(.vertical, 6)
+//                                .padding(.horizontal, 16)
+//                                .foregroundColor(Color.white)
+//                                .background(Color.black)
+//                                .cornerRadius(15)
+//                                .padding(.leading, 10)
+//                                .padding(.top, 10)
+//                        }
+//                        .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
+//
+//                        ScrollView(.horizontal, showsIndicators: true) {
+//                            LazyHStack {
+//                                ForEach(mainController.otherWords, id: \.id) {
+//                                    word in WordBtnView(word: word).onAppear { mainController.otherWords.loadMoreWords(currentItem: word) }
+//                                }
+//                            }
+//                        }
+//                    }
+//                    .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
+//                    .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+//                    .cornerRadius(20)
                     
                     
                     Spacer()

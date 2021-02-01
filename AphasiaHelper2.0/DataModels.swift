@@ -24,6 +24,8 @@ enum WordType: String, Codable {
     case Subject
     case Predicate
     case Object
+    case Adjective
+    case Other
 }
 
 // 可更新频率的类型
@@ -247,7 +249,7 @@ class Categories: ObservableObject, RandomAccessCollection {
     
     var startIndex: Int { categories.startIndex }
     var endIndex: Int { categories.endIndex }
-    var total = 19  // TODO: default 19?
+    var total = 20  // TODO: default 20?
     var doneLoading = false // 用于确保加载完 categories 再加载 MainView->Lv2ObjectsView
     
     var urlBase = "http://47.102.158.185:8899/word/page/category_list?pageNum=1&pageSize="
@@ -326,6 +328,22 @@ class Lv2Objects: Words {
     // 检查是否在当前组成的一句话中，若在，修改isSelected为true (TODO: 仅对二级宾语？)
     init(category_dbkey: Int, component_words: [Word]) {
         super.init(urlWordType: "second_object", type: WordType.Object, category_dbkey: category_dbkey, component_words: component_words)
+    }
+}
+
+// 加载形容词列表 (子类)
+class Adjectives: Words {
+    
+    init() {
+        super.init(urlWordType: "adj", type: WordType.Adjective)
+    }
+}
+
+// 加载其他词库词语列表 (子类)
+class OtherWords: Words {
+    
+    init() {
+        super.init(urlWordType: "other", type: WordType.Other)
     }
 }
 

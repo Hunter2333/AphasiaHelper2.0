@@ -31,6 +31,12 @@ class MainController: ObservableObject {
     // TODO: default 80?
     @ObservedObject var lv2Objects = Lv2Objects(category_dbkey: 80, component_words: [Word]())
     
+    // 形容词
+    @ObservedObject var adjectives = Adjectives()
+    
+    // 其他词库词语
+    @ObservedObject var otherWords = OtherWords()
+    
     // 常用短语
     @ObservedObject var phrases = Phrases()
     
@@ -130,6 +136,30 @@ class MainController: ObservableObject {
                     }
                 }
             }
+        case .Adjective:
+            for i in 0..<adjectives.count {
+                if(adjectives[i].DBKey == DBKey) {
+                    if(!adjectives[i].isSelected) {
+                        // 该词语未被选中, 更改 button 样式
+                        adjectives.setIsSelected(pos: i, val: true)
+                        sentence.append("\(adjectives[i].name)")
+                        componentWords.append(adjectives[i])
+                    }
+                    break
+                }
+            }
+        case .Other:
+            for i in 0..<otherWords.count {
+                if(otherWords[i].DBKey == DBKey) {
+                    if(!otherWords[i].isSelected) {
+                        // 该词语未被选中, 更改 button 样式
+                        otherWords.setIsSelected(pos: i, val: true)
+                        sentence.append("\(otherWords[i].name)")
+                        componentWords.append(otherWords[i])
+                    }
+                    break
+                }
+            }
         }
     }
     
@@ -164,6 +194,20 @@ class MainController: ObservableObject {
                 for i in 0..<lv2Objects.count {
                     if(lv2Objects[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
                         lv2Objects.setIsSelected(pos: i, val: false)
+                        break
+                    }
+                }
+            case .Adjective:
+                for i in 0..<adjectives.count {
+                    if(adjectives[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        adjectives.setIsSelected(pos: i, val: false)
+                        break
+                    }
+                }
+            case .Other:
+                for i in 0..<otherWords.count {
+                    if(otherWords[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        otherWords.setIsSelected(pos: i, val: false)
                         break
                     }
                 }
@@ -202,6 +246,16 @@ class MainController: ObservableObject {
                     lv2Objects.setIsSelected(pos: i, val: false)
                 }
             }
+            for i in 0..<adjectives.count {
+                if(adjectives[i].isSelected) {
+                    adjectives.setIsSelected(pos: i, val: false)
+                }
+            }
+            for i in 0..<otherWords.count {
+                if(otherWords[i].isSelected) {
+                    otherWords.setIsSelected(pos: i, val: false)
+                }
+            }
             
             componentWords.removeAll()
             sentence = ""
@@ -209,41 +263,29 @@ class MainController: ObservableObject {
     }
     
     
-    // TODO: 合并 addWordToDB(type, name, categoryDBKey) 和 addPhrase(phrase)
-    // 向后端插入词语 (主谓宾)
-    func addWordToDB(type: AddableType, name: String, categoryDBKey: Int) {
+    // 向后端插入词语 (主谓宾) 或 常用短语
+    func addItemToDB(type: AddableType, name: String, categoryDBKey: Int) {
         
-        print("请求添加词语: \(type), \(name), \(categoryDBKey)")
+        print("请求添加: \(type), \(name), \(categoryDBKey)")
         
         let urlBase = "http://47.102.158.185:8899/word/insert/\(type)"
-        let urlString = (type == AddableType.second_object) ? "\(urlBase)?categoryId=\(categoryDBKey)&name=\(name)" : "\(urlBase)?name=\(name)"
+        var urlString = ""
+        if(type == AddableType.sentence) {
+            urlString = "\(urlBase)?sentence=\(name)"
+        } else if(type == AddableType.second_object) {
+            urlString = "\(urlBase)?categoryId=\(categoryDBKey)&name=\(name)"
+        } else {
+            urlString = "\(urlBase)?name=\(name)"
+        }
         
         guard let url = URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) else {
             print("Invalid Insert URL")
             return
         }
-
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let httpResponse = response as? HTTPURLResponse, let data = data, let dataString = String(data: data, encoding: .utf8) {
-                print("Response Status Code: \(httpResponse.statusCode)")
-                print(dataString)
-            } else {
-                print(error ?? "")
-            }
-        }.resume()
-    }
-    
-    // 向后端插入常用短语
-    func addPhrase(phrase: String) {
-        
-        print("插入常用短语: \(phrase)")
-        
-        guard let url = URL(string: "http://47.102.158.185:8899/word/insert/sentence?sentence=\(phrase)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) else {
-            print("Invalid Insert URL")
-            return
-        }
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        if(type == AddableType.sentence) {
+            request.httpMethod = "POST"
+        }
 
         URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let httpResponse = response as? HTTPURLResponse, let data = data, let dataString = String(data: data, encoding: .utf8) {
