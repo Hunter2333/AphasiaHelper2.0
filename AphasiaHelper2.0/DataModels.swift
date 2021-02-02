@@ -80,6 +80,16 @@ class Words: ObservableObject, RandomAccessCollection {
         return words[position]
     }
     
+    func clearOld(category_dbkey: Int? = nil, component_words: [Word]? = nil) {
+        words.removeAll()
+        nextPageToLoad = 1
+        currentlyLoading = false
+        doneLoading = false
+        
+        categoryDBKey = category_dbkey ?? -1  // 一级词语默认分类标签DBKey为-1 (无分类)
+        componentWords = component_words ?? [Word]()
+    }
+    
     func setIsSelected(pos: Int, val: Bool) {
         words[pos].isSelected = val
     }
@@ -184,6 +194,13 @@ class Phrases: ObservableObject, RandomAccessCollection {
     
     subscript(position: Int) -> Phrase {
         return phrases[position]
+    }
+    
+    func clearOld() {
+        phrases.removeAll()
+        nextPageToLoad = 1
+        currentlyLoading = false
+        doneLoading = false
     }
     
     func loadMorePhrases(currentItem: Phrase? = nil) {
