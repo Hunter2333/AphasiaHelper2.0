@@ -12,13 +12,11 @@ struct PhraseBtnView: View {
     
     var phrase: Phrase
     
-    @EnvironmentObject var mainController: MainController
-    
     var body: some View {
         Button(action: {
             read(text: "\(phrase.name)")
             // 后端频率加一
-            mainController.addFrequency(type: FrequencyUpdateType.sentence, DBKey: phrase.DBKey)
+            addFrequency(type: FrequencyUpdateType.sentence, DBKey: phrase.DBKey)
         }){
             Text("\(phrase.name)")
                 .foregroundColor(Color.black)

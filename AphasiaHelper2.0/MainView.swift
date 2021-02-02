@@ -9,7 +9,38 @@ import SwiftUI
 
 struct MainView: View {
     
-    @EnvironmentObject var mainController: MainController
+    // 主语
+    @ObservedObject var subjects = Subjects()
+    
+    // 谓语
+    @ObservedObject var predicates = Predicates()
+    
+    // 宾语常用词
+    @ObservedObject var frequentObjects = FrequentObjects()
+    
+    // 当前选中的那个宾语二级分类标签在categories中的下标
+    @State var selectedCategoryIndex: Int = 0
+    // 宾语二级分类的所有标签
+    @ObservedObject var categories = Categories()
+    
+    // 二级宾语
+    // TODO: default 80?
+    @ObservedObject var lv2Objects = Lv2Objects(category_dbkey: 80, component_words: [Word]())
+    
+    // 形容词
+    @ObservedObject var adjectives = Adjectives()
+    
+    // 其他词库词语
+    @ObservedObject var otherWords = OtherWords()
+    
+    // 常用短语
+    @ObservedObject var phrases = Phrases()
+    
+    // 组成的一句话
+    @State var sentence: String = ""
+    @State var componentWords = [Word]()
+    
+    
     
     @State var showAddView: Bool = false
     
@@ -31,7 +62,7 @@ struct MainView: View {
                                 
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     HStack {
-                                        ForEach(mainController.componentWords, id: \.id) { componentWord in
+                                        ForEach(componentWords, id: \.id) { componentWord in
                                             ComponentWordView(word: componentWord)
                                         }
                                     }
@@ -69,12 +100,12 @@ struct MainView: View {
                             
                             Button(action: {
                                 // 朗读句子 & 添加到常用短语
-                                if(mainController.sentence.count > 0) {
-                                    read(text: mainController.sentence)
-                                    mainController.addItemToDB(type: AddableType.sentence, name: mainController.sentence, categoryDBKey: -1)
+                                if(sentence.count > 0) {
+                                    read(text: sentence)
+                                    addItemToDB(type: AddableType.sentence, name: sentence, categoryDBKey: -1)
                                     // 更新前端常用短语显示
                                     // TODO: 数据加载问题: 第一次不成功，旋转设备屏幕后(相当于第二次)才成功
-                                    mainController.phrases = Phrases()
+                                    //phrases = Phrases()
                                 }
                             }){
                                 Image(systemName: "speaker.wave.2").font(.system(size: 22, weight: .regular))
@@ -86,7 +117,7 @@ struct MainView: View {
                             
                             Button(action: {
                                 // 一次只清除一个词
-                                mainController.removeLastWord()
+                                removeLastWord()
                             }){
                                 Image(systemName: "clear").font(.system(size: 20, weight: .regular))
                             }
@@ -95,7 +126,7 @@ struct MainView: View {
                             
                             Button(action: {
                                 // 清空组成的句子
-                                mainController.removeAllWords()
+                                removeAllWords()
                             }){
                                 Image(systemName: "arrow.triangle.2.circlepath").font(.system(size: 18, weight: .regular))
                             }
@@ -148,8 +179,24 @@ struct MainView: View {
                         
                         ScrollView(.horizontal, showsIndicators: true) {
                             LazyHStack {
-                                ForEach(mainController.subjects, id: \.id) {
-                                    word in WordBtnView(word: word).onAppear { mainController.subjects.loadMoreWords(currentItem: word) }
+                                ForEach(subjects, id: \.id) { word in
+                                    Button(action: {
+                                        read(text: "\(word.name)")
+                                        addWord(type: word.type, DBKey: word.DBKey)
+                                    }){
+                                        VStack {
+                                            UrlImageView(urlString: word.urlToImage)
+                                            Text("\(word.name)")
+                                                .foregroundColor(Color.black)
+                                                .font(.caption)
+                                                .bold()
+                                        }
+                                        .frame(width: 60, height: 90)
+                                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                        .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
+                                    }
+                                    .padding(10)
+                                    .onAppear { subjects.loadMoreWords(currentItem: word) }
                                 }
                             }
                         }
@@ -181,8 +228,24 @@ struct MainView: View {
                         
                         ScrollView(.horizontal, showsIndicators: true) {
                             LazyHStack {
-                                ForEach(mainController.predicates, id: \.id) {
-                                    word in WordBtnView(word: word).onAppear { mainController.predicates.loadMoreWords(currentItem: word) }
+                                ForEach(predicates, id: \.id) { word in
+                                    Button(action: {
+                                        read(text: "\(word.name)")
+                                        addWord(type: word.type, DBKey: word.DBKey)
+                                    }){
+                                        VStack {
+                                            UrlImageView(urlString: word.urlToImage)
+                                            Text("\(word.name)")
+                                                .foregroundColor(Color.black)
+                                                .font(.caption)
+                                                .bold()
+                                        }
+                                        .frame(width: 60, height: 90)
+                                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                        .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
+                                    }
+                                    .padding(10)
+                                    .onAppear { predicates.loadMoreWords(currentItem: word) }
                                 }
                             }
                         }
@@ -215,24 +278,66 @@ struct MainView: View {
                         VStack {
                             ScrollView(.horizontal, showsIndicators: true) {
                                 LazyHStack {
-                                    ForEach(mainController.frequentObjects, id: \.id) {
-                                        word in WordBtnView(word: word).onAppear { mainController.frequentObjects.loadMoreWords(currentItem: word) }
+                                    ForEach(frequentObjects, id: \.id) { word in
+                                        Button(action: {
+                                            read(text: "\(word.name)")
+                                            addWord(type: word.type, DBKey: word.DBKey)
+                                        }){
+                                            VStack {
+                                                UrlImageView(urlString: word.urlToImage)
+                                                Text("\(word.name)")
+                                                    .foregroundColor(Color.black)
+                                                    .font(.caption)
+                                                    .bold()
+                                            }
+                                            .frame(width: 60, height: 90)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                            .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
+                                        }
+                                        .padding(10)
+                                        .onAppear { frequentObjects.loadMoreWords(currentItem: word) }
                                     }
                                 }
                             }.padding(.top, 15)
                             ScrollView(.horizontal, showsIndicators: true) {
                                 HStack {
-                                    ForEach(mainController.categories, id: \.id) { category in
-                                        CategoryBtnView(category: category)
+                                    ForEach(categories, id: \.id) { category in
+                                        Button(action: {
+                                        updateCategoryBtnViews(selectedCategoryDBKey: category.DBKey)
+                                        }){
+                                            Text("\(category.name)")
+                                                .font(.caption2)
+                                                .padding(.horizontal, 18)
+                                                .padding(.vertical, 4)
+                                                .foregroundColor(category.isSelected ? Color.white : Color.black)
+                                                .background(category.isSelected ? Color.black : Color(red: 233/255, green: 238/255, blue: 251/255))
+                                                .cornerRadius(5)
+                                        }.padding(5)
                                     }
                                 }
                             }
                             // 确保加载完categories再加载Lv2ObjectsView
-                            if mainController.categories.doneLoading {
+                            if categories.doneLoading {
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     LazyHStack {
-                                        ForEach(mainController.lv2Objects, id: \.id) {
-                                            word in WordBtnView(word: word).onAppear { mainController.lv2Objects.loadMoreWords(currentItem: word) }
+                                        ForEach(lv2Objects, id: \.id) { word in
+                                            Button(action: {
+                                                read(text: "\(word.name)")
+                                                addWord(type: word.type, DBKey: word.DBKey)
+                                            }){
+                                                VStack {
+                                                    UrlImageView(urlString: word.urlToImage)
+                                                    Text("\(word.name)")
+                                                        .foregroundColor(Color.black)
+                                                        .font(.caption)
+                                                        .bold()
+                                                }
+                                                .frame(width: 60, height: 90)
+                                                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                                .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
+                                            }
+                                            .padding(10)
+                                            .onAppear { lv2Objects.loadMoreWords(currentItem: word) }
                                         }
                                     }
                                     Spacer()
@@ -246,72 +351,6 @@ struct MainView: View {
                     .frame(width: geo.size.width - 30, height: geo.size.height / 5 * 2 - 20)
                     .background(Color(red: 245/255, green: 246/255, blue: 251/255))
                     .cornerRadius(20)
-                    
-                    
-//                    Spacer()
-//
-//
-//                    // 形容词
-//                    HStack {
-//
-//                        HStack {
-//                            Text("形容词")
-//                                .font(.headline)
-//                                .bold()
-//                                .padding(.vertical, 6)
-//                                .padding(.horizontal, 16)
-//                                .foregroundColor(Color.white)
-//                                .background(Color.black)
-//                                .cornerRadius(15)
-//                                .padding(.leading, 10)
-//                                .padding(.top, 10)
-//                        }
-//                        .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
-//
-//                        ScrollView(.horizontal, showsIndicators: true) {
-//                            LazyHStack {
-//                                ForEach(mainController.adjectives, id: \.id) {
-//                                    word in WordBtnView(word: word).onAppear { mainController.adjectives.loadMoreWords(currentItem: word) }
-//                                }
-//                            }
-//                        }
-//                    }
-//                    .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
-//                    .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-//                    .cornerRadius(20)
-//
-//
-//                    Spacer()
-//
-//
-//                    // 其他词库词语
-//                    HStack {
-//
-//                        HStack {
-//                            Text("其他词库词语")
-//                                .font(.headline)
-//                                .bold()
-//                                .padding(.vertical, 6)
-//                                .padding(.horizontal, 16)
-//                                .foregroundColor(Color.white)
-//                                .background(Color.black)
-//                                .cornerRadius(15)
-//                                .padding(.leading, 10)
-//                                .padding(.top, 10)
-//                        }
-//                        .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
-//
-//                        ScrollView(.horizontal, showsIndicators: true) {
-//                            LazyHStack {
-//                                ForEach(mainController.otherWords, id: \.id) {
-//                                    word in WordBtnView(word: word).onAppear { mainController.otherWords.loadMoreWords(currentItem: word) }
-//                                }
-//                            }
-//                        }
-//                    }
-//                    .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
-//                    .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-//                    .cornerRadius(20)
                     
                     
                     Spacer()
@@ -336,8 +375,8 @@ struct MainView: View {
                         
                         ScrollView(.horizontal, showsIndicators: true) {
                             LazyHStack {
-                                ForEach(mainController.phrases, id: \.id) { phrase in
-                                    PhraseBtnView(phrase: phrase).padding(.trailing, 10).onAppear { mainController.phrases.loadMorePhrases(currentItem: phrase) }
+                                ForEach(phrases, id: \.id) { phrase in
+                                    PhraseBtnView(phrase: phrase).padding(.trailing, 10).onAppear { phrases.loadMorePhrases(currentItem: phrase) }
                                 }
                             }
                         }
@@ -353,7 +392,7 @@ struct MainView: View {
                         Spacer().frame(height: geo.size.height / 10)
                         HStack {
                             Spacer()
-                            AddView(show: $showAddView)
+                            AddView(show: $showAddView, categories: categories)
                                 .padding(.trailing, 15)
                         }
                         Spacer()
@@ -362,10 +401,233 @@ struct MainView: View {
             }
         }
     }
+    
+    
+    
+    //--------------------------functions-------------------------
+    // 删除组成的句子中最后一个词
+    func removeLastWord() -> Void {
+        if(componentWords.count > 0) {
+            
+            switch componentWords[componentWords.count - 1].type {
+            case .Subject:
+                for i in 0..<subjects.count {
+                    if(subjects[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        subjects.setIsSelected(pos: i, val: false)
+                        break
+                    }
+                }
+            case .Predicate:
+                for i in 0..<predicates.count {
+                    if(predicates[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        predicates.setIsSelected(pos: i, val: false)
+                        break
+                    }
+                }
+            case .Object:
+                // 宾语常用词和二级宾语 isSelected 联动
+                for i in 0..<frequentObjects.count {
+                    if(frequentObjects[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        frequentObjects.setIsSelected(pos: i, val: false)
+                        break
+                    }
+                }
+                for i in 0..<lv2Objects.count {
+                    if(lv2Objects[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        lv2Objects.setIsSelected(pos: i, val: false)
+                        break
+                    }
+                }
+            case .Adjective:
+                for i in 0..<adjectives.count {
+                    if(adjectives[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        adjectives.setIsSelected(pos: i, val: false)
+                        break
+                    }
+                }
+            case .Other:
+                for i in 0..<otherWords.count {
+                    if(otherWords[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        otherWords.setIsSelected(pos: i, val: false)
+                        break
+                    }
+                }
+            }
+            
+            componentWords.removeLast()
+            sentence = ""
+            for componentWord in componentWords {
+                sentence.append(componentWord.name)
+            }
+        }
+    }
+    
+    
+    // 清空组成的句子
+    func removeAllWords() -> Void {
+        
+        if(componentWords.count > 0) {
+            for i in 0..<subjects.count {
+                if(subjects[i].isSelected) {
+                    subjects.setIsSelected(pos: i, val: false)
+                }
+            }
+            for i in 0..<predicates.count {
+                if(predicates[i].isSelected) {
+                    predicates.setIsSelected(pos: i, val: false)
+                }
+            }
+            for i in 0..<frequentObjects.count {
+                if(frequentObjects[i].isSelected) {
+                    frequentObjects.setIsSelected(pos: i, val: false)
+                }
+            }
+            for i in 0..<lv2Objects.count {
+                if(lv2Objects[i].isSelected) {
+                    lv2Objects.setIsSelected(pos: i, val: false)
+                }
+            }
+            for i in 0..<adjectives.count {
+                if(adjectives[i].isSelected) {
+                    adjectives.setIsSelected(pos: i, val: false)
+                }
+            }
+            for i in 0..<otherWords.count {
+                if(otherWords[i].isSelected) {
+                    otherWords.setIsSelected(pos: i, val: false)
+                }
+            }
+            
+            componentWords.removeAll()
+            sentence = ""
+        }
+    }
+    
+    
+    // 切换标签: 同时只能有一个二级分类标签被选中, 初次打开页面时默认为第一个
+    func updateCategoryBtnViews(selectedCategoryDBKey: Int) -> Void {
+        
+        if(categories[selectedCategoryIndex].DBKey != selectedCategoryDBKey) {
+            
+            categories.setIsSelected(pos: selectedCategoryIndex, val: false)
+            
+            for i in 0..<categories.count {
+                if(categories[i].DBKey == selectedCategoryDBKey) {
+                    categories.setIsSelected(pos: i, val: true)
+                    selectedCategoryIndex = i
+                    // 更新二级宾语
+                    // TODO: 数据加载问题: 第一次不成功，旋转设备屏幕后(相当于第二次)才成功
+                    //lv2Objects = Lv2Objects(category_dbkey: selectedCategoryDBKey, component_words: componentWords)
+                    //print(lv2Objects.words.count)
+                    break
+                }
+            }
+        }
+    }
+    
+    
+    // 向组成的句子末添加词语
+    func addWord(type: WordType, DBKey: Int) -> Void {
+        
+        switch type {
+        case .Subject:
+            for i in 0..<subjects.count {
+                if(subjects[i].DBKey == DBKey) {
+                    if(!subjects[i].isSelected) {
+                        // 该词语未被选中, 更改 button 样式
+                        subjects.setIsSelected(pos: i, val: true)
+                        sentence.append("\(subjects[i].name)")
+                        componentWords.append(subjects[i])
+                    }
+                    break
+                }
+            }
+        case .Predicate:
+            for i in 0..<predicates.count {
+                if(predicates[i].DBKey == DBKey) {
+                    if(!predicates[i].isSelected) {
+                        // 该词语未被选中, 更改 button 样式
+                        predicates.setIsSelected(pos: i, val: true)
+                        sentence.append("\(predicates[i].name)")
+                        componentWords.append(predicates[i])
+                    }
+                    break
+                }
+
+            }
+        case .Object:
+            // 宾语常用词和二级宾语 isSelected 联动
+            var objectInFrequent: Bool = false
+            for i in 0..<frequentObjects.count {
+                if(frequentObjects[i].DBKey == DBKey) {
+                    objectInFrequent = true
+                    if(!frequentObjects[i].isSelected) {
+                        // 该词语未被选中, 更改 button 样式
+                        frequentObjects.setIsSelected(pos: i, val: true)
+                        sentence.append("\(frequentObjects[i].name)")
+                        componentWords.append(frequentObjects[i])
+                        // 检查当前二级宾语中是否有该词语, 保持 button 样式统一
+                        for j in 0..<lv2Objects.count {
+                            if(lv2Objects[j].DBKey == DBKey) {
+                                lv2Objects.setIsSelected(pos: j, val: true)
+                                break
+                            }
+                        }
+                        // 后端词频加一 (对于用户点击前为未选中状态的宾语词)
+                        addFrequency(type: FrequencyUpdateType.object, DBKey: DBKey)
+                    }
+                    break
+                }
+            }
+            // 用户点击的宾语词不在宾语常用词中, 在当前二级宾语中
+            if(!objectInFrequent) {
+                for i in 0..<lv2Objects.count {
+                    if(lv2Objects[i].DBKey == DBKey) {
+                        if(!lv2Objects[i].isSelected) {
+                            // 该词语未被选中, 更改 button 样式
+                            lv2Objects.setIsSelected(pos: i, val: true)
+                            sentence.append("\(lv2Objects[i].name)")
+                            componentWords.append(lv2Objects[i])
+                            // To Test 后端词频加一 (对于用户点击前为未选中状态的宾语词)
+                            addFrequency(type: FrequencyUpdateType.object, DBKey: DBKey)
+                        }
+                        break
+                    }
+                }
+            }
+        case .Adjective:
+            for i in 0..<adjectives.count {
+                if(adjectives[i].DBKey == DBKey) {
+                    if(!adjectives[i].isSelected) {
+                        // 该词语未被选中, 更改 button 样式
+                        adjectives.setIsSelected(pos: i, val: true)
+                        sentence.append("\(adjectives[i].name)")
+                        componentWords.append(adjectives[i])
+                    }
+                    break
+                }
+            }
+        case .Other:
+            for i in 0..<otherWords.count {
+                if(otherWords[i].DBKey == DBKey) {
+                    if(!otherWords[i].isSelected) {
+                        // 该词语未被选中, 更改 button 样式
+                        otherWords.setIsSelected(pos: i, val: true)
+                        sentence.append("\(otherWords[i].name)")
+                        componentWords.append(otherWords[i])
+                    }
+                    break
+                }
+            }
+        }
+    }
 }
+
+
+
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
-        MainView().environmentObject(MainController())
+        MainView()
     }
 }

@@ -249,7 +249,7 @@ class Categories: ObservableObject, RandomAccessCollection {
     
     var startIndex: Int { categories.startIndex }
     var endIndex: Int { categories.endIndex }
-    var total = 20  // TODO: default 20?
+    var total = 30  // TODO: default infinity?
     var doneLoading = false // 用于确保加载完 categories 再加载 MainView->Lv2ObjectsView
     
     var urlBase = "http://47.102.158.185:8899/word/page/category_list?pageNum=1&pageSize="
@@ -501,16 +501,4 @@ struct CategoryList: Codable {
 struct PhraseList: Codable {
     var total: Int
     var list: [Phrase]
-}
-
-
-
-struct InsertItem: Codable {
-    var _id: Int
-    var _name: String
-    var _url: String
-}
-
-struct InsertNewWord: Codable {
-    var insertItem: InsertItem
 }

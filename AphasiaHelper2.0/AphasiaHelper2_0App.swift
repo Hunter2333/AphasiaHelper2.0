@@ -9,10 +9,11 @@ import SwiftUI
 
 @main
 struct AphasiaHelper2_0App: App {
+    
     var body: some Scene {
         
         WindowGroup {
-            MainView().environmentObject(MainController())
+            MainView()
         }
     }
 }
