@@ -42,7 +42,7 @@ func addItemToDB(type: AddableType, name: String, categoryDBKey: Int) {
     if(type == AddableType.sentence) {
         request.httpMethod = "POST"
     }
-
+    
     URLSession.shared.dataTask(with: request) { (data, response, error) in
         if let httpResponse = response as? HTTPURLResponse, let data = data, let dataString = String(data: data, encoding: .utf8) {
             print("Response Status Code: \(httpResponse.statusCode)")
@@ -66,7 +66,7 @@ func addFrequency(type: FrequencyUpdateType, DBKey: Int) {
     
     var request = URLRequest(url: url)
     request.httpMethod = "PUT"
-
+    
     URLSession.shared.dataTask(with: request) { (data, response, error) in
         if let httpResponse = response as? HTTPURLResponse {
             print("Response Status Code: \(httpResponse.statusCode)")

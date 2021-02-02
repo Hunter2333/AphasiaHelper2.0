@@ -312,7 +312,7 @@ struct MainView: View {
                                 HStack {
                                     ForEach(categories, id: \.id) { category in
                                         Button(action: {
-                                        updateCategoryBtnViews(selectedCategoryDBKey: category.DBKey)
+                                            updateCategoryBtnViews(selectedCategoryDBKey: category.DBKey)
                                         }){
                                             Text("\(category.name)")
                                                 .font(.caption2)
@@ -472,7 +472,7 @@ struct MainView: View {
                                                     .padding(10)
                                                     .font(.caption)
                                                     .foregroundColor(Color.white.opacity(0.25))
-                                                    
+                                                
                                             }
                                             TextField("", text: $name)
                                                 .padding(10)
@@ -593,7 +593,7 @@ struct MainView: View {
                                             .foregroundColor(Color.white)
                                             .padding(.bottom, 80)
                                     }
-
+                                    
                                     Button(action: {
                                         switch selectedTab {
                                         case TabsInAdd.AddNewWord:
@@ -801,7 +801,7 @@ struct MainView: View {
                     }
                     break
                 }
-
+                
             }
         case .Object:
             // 宾语常用词和二级宾语 isSelected 联动
