@@ -54,6 +54,12 @@ struct MainView: View {
     }
     
     
+    // 拍照识别相关
+    @State var showCameraView: Bool = false
+    @State var showImagePicker: Bool = false
+    @State var image: UIImage?
+    
+    
     var body: some View {
         GeometryReader { geo in
             
@@ -80,8 +86,7 @@ struct MainView: View {
                                 .padding(.leading, 8)
                                 
                                 Button(action: {
-                                    // 语音识别
-                                    //................
+                                    // TODO: 语音识别
                                 }){
                                     Image(systemName: "mic.fill").font(.system(size: 18, weight: .regular))
                                 }
@@ -92,14 +97,19 @@ struct MainView: View {
                                 
                                 Button(action: {
                                     // 拍照识别
-                                    //................
+                                    withAnimation {
+                                        showCameraView = true
+                                        showImagePicker = true
+                                        showAddView = false
+                                        // TODO: 语音
+                                    }
                                 }){
                                     Image(systemName: "camera.fill").font(.system(size: 18, weight: .regular))
                                 }
-                                .foregroundColor(Color.secondary)
-                                // TODO: 选中改为黑色
+                                .foregroundColor(showCameraView ? Color(red: 26/255, green: 26/255, blue: 55/255) : Color.secondary)
                                 .padding(10)
                                 .padding(.trailing, 20)
+                                .disabled(showCameraView)
                             }
                             .frame(height: geo.size.height / 10 - 40)
                             .background(Color(red: 245/255, green: 246/255, blue: 251/255))
@@ -151,7 +161,10 @@ struct MainView: View {
                         Button(action: {
                             // 添加词语 & 待办事项
                             withAnimation {
+                                showCameraView = false
+                                showImagePicker = false
                                 showAddView = true
+                                // TODO: 语音
                             }
                         }){
                             Image(systemName: "plus").font(.system(size: 36, weight: .regular))
@@ -169,167 +182,33 @@ struct MainView: View {
                     Spacer()
                     
                     
-                    // 主语
-                    HStack {
-                        
-                        HStack {
-                            Text("主语")
-                                .font(.headline)
-                                .bold()
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 16)
-                                .foregroundColor(Color.white)
-                                .background(Color.black)
-                                .cornerRadius(15)
-                                .padding(.leading, 10)
-                                .padding(.top, 10)
-                        }
-                        .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
-                        
-                        ScrollView(.horizontal, showsIndicators: true) {
-                            LazyHStack {
-                                ForEach(subjects, id: \.id) { word in
-                                    Button(action: {
-                                        read(text: "\(word.name)")
-                                        addWord(type: word.type, DBKey: word.DBKey)
-                                    }){
-                                        VStack {
-                                            UrlImageView(urlString: word.urlToImage)
-                                            Text("\(word.name)")
-                                                .foregroundColor(Color.black)
-                                                .font(.caption)
-                                                .bold()
-                                        }
-                                        .frame(width: 60, height: 90)
-                                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
-                                        .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
-                                    }
-                                    .padding(10)
-                                    .onAppear { subjects.loadMoreWords(currentItem: word) }
-                                }
-                            }
-                        }
-                    }
-                    .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
-                    .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                    .cornerRadius(20)
-                    
-                    
-                    Spacer()
-                    
-                    
-                    // 谓语
-                    HStack {
-                        
-                        HStack {
-                            Text("谓语")
-                                .font(.headline)
-                                .bold()
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 16)
-                                .foregroundColor(Color.white)
-                                .background(Color.black)
-                                .cornerRadius(15)
-                                .padding(.leading, 10)
-                                .padding(.top, 10)
-                        }
-                        .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
-                        
-                        ScrollView(.horizontal, showsIndicators: true) {
-                            LazyHStack {
-                                ForEach(predicates, id: \.id) { word in
-                                    Button(action: {
-                                        read(text: "\(word.name)")
-                                        addWord(type: word.type, DBKey: word.DBKey)
-                                    }){
-                                        VStack {
-                                            UrlImageView(urlString: word.urlToImage)
-                                            Text("\(word.name)")
-                                                .foregroundColor(Color.black)
-                                                .font(.caption)
-                                                .bold()
-                                        }
-                                        .frame(width: 60, height: 90)
-                                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
-                                        .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
-                                    }
-                                    .padding(10)
-                                    .onAppear { predicates.loadMoreWords(currentItem: word) }
-                                }
-                            }
-                        }
-                    }
-                    .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
-                    .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                    .cornerRadius(20)
-                    
-                    
-                    Spacer()
-                    
-                    
-                    // 宾语
-                    HStack {
-                        
-                        HStack {
-                            Text("宾语")
-                                .font(.headline)
-                                .bold()
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 16)
-                                .foregroundColor(Color.white)
-                                .background(Color.black)
-                                .cornerRadius(15)
-                                .padding(.leading, 10)
-                                .padding(.top, 10)
-                        }
-                        .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 * 2 - 20, alignment: .topLeading)
-                        
-                        VStack {
-                            ScrollView(.horizontal, showsIndicators: true) {
-                                LazyHStack {
-                                    ForEach(frequentObjects, id: \.id) { word in
-                                        Button(action: {
-                                            read(text: "\(word.name)")
-                                            addWord(type: word.type, DBKey: word.DBKey)
-                                        }){
-                                            VStack {
-                                                UrlImageView(urlString: word.urlToImage)
-                                                Text("\(word.name)")
-                                                    .foregroundColor(Color.black)
-                                                    .font(.caption)
-                                                    .bold()
-                                            }
-                                            .frame(width: 60, height: 90)
-                                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
-                                            .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
-                                        }
-                                        .padding(10)
-                                        .onAppear { frequentObjects.loadMoreWords(currentItem: word) }
-                                    }
-                                }
-                            }.padding(.top, 15)
-                            ScrollView(.horizontal, showsIndicators: true) {
+                    VStack {
+                        if showCameraView && !showImagePicker {
+                            // TODO: 拍照识别结果
+                            Image(uiImage: image ?? UIImage(named: "placeholder")!)
+                                .resizable()
+                                .frame(width: geo.size.width, height: geo.size.width / 10 * 9 - 10)
+                        } else {
+                            // 主语
+                            HStack {
+                                
                                 HStack {
-                                    ForEach(categories, id: \.id) { category in
-                                        Button(action: {
-                                            updateCategoryBtnViews(selectedCategoryDBKey: category.DBKey)
-                                        }){
-                                            Text("\(category.name)")
-                                                .font(.caption2)
-                                                .padding(.horizontal, 18)
-                                                .padding(.vertical, 4)
-                                                .foregroundColor(category.isSelected ? Color.white : Color.black)
-                                                .background(category.isSelected ? Color.black : Color(red: 233/255, green: 238/255, blue: 251/255))
-                                                .cornerRadius(5)
-                                        }.padding(5)
-                                    }
+                                    Text("主语")
+                                        .font(.headline)
+                                        .bold()
+                                        .padding(.vertical, 6)
+                                        .padding(.horizontal, 16)
+                                        .foregroundColor(Color.white)
+                                        .background(Color.black)
+                                        .cornerRadius(15)
+                                        .padding(.leading, 10)
+                                        .padding(.top, 10)
                                 }
-                            }
-                            // 确保加载完categories再加载Lv2ObjectsView
-                            if categories.doneLoading {
+                                .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
+                                
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     LazyHStack {
-                                        ForEach(lv2Objects, id: \.id) { word in
+                                        ForEach(subjects, id: \.id) { word in
                                             Button(action: {
                                                 read(text: "\(word.name)")
                                                 addWord(type: word.type, DBKey: word.DBKey)
@@ -346,54 +225,197 @@ struct MainView: View {
                                                 .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
                                             }
                                             .padding(10)
-                                            .onAppear { lv2Objects.loadMoreWords(currentItem: word) }
+                                            .onAppear { subjects.loadMoreWords(currentItem: word) }
                                         }
                                     }
-                                    Spacer()
-                                }
-                            } else {
-                                Spacer()
-                            }
-                        }
-                        .frame(alignment: .topLeading)
-                    }
-                    .frame(width: geo.size.width - 30, height: geo.size.height / 5 * 2 - 20)
-                    .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                    .cornerRadius(20)
-                    
-                    
-                    Spacer()
-                    
-                    
-                    // 常用短语
-                    HStack {
-                        
-                        HStack {
-                            Text("常用短语")
-                                .font(.headline)
-                                .bold()
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 16)
-                                .foregroundColor(Color.white)
-                                .background(Color.black)
-                                .cornerRadius(15)
-                                .padding(.leading, 10)
-                                .padding(.top, 10)
-                        }
-                        .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 10, alignment: .topLeading)
-                        
-                        ScrollView(.horizontal, showsIndicators: true) {
-                            LazyHStack {
-                                ForEach(phrases, id: \.id) { phrase in
-                                    PhraseBtnView(phrase: phrase).padding(.trailing, 10).onAppear { phrases.loadMorePhrases(currentItem: phrase) }
                                 }
                             }
+                            .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
+                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                            .cornerRadius(20)
+                            
+                            
+                            Spacer()
+                            
+                            
+                            // 谓语
+                            HStack {
+                                
+                                HStack {
+                                    Text("谓语")
+                                        .font(.headline)
+                                        .bold()
+                                        .padding(.vertical, 6)
+                                        .padding(.horizontal, 16)
+                                        .foregroundColor(Color.white)
+                                        .background(Color.black)
+                                        .cornerRadius(15)
+                                        .padding(.leading, 10)
+                                        .padding(.top, 10)
+                                }
+                                .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
+                                
+                                ScrollView(.horizontal, showsIndicators: true) {
+                                    LazyHStack {
+                                        ForEach(predicates, id: \.id) { word in
+                                            Button(action: {
+                                                read(text: "\(word.name)")
+                                                addWord(type: word.type, DBKey: word.DBKey)
+                                            }){
+                                                VStack {
+                                                    UrlImageView(urlString: word.urlToImage)
+                                                    Text("\(word.name)")
+                                                        .foregroundColor(Color.black)
+                                                        .font(.caption)
+                                                        .bold()
+                                                }
+                                                .frame(width: 60, height: 90)
+                                                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                                .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
+                                            }
+                                            .padding(10)
+                                            .onAppear { predicates.loadMoreWords(currentItem: word) }
+                                        }
+                                    }
+                                }
+                            }
+                            .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
+                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                            .cornerRadius(20)
+                            
+                            
+                            Spacer()
+                            
+                            
+                            // 宾语
+                            HStack {
+                                
+                                HStack {
+                                    Text("宾语")
+                                        .font(.headline)
+                                        .bold()
+                                        .padding(.vertical, 6)
+                                        .padding(.horizontal, 16)
+                                        .foregroundColor(Color.white)
+                                        .background(Color.black)
+                                        .cornerRadius(15)
+                                        .padding(.leading, 10)
+                                        .padding(.top, 10)
+                                }
+                                .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 * 2 - 20, alignment: .topLeading)
+                                
+                                VStack {
+                                    ScrollView(.horizontal, showsIndicators: true) {
+                                        LazyHStack {
+                                            ForEach(frequentObjects, id: \.id) { word in
+                                                Button(action: {
+                                                    read(text: "\(word.name)")
+                                                    addWord(type: word.type, DBKey: word.DBKey)
+                                                }){
+                                                    VStack {
+                                                        UrlImageView(urlString: word.urlToImage)
+                                                        Text("\(word.name)")
+                                                            .foregroundColor(Color.black)
+                                                            .font(.caption)
+                                                            .bold()
+                                                    }
+                                                    .frame(width: 60, height: 90)
+                                                    .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                                    .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
+                                                }
+                                                .padding(10)
+                                                .onAppear { frequentObjects.loadMoreWords(currentItem: word) }
+                                            }
+                                        }
+                                    }.padding(.top, 15)
+                                    ScrollView(.horizontal, showsIndicators: true) {
+                                        HStack {
+                                            ForEach(categories, id: \.id) { category in
+                                                Button(action: {
+                                                    updateCategoryBtnViews(selectedCategoryDBKey: category.DBKey)
+                                                }){
+                                                    Text("\(category.name)")
+                                                        .font(.caption2)
+                                                        .padding(.horizontal, 18)
+                                                        .padding(.vertical, 4)
+                                                        .foregroundColor(category.isSelected ? Color.white : Color.black)
+                                                        .background(category.isSelected ? Color.black : Color(red: 233/255, green: 238/255, blue: 251/255))
+                                                        .cornerRadius(5)
+                                                }.padding(5)
+                                            }
+                                        }
+                                    }
+                                    // 确保加载完categories再加载Lv2ObjectsView
+                                    if categories.doneLoading {
+                                        ScrollView(.horizontal, showsIndicators: true) {
+                                            LazyHStack {
+                                                ForEach(lv2Objects, id: \.id) { word in
+                                                    Button(action: {
+                                                        read(text: "\(word.name)")
+                                                        addWord(type: word.type, DBKey: word.DBKey)
+                                                    }){
+                                                        VStack {
+                                                            UrlImageView(urlString: word.urlToImage)
+                                                            Text("\(word.name)")
+                                                                .foregroundColor(Color.black)
+                                                                .font(.caption)
+                                                                .bold()
+                                                        }
+                                                        .frame(width: 60, height: 90)
+                                                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                                        .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
+                                                    }
+                                                    .padding(10)
+                                                    .onAppear { lv2Objects.loadMoreWords(currentItem: word) }
+                                                }
+                                            }
+                                            Spacer()
+                                        }
+                                    } else {
+                                        Spacer()
+                                    }
+                                }
+                                .frame(alignment: .topLeading)
+                            }
+                            .frame(width: geo.size.width - 30, height: geo.size.height / 5 * 2 - 20)
+                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                            .cornerRadius(20)
+                            
+                            
+                            Spacer()
+                            
+                            
+                            // 常用短语
+                            HStack {
+                                
+                                HStack {
+                                    Text("常用短语")
+                                        .font(.headline)
+                                        .bold()
+                                        .padding(.vertical, 6)
+                                        .padding(.horizontal, 16)
+                                        .foregroundColor(Color.white)
+                                        .background(Color.black)
+                                        .cornerRadius(15)
+                                        .padding(.leading, 10)
+                                        .padding(.top, 10)
+                                }
+                                .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 10, alignment: .topLeading)
+                                
+                                ScrollView(.horizontal, showsIndicators: true) {
+                                    LazyHStack {
+                                        ForEach(phrases, id: \.id) { phrase in
+                                            PhraseBtnView(phrase: phrase).padding(.trailing, 10).onAppear { phrases.loadMorePhrases(currentItem: phrase) }
+                                        }
+                                    }
+                                }
+                            }
+                            .frame(width: geo.size.width - 30, height: geo.size.height / 10)
+                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                            .cornerRadius(20)
+                            .padding(.bottom, 20)
                         }
                     }
-                    .frame(width: geo.size.width - 30, height: geo.size.height / 10)
-                    .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                    .cornerRadius(20)
-                    .padding(.bottom, 20)
                 }
                 
                 if showAddView {
@@ -647,6 +669,9 @@ struct MainView: View {
                         Spacer()
                     }
                 }
+            }.fullScreenCover(isPresented: $showImagePicker) {
+                // 调用摄像头拍照
+                ImagePicker(image: self.$image, isShown: self.$showImagePicker, sourceType: .camera)
             }
         }
     }

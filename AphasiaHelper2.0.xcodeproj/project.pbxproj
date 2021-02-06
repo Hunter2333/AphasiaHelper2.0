@@ -12,6 +12,7 @@
 		F4457241257DDB9A00E4A509 /* functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4457240257DDB9A00E4A509 /* functions.swift */; };
 		F45080CC25885718007892E3 /* DataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45080CB25885718007892E3 /* DataModels.swift */; };
 		F4831E9A2586EE39008D04C4 /* ComponentWordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4831E992586EE39008D04C4 /* ComponentWordView.swift */; };
+		F4B901A225CE58A70096D594 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B901A125CE58A70096D594 /* ImagePicker.swift */; };
 		F4C5AEA3257CDF48008C2D4A /* AphasiaHelper2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C5AEA2257CDF48008C2D4A /* AphasiaHelper2_0App.swift */; };
 		F4C5AEA7257CDF49008C2D4A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4C5AEA6257CDF49008C2D4A /* Assets.xcassets */; };
 		F4C5AEAA257CDF49008C2D4A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4C5AEA9257CDF49008C2D4A /* Preview Assets.xcassets */; };
@@ -25,6 +26,7 @@
 		F4457240257DDB9A00E4A509 /* functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = functions.swift; sourceTree = "<group>"; };
 		F45080CB25885718007892E3 /* DataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModels.swift; sourceTree = "<group>"; };
 		F4831E992586EE39008D04C4 /* ComponentWordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentWordView.swift; sourceTree = "<group>"; };
+		F4B901A125CE58A70096D594 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		F4C5AE9F257CDF48008C2D4A /* AphasiaHelper2.0.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AphasiaHelper2.0.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4C5AEA2257CDF48008C2D4A /* AphasiaHelper2_0App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AphasiaHelper2_0App.swift; sourceTree = "<group>"; };
 		F4C5AEA6257CDF49008C2D4A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 				F4C5AEA8257CDF49008C2D4A /* Preview Content */,
 				F45080CB25885718007892E3 /* DataModels.swift */,
 				F4457240257DDB9A00E4A509 /* functions.swift */,
+				F4B901A125CE58A70096D594 /* ImagePicker.swift */,
 				F430283B25B4816300D5A5FE /* UrlImageView.swift */,
 				F4F7C1E625863F4E002D9330 /* PhraseBtnView.swift */,
 				F4831E992586EE39008D04C4 /* ComponentWordView.swift */,
@@ -170,6 +173,7 @@
 				F430283C25B4816300D5A5FE /* UrlImageView.swift in Sources */,
 				F4C5AEA3257CDF48008C2D4A /* AphasiaHelper2_0App.swift in Sources */,
 				F4831E9A2586EE39008D04C4 /* ComponentWordView.swift in Sources */,
+				F4B901A225CE58A70096D594 /* ImagePicker.swift in Sources */,
 				F45080CC25885718007892E3 /* DataModels.swift in Sources */,
 				F4457241257DDB9A00E4A509 /* functions.swift in Sources */,
 			);
