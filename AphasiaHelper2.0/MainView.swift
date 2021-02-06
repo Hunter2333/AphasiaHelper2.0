@@ -97,12 +97,10 @@ struct MainView: View {
                                 
                                 Button(action: {
                                     // 拍照识别
-                                    withAnimation {
-                                        showCameraView = true
-                                        showImagePicker = true
-                                        showAddView = false
-                                        // TODO: 语音
-                                    }
+                                    showCameraView = true
+                                    showImagePicker = true
+                                    showAddView = false
+                                    // TODO: 语音
                                 }){
                                     Image(systemName: "camera.fill").font(.system(size: 18, weight: .regular))
                                 }
@@ -183,11 +181,69 @@ struct MainView: View {
                     
                     
                     VStack {
-                        if showCameraView && !showImagePicker {
+                        if showCameraView && !showImagePicker && (image != nil) {
                             // TODO: 拍照识别结果
-                            Image(uiImage: image ?? UIImage(named: "placeholder")!)
-                                .resizable()
-                                .frame(width: geo.size.width, height: geo.size.width / 10 * 9 - 10)
+                            HStack {
+                                VStack(spacing: 0) {
+                                    Text("识别结果1")
+                                        .font(.title)
+                                        .bold()
+                                    Text("识别结果2")
+                                        .font(.title)
+                                        .bold()
+                                        .padding(.bottom, 16)
+                                    HStack {
+                                        Button(action: {
+                                            let imageSaver = ImageSaver()
+                                            imageSaver.writeToPhotoAlbum(image: image!)
+                                            // TODO: 保存成功提示
+                                        }) {
+                                            Text("保存照片")
+                                                .font(.footnote)
+                                                .bold()
+                                                .padding(.vertical, 8)
+                                                .padding(.horizontal, 12)
+                                                .foregroundColor(Color.white)
+                                                .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 41/255, green: 118/255, blue: 224/255)))
+                                        }
+                                        Button(action: {
+                                            showImagePicker = true
+                                        }) {
+                                            Text("重新取词")
+                                                .font(.footnote)
+                                                .bold()
+                                                .padding(.vertical, 8)
+                                                .padding(.horizontal, 12)
+                                                .foregroundColor(Color.white)
+                                                .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 41/255, green: 118/255, blue: 224/255)))
+                                                .padding(.leading, 6)
+                                        }
+                                    }.padding(.bottom, 10)
+                                    Button(action: {
+                                        showCameraView = false
+                                        showImagePicker = false
+                                    }) {
+                                        Text("退出相机")
+                                            .font(.footnote)
+                                            .bold()
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 58)
+                                            .foregroundColor(Color.red)
+                                            .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 245/255, green: 246/255, blue: 251/255)))
+                                    }
+                                }
+                                .frame(width: geo.size.width / 5 + 22, height: geo.size.height / 10 * 9 - 40)
+                                .background(Color(red: 233/255, green: 238/255, blue:  251/255))
+                                .cornerRadius(20)
+                                .padding(.leading, 30)
+                                .padding(.bottom, 30)
+                                Spacer()
+                                // TODO: image -> 画了框的Image
+                                Image(uiImage: image ?? UIImage(named: "PlaceHolder")!)
+                                    .resizable()
+                                    .frame(width: geo.size.width / 5 * 4 - 32, height: geo.size.height / 10 * 9 - 40)
+                                    .padding(.bottom, 30)
+                            }
                         } else {
                             // 主语
                             HStack {
@@ -671,7 +727,7 @@ struct MainView: View {
                 }
             }.fullScreenCover(isPresented: $showImagePicker) {
                 // 调用摄像头拍照
-                ImagePicker(image: self.$image, isShown: self.$showImagePicker, sourceType: .camera)
+                ImagePicker(image: self.$image, isShown: self.$showImagePicker, isShowCameraView: self.$showCameraView, sourceType: .camera)
             }
         }
     }

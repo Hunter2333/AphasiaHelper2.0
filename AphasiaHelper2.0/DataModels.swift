@@ -450,6 +450,18 @@ extension ImageCache {
 
 
 
+// 保存摄像机刚拍摄的照片到本地相册
+class ImageSaver: NSObject {
+    func writeToPhotoAlbum(image: UIImage) {
+        UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveError), nil)
+    }
+    @objc func saveError(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        print("Photo save finished!")
+    }
+}
+
+
+
 
 
 // -------------------基础数据类型-------------------
@@ -519,4 +531,10 @@ struct CategoryList: Codable {
 struct PhraseList: Codable {
     var total: Int
     var list: [Phrase]
+}
+
+struct PredictResponse: Codable {
+    var isSuccess: Bool
+    // TODO
+    //var rel:
 }
