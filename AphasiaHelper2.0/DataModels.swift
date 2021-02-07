@@ -461,6 +461,22 @@ class ImageSaver: NSObject {
     }
 }
 
+// TODO: 获取图片目标检测的结果
+class ImageObjectDetection {
+    var image: UIImage?
+    var url: String = "http://47.102.158.185:8899/alg/predict"
+    var predictObjects = [PredictObject]()
+    
+    init(image: UIImage?) {
+        self.image = image
+        getPredictResult()
+    }
+    
+    func getPredictResult() {
+        
+    }
+}
+
 
 
 
@@ -536,6 +552,13 @@ struct PhraseList: Codable {
 
 struct PredictResponse: Codable {
     var isSuccess: Bool
-    // TODO
-    //var rel:
+    var rel: [PredictObject]
+}
+
+struct PredictObject: Codable {
+    var name: String
+    var x1: Int
+    var y1: Int
+    var x2: Int
+    var y2: Int
 }
