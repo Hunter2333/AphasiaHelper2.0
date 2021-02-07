@@ -58,6 +58,8 @@ struct MainView: View {
     @State var showCameraView: Bool = false
     @State var showImagePicker: Bool = false
     @State var image: UIImage?
+    @State var showImageSaveToLocalResult: Bool = false
+    
     
     
     var body: some View {
@@ -196,7 +198,8 @@ struct MainView: View {
                                         Button(action: {
                                             let imageSaver = ImageSaver()
                                             imageSaver.writeToPhotoAlbum(image: image!)
-                                            // TODO: 保存成功提示
+                                            // 提示图片保存成功
+                                            showImageSaveToLocalResult = true
                                         }) {
                                             Text("保存照片")
                                                 .font(.footnote)
@@ -205,6 +208,7 @@ struct MainView: View {
                                                 .padding(.horizontal, 12)
                                                 .foregroundColor(Color.white)
                                                 .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 41/255, green: 118/255, blue: 224/255)))
+                                        }.alert(isPresented: $showImageSaveToLocalResult) { () -> Alert in Alert(title: Text("✅图片保存成功"), message: Text("图片已成功保存至本地相册"), dismissButton: .default(Text("确定")))
                                         }
                                         Button(action: {
                                             showImagePicker = true

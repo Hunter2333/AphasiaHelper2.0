@@ -452,6 +452,7 @@ extension ImageCache {
 
 // 保存摄像机刚拍摄的照片到本地相册
 class ImageSaver: NSObject {
+    
     func writeToPhotoAlbum(image: UIImage) {
         UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveError), nil)
     }
