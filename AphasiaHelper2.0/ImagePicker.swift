@@ -23,9 +23,31 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let uiImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            image = uiImage
+            //image = uiImage
+            image = UIImage(named: "catdog")
             isShown = false
             isShowCameraView = true
+            let imageObjectDetector = ImageObjectDetector(image: self.image)
+            // TODO 1
+//            {
+//                "isSuccess": true,
+//                "rel": [
+//                    {
+//                        "name": "狗",
+//                        "x1": 204,
+//                        "y1": 44,
+//                        "x2": 450,
+//                        "y2": 452
+//                    },
+//                    {
+//                        "name": "猫",
+//                        "x1": 38,
+//                        "y1": 121,
+//                        "x2": 290,
+//                        "y2": 400
+//                    }
+//                ]
+//            }
         }
         
     }

@@ -462,7 +462,7 @@ class ImageSaver: NSObject {
 }
 
 // TODO: 获取图片目标检测的结果
-class ImageObjectDetection {
+class ImageObjectDetector {
     var image: UIImage?
     var url: String = "http://47.102.158.185:8899/alg/predict"
     var predictObjects = [PredictObject]()
@@ -473,7 +473,57 @@ class ImageObjectDetection {
     }
     
     func getPredictResult() {
+        guard let endpoint = URL(string: url) else {
+            print("Error creating endpoint")
+            return
+        }
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
         
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        let mimeType = "image/jpg" // TODO........
+        
+        let body = NSMutableData()
+        let imageData = image!.jpegData(compressionQuality: 1.0)! // TODO.........
+        let filename = "imageForObjectDetection.jpg" // TODO.........
+        
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"pic\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+        body.append(imageData) // TODO.........
+        body.append("\r\n".data(using: .utf8)!)
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        request.httpBody = body as Data
+        
+        let task = URLSession.shared.dataTask(with: request, completionHandler: parseObjectsFromResponse(data:response:error:))
+        task.resume()
+    }
+    
+    func parseObjectsFromResponse(data: Data?, response: URLResponse?, error: Error?) {
+        guard error == nil else {
+            print("Error: \(error!)")
+            return
+        }
+        guard let data = data else {
+            print("No data found")
+            return
+        }
+        
+        let dataString = String(data: data, encoding: .utf8)
+        print("——————TODO: 拍照识别结果——————")
+        print(dataString!)
+            // TODO 2
+//            {"isSuccess":true,"rel":[{"name":"狗","x1":47,"y1":71,"x2":456,"y2":428},{"name":"猫","x1":55,"y1":117,"x2":374,"y2":428}]}
+        
+        if let decodedResponse = try? JSONDecoder().decode(PredictResponse.self, from: data) {
+            DispatchQueue.main.async {
+                self.predictObjects = decodedResponse.rel
+            }
+        } else {
+            print(error ?? "")
+        }
     }
 }
 
