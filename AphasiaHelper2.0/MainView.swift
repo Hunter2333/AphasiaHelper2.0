@@ -187,13 +187,34 @@ struct MainView: View {
                             // TODO: 拍照识别结果
                             HStack {
                                 VStack(spacing: 0) {
-                                    Text("识别结果1")
-                                        .font(.title)
-                                        .bold()
-                                    Text("识别结果2")
-                                        .font(.title)
-                                        .bold()
-                                        .padding(.bottom, 16)
+                                    ScrollView(.vertical, showsIndicators: true) {
+                                        VStack(spacing: 15) {
+                                            HStack {
+                                                Image(uiImage: UIImage(named: "PlaceHolder")!)
+                                                    .resizable()
+                                                    .frame(width: 60, height: 90)
+                                                    .cornerRadius(10)
+                                                    .padding(10)
+                                                Button(action: {
+                                                    read(text: "识别结果")
+                                                    addWord(type: WordType.Subject, DBKey: -1)
+                                                }){
+                                                    VStack {
+                                                        UrlImageView(urlString: "")
+                                                        Text("识别结果")
+                                                            .foregroundColor(Color.black)
+                                                            .font(.caption)
+                                                            .bold()
+                                                    }
+                                                    .frame(width: 60, height: 90)
+                                                    .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                                }.padding(10)
+                                            }
+                                            .padding(10)
+                                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                                            .cornerRadius(20)
+                                        }
+                                    }.padding(.top, 36).padding(.bottom, 28)
                                     HStack {
                                         Button(action: {
                                             let imageSaver = ImageSaver()
@@ -204,8 +225,8 @@ struct MainView: View {
                                             Text("保存照片")
                                                 .font(.footnote)
                                                 .bold()
-                                                .padding(.vertical, 8)
-                                                .padding(.horizontal, 12)
+                                                .padding(.vertical, 12)
+                                                .padding(.horizontal, 16)
                                                 .foregroundColor(Color.white)
                                                 .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 41/255, green: 118/255, blue: 224/255)))
                                         }.alert(isPresented: $showImageSaveToLocalResult) { () -> Alert in Alert(title: Text("✅图片保存成功"), message: Text("图片已成功保存至本地相册"), dismissButton: .default(Text("确定")))
@@ -216,13 +237,13 @@ struct MainView: View {
                                             Text("重新取词")
                                                 .font(.footnote)
                                                 .bold()
-                                                .padding(.vertical, 8)
-                                                .padding(.horizontal, 12)
+                                                .padding(.vertical, 12)
+                                                .padding(.horizontal, 16)
                                                 .foregroundColor(Color.white)
                                                 .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 41/255, green: 118/255, blue: 224/255)))
-                                                .padding(.leading, 6)
+                                                .padding(.leading, 10)
                                         }
-                                    }.padding(.bottom, 10)
+                                    }.padding(.bottom, 15)
                                     Button(action: {
                                         showCameraView = false
                                         showImagePicker = false
@@ -230,11 +251,11 @@ struct MainView: View {
                                         Text("退出相机")
                                             .font(.footnote)
                                             .bold()
-                                            .padding(.vertical, 8)
-                                            .padding(.horizontal, 58)
+                                            .padding(.vertical, 12)
+                                            .padding(.horizontal, 68)
                                             .foregroundColor(Color.red)
                                             .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 245/255, green: 246/255, blue: 251/255)))
-                                    }
+                                    }.padding(.bottom, 36)
                                 }
                                 .frame(width: geo.size.width / 5 + 22, height: geo.size.height / 10 * 9 - 40)
                                 .background(Color(red: 233/255, green: 238/255, blue:  251/255))
