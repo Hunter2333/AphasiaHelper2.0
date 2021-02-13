@@ -469,7 +469,41 @@ class ImageObjectDetector {
     
     init(image: UIImage?) {
         self.image = image
-        getPredictResult()
+        // getPredictResult()
+        self.predictObjects = [PredictObject(name: "狗", x1: 47, y1: 71, x2: 456, y2: 428), PredictObject(name: "猫", x1: 55, y1: 117, x2: 374, y2: 428)]
+    }
+    
+    // TODO 3
+    func drawRectanglesOnImage() -> UIImage {
+        // Create a context of the starting image size and set it as the current one
+        UIGraphicsBeginImageContext(image!.size)
+        
+        // Draw the starting image in the current context as background
+        image!.draw(at: CGPoint.zero)
+        
+        // Get the current context
+        let context = UIGraphicsGetCurrentContext()!
+        
+        // Draw a red line
+        context.setLineWidth(2.0)
+        context.setStrokeColor(UIColor.yellow.cgColor)
+        context.move(to: CGPoint(x: 100, y: 100))
+        context.addLine(to: CGPoint(x: 200, y: 200))
+        context.strokePath()
+        
+        // Draw a transparent green Circle
+        context.setStrokeColor(UIColor.green.cgColor)
+        context.setAlpha(0.5)
+        context.setLineWidth(10.0)
+        context.addEllipse(in: CGRect(x: 100, y: 100, width: 100, height: 100))
+        context.drawPath(using: .stroke) // or .fillStroke if need filling
+        
+        // Save the context as a new UIImage
+        let myImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        // Return modified image
+        return myImage!
     }
     
     func getPredictResult() {
@@ -514,8 +548,8 @@ class ImageObjectDetector {
         let dataString = String(data: data, encoding: .utf8)
         print("——————TODO: 拍照识别结果——————")
         print(dataString!)
-            // TODO 2
-//            {"isSuccess":true,"rel":[{"name":"狗","x1":47,"y1":71,"x2":456,"y2":428},{"name":"猫","x1":55,"y1":117,"x2":374,"y2":428}]}
+        // TODO 2
+        //            {"isSuccess":true,"rel":[{"name":"狗","x1":47,"y1":71,"x2":456,"y2":428},{"name":"猫","x1":55,"y1":117,"x2":374,"y2":428}]}
         
         if let decodedResponse = try? JSONDecoder().decode(PredictResponse.self, from: data) {
             DispatchQueue.main.async {

@@ -24,10 +24,10 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
         
         if let uiImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             //image = uiImage
-            image = UIImage(named: "catdog")
+            let imageObjectDetector = ImageObjectDetector(image: UIImage(named: "catdog"))
+            image = imageObjectDetector.drawRectanglesOnImage()
             isShown = false
             isShowCameraView = true
-            let imageObjectDetector = ImageObjectDetector(image: self.image)
             // TODO 1
 //            {
 //                "isSuccess": true,

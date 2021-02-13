@@ -242,9 +242,10 @@ struct MainView: View {
                                 .padding(.leading, 30)
                                 .padding(.bottom, 30)
                                 Spacer()
-                                // TODO: image -> 画了框的Image
+                                // TODO: image -> 画出了识别框的Image
                                 Image(uiImage: image ?? UIImage(named: "PlaceHolder")!)
                                     .resizable()
+                                    .scaledToFit()
                                     .frame(width: geo.size.width / 5 * 4 - 32, height: geo.size.height / 10 * 9 - 40)
                                     .padding(.bottom, 30)
                             }
