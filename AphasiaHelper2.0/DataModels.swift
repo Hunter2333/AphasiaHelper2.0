@@ -488,6 +488,7 @@ class ImageObjectDetector {
         let context = UIGraphicsGetCurrentContext()!
         // Draw rectangles
         context.setLineWidth(3.0)
+        // WARNING: 须确保 predictObjects.count > 0 !!!!
         for i in 0...(predictObjects.count - 1) {
             // 正常坐标系转图片坐标系
             // 图片坐标系: x轴向右越来越大, y轴向下越来越大
