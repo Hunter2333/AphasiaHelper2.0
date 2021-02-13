@@ -470,40 +470,45 @@ class ImageObjectDetector {
     init(image: UIImage?) {
         self.image = image
         // getPredictResult()
+        // 正常坐标系: x轴向右越来越大, y轴向上越来越大
         self.predictObjects = [PredictObject(name: "狗", x1: 47, y1: 71, x2: 456, y2: 428), PredictObject(name: "猫", x1: 55, y1: 117, x2: 374, y2: 428)]
     }
     
-    // TODO 3
     func drawRectanglesOnImage() -> UIImage {
+        
+        // 随机选取方框颜色 (识别出多少个物体就有多少个方框)
+        let colors = [UIColor.red.cgColor, UIColor.green.cgColor, UIColor.orange.cgColor, UIColor.blue.cgColor, UIColor.yellow.cgColor, UIColor.purple.cgColor]
+        let getRandom = randomSequenceGenerator(start: 0, end: colors.count - 1)
+        
         // Create a context of the starting image size and set it as the current one
         UIGraphicsBeginImageContext(image!.size)
-        
         // Draw the starting image in the current context as background
         image!.draw(at: CGPoint.zero)
-        
         // Get the current context
         let context = UIGraphicsGetCurrentContext()!
-        
-        // Draw a red line
-        context.setLineWidth(2.0)
-        context.setStrokeColor(UIColor.yellow.cgColor)
-        context.move(to: CGPoint(x: 100, y: 100))
-        context.addLine(to: CGPoint(x: 200, y: 200))
-        context.strokePath()
-        
-        // Draw a transparent green Circle
-        context.setStrokeColor(UIColor.green.cgColor)
-        context.setAlpha(0.5)
-        context.setLineWidth(10.0)
-        context.addEllipse(in: CGRect(x: 100, y: 100, width: 100, height: 100))
-        context.drawPath(using: .stroke) // or .fillStroke if need filling
+        // Draw rectangles
+        context.setLineWidth(3.0)
+        for i in 0...(predictObjects.count - 1) {
+            // 正常坐标系转图片坐标系
+            // 图片坐标系: x轴向右越来越大, y轴向下越来越大
+            let new_y1 = Int(image!.size.height) - predictObjects[i].y1
+            let new_y2 = Int(image!.size.height) - predictObjects[i].y2
+            context.setStrokeColor(colors[getRandom()])
+            context.move(to: CGPoint(x: predictObjects[i].x1, y: new_y1))
+            context.addLine(to: CGPoint(x: predictObjects[i].x2, y: new_y1))
+            context.addLine(to: CGPoint(x: predictObjects[i].x2, y: new_y2))
+            context.addLine(to: CGPoint(x: predictObjects[i].x1, y: new_y2))
+            context.addLine(to: CGPoint(x: predictObjects[i].x1, y: new_y1))
+            context.addLine(to: CGPoint(x: predictObjects[i].x2, y: new_y1))
+            context.strokePath()
+        }
         
         // Save the context as a new UIImage
-        let myImage = UIGraphicsGetImageFromCurrentImageContext()
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
         // Return modified image
-        return myImage!
+        return newImage!
     }
     
     func getPredictResult() {
@@ -557,6 +562,22 @@ class ImageObjectDetector {
             }
         } else {
             print(error ?? "")
+        }
+    }
+}
+extension ImageObjectDetector {
+    
+    //随机数生成器函数
+    func randomSequenceGenerator(start: Int, end: Int) -> () ->Int {
+        //根据参数初始化可选值数组
+        var numbers: [Int] = []
+        return {
+            if numbers.isEmpty {
+                numbers = Array(start ... end)
+            }
+            //随机返回一个数，同时从数组里删除
+            let index = Int(arc4random_uniform(UInt32(numbers.count)))
+            return numbers.remove(at: index)
         }
     }
 }
