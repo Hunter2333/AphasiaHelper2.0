@@ -474,8 +474,20 @@ class ImageObjectDetector {
         self.predictObjects = [PredictObject(name: "狗", x1: 47, y1: 71, x2: 456, y2: 428), PredictObject(name: "猫", x1: 55, y1: 117, x2: 374, y2: 428)]
     }
     
+    // 抠图
+    func cropObjectsOnImage() -> [UIImage] {
+        var result = [UIImage]()
+        for i in 0...(predictObjects.count - 1) {
+            let rect = CGRect(x: predictObjects[i].x1, y: Int(image!.size.height) - predictObjects[i].y2, width: abs(predictObjects[i].x2 - predictObjects[i].x1), height: abs(predictObjects[i].y2 - predictObjects[i].y1))
+            let cgImage = image!.cgImage
+            let croppedCGImage = cgImage!.cropping(to: rect)
+            result.append(UIImage(cgImage: croppedCGImage!, scale: image!.scale, orientation: image!.imageOrientation))
+        }
+        return result
+    }
+    
+    // 画识别框
     func drawRectanglesOnImage() -> UIImage {
-        
         // 随机选取方框颜色 (识别出多少个物体就有多少个方框)
         let colors = [UIColor.red.cgColor, UIColor.green.cgColor, UIColor.orange.cgColor, UIColor.blue.cgColor, UIColor.yellow.cgColor, UIColor.purple.cgColor]
         let getRandom = randomSequenceGenerator(start: 0, end: colors.count - 1)
@@ -507,7 +519,6 @@ class ImageObjectDetector {
         // Save the context as a new UIImage
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        
         // Return modified image
         return newImage!
     }

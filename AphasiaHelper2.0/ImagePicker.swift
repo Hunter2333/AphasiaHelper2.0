@@ -11,11 +11,13 @@ import SwiftUI
 class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
     @Binding var image: UIImage?
+    @Binding var croppedImages: [UIImage]
     @Binding var isShown: Bool
     @Binding var isShowCameraView: Bool
     
-    init(image: Binding<UIImage?>, isShown: Binding<Bool>, isShowCameraView: Binding<Bool>) {
+    init(image: Binding<UIImage?>, croppedImages: Binding<[UIImage]>, isShown: Binding<Bool>, isShowCameraView: Binding<Bool>) {
         _image = image
+        _croppedImages = croppedImages
         _isShown = isShown
         _isShowCameraView = isShowCameraView
     }
@@ -27,8 +29,10 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
             let imageObjectDetector = ImageObjectDetector(image: UIImage(named: "catdog"))
             if imageObjectDetector.predictObjects.count > 0 {
                 image = imageObjectDetector.drawRectanglesOnImage()
+                croppedImages = imageObjectDetector.cropObjectsOnImage()
             } else {
                 image = uiImage
+                croppedImages = [UIImage]()
             }
             isShown = false
             isShowCameraView = true
@@ -71,6 +75,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     typealias Coordinator = ImagePickerCoordinator
     
     @Binding var image: UIImage?
+    @Binding var croppedImages: [UIImage]
     @Binding var isShown: Bool
     @Binding var isShowCameraView: Bool
     var sourceType: UIImagePickerController.SourceType = .camera
@@ -79,7 +84,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
     
     func makeCoordinator() -> ImagePicker.Coordinator {
-        return ImagePickerCoordinator(image: $image, isShown: $isShown, isShowCameraView: $isShowCameraView)
+        return ImagePickerCoordinator(image: $image, croppedImages: $croppedImages, isShown: $isShown, isShowCameraView: $isShowCameraView)
     }
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {

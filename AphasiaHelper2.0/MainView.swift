@@ -58,6 +58,7 @@ struct MainView: View {
     @State var showCameraView: Bool = false
     @State var showImagePicker: Bool = false
     @State var image: UIImage?
+    @State var croppedImages = [UIImage]()
     @State var showImageSaveToLocalResult: Bool = false
     
     
@@ -184,35 +185,39 @@ struct MainView: View {
                     
                     VStack {
                         if showCameraView && !showImagePicker && (image != nil) {
-                            // TODO: 拍照识别结果
+                            // 呈现拍照识别的结果
                             HStack {
                                 VStack(spacing: 0) {
                                     ScrollView(.vertical, showsIndicators: true) {
                                         VStack(spacing: 15) {
-                                            HStack {
-                                                Image(uiImage: UIImage(named: "PlaceHolder")!)
-                                                    .resizable()
-                                                    .frame(width: 60, height: 90)
-                                                    .cornerRadius(10)
-                                                    .padding(10)
-                                                Button(action: {
-                                                    read(text: "识别结果")
-                                                    addWord(type: WordType.Subject, DBKey: -1)
-                                                }){
-                                                    VStack {
-                                                        UrlImageView(urlString: "")
-                                                        Text("识别结果")
-                                                            .foregroundColor(Color.black)
-                                                            .font(.caption)
-                                                            .bold()
-                                                    }
-                                                    .frame(width: 60, height: 90)
-                                                    .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
-                                                }.padding(10)
+                                            ForEach(croppedImages, id: \.self) { img in
+                                                HStack {
+                                                    Image(uiImage: img)
+                                                        .resizable()
+                                                        .frame(width: 60, height: 90)
+                                                        .cornerRadius(10)
+                                                        .padding(10)
+                                                    // TODO: 找到词库中匹配的词语卡片
+                                                    Button(action: {
+                                                        read(text: "识别结果")
+                                                        // TODO: 可修改 isSelected ?
+                                                        addWord(type: WordType.Subject, DBKey: -1)
+                                                    }){
+                                                        VStack {
+                                                            UrlImageView(urlString: "")
+                                                            Text("识别结果")
+                                                                .foregroundColor(Color.black)
+                                                                .font(.caption)
+                                                                .bold()
+                                                        }
+                                                        .frame(width: 60, height: 90)
+                                                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                                    }.padding(10)
+                                                }
+                                                .padding(10)
+                                                .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                                                .cornerRadius(20)
                                             }
-                                            .padding(10)
-                                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                                            .cornerRadius(20)
                                         }
                                     }.padding(.top, 36).padding(.bottom, 28)
                                     HStack {
@@ -753,7 +758,7 @@ struct MainView: View {
                 }
             }.fullScreenCover(isPresented: $showImagePicker) {
                 // 调用摄像头拍照
-                ImagePicker(image: self.$image, isShown: self.$showImagePicker, isShowCameraView: self.$showCameraView, sourceType: .camera)
+                ImagePicker(image: self.$image, croppedImages: self.$croppedImages, isShown: self.$showImagePicker, isShowCameraView: self.$showCameraView, sourceType: .camera)
             }
         }
     }
