@@ -58,7 +58,7 @@ struct MainView: View {
     @State var showCameraView: Bool = false
     @State var showImagePicker: Bool = false
     @State var image: UIImage?
-    @State var croppedImages = [UIImage]() // TODO: 修改数据结构 {img,word}
+    @State var imageRecogResults = [ImageRecogResult]()
     @State var showImageSaveToLocalResult: Bool = false
     
     
@@ -199,28 +199,29 @@ struct MainView: View {
                                 VStack(spacing: 0) {
                                     ScrollView(.vertical, showsIndicators: true) {
                                         VStack(spacing: 15) {
-                                            ForEach(croppedImages, id: \.self) { img in
+                                            ForEach(imageRecogResults, id: \.id) { result in
                                                 HStack {
-                                                    Image(uiImage: img)
+                                                    Image(uiImage: result.img)
                                                         .resizable()
                                                         .frame(width: 60, height: 90)
                                                         .cornerRadius(10)
                                                         .padding(10)
-                                                    // TODO: 找到词库中匹配的词语卡片
+                                                    // TODO: 获取词库中name匹配的词语完整信息
                                                     Button(action: {
-                                                        read(text: "识别结果")
-                                                        // TODO: 可修改 isSelected ?
-                                                        addWord(type: WordType.Subject, DBKey: -1)
+                                                        read(text: result.word.name)
+                                                        // TODO: 主/谓/宾语常用词修改 isSelected 后, 要检查是否在当前组成的一句话中 -> 改Words类
+                                                        addWord(type: result.word.type, DBKey: result.word.DBKey)
                                                     }){
                                                         VStack {
-                                                            UrlImageView(urlString: "")
-                                                            Text("识别结果")
+                                                            UrlImageView(urlString: result.word.urlToImage)
+                                                            Text(result.word.name)
                                                                 .foregroundColor(Color.black)
                                                                 .font(.caption)
                                                                 .bold()
                                                         }
                                                         .frame(width: 60, height: 90)
                                                         .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                                        .overlay(result.word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
                                                     }.padding(10)
                                                 }
                                                 .padding(10)
@@ -277,7 +278,7 @@ struct MainView: View {
                                 .padding(.leading, 30)
                                 .padding(.bottom, 30)
                                 Spacer()
-                                // TODO: image -> 画出了识别框的Image
+                                // 画出了识别框的Image
                                 Image(uiImage: image ?? UIImage(named: "PlaceHolder")!)
                                     .resizable()
                                     .scaledToFit()
@@ -524,7 +525,6 @@ struct MainView: View {
                                 HStack {
                                     Spacer()
                                     Button(action: {
-                                        // TODO: Animation?
                                         showAddView = false
                                     }){
                                         Image(systemName: "xmark").font(.system(size: 10, weight: .bold))
@@ -767,7 +767,7 @@ struct MainView: View {
                 }
             }.fullScreenCover(isPresented: $showImagePicker) {
                 // 调用摄像头拍照
-                ImagePicker(image: self.$image, croppedImages: self.$croppedImages, isShown: self.$showImagePicker, isShowCameraView: self.$showCameraView, sourceType: .camera)
+                ImagePicker(image: self.$image, imageRecogResults: self.$imageRecogResults, isShown: self.$showImagePicker, isShowCameraView: self.$showCameraView, sourceType: .camera)
             }
         }
     }
@@ -906,6 +906,7 @@ struct MainView: View {
                         // 该词语未被选中, 更改 button 样式
                         subjects.setIsSelected(pos: i, val: true)
                         sentence.append("\(subjects[i].name)")
+                        // TODO: 存在用户点击的词语还未加载到首页的词语列表中的情况!!!!! componentWords.append(subjects[i]) 改成 componentWords.append(用户点击的词语完整信息), 同时本func的参数改成一个word
                         componentWords.append(subjects[i])
                     }
                     break

@@ -11,13 +11,13 @@ import SwiftUI
 class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
     @Binding var image: UIImage?
-    @Binding var croppedImages: [UIImage]
+    @Binding var imageRecogResults: [ImageRecogResult]
     @Binding var isShown: Bool
     @Binding var isShowCameraView: Bool
     
-    init(image: Binding<UIImage?>, croppedImages: Binding<[UIImage]>, isShown: Binding<Bool>, isShowCameraView: Binding<Bool>) {
+    init(image: Binding<UIImage?>, imageRecogResults: Binding<[ImageRecogResult]>, isShown: Binding<Bool>, isShowCameraView: Binding<Bool>) {
         _image = image
-        _croppedImages = croppedImages
+        _imageRecogResults = imageRecogResults
         _isShown = isShown
         _isShowCameraView = isShowCameraView
     }
@@ -27,12 +27,17 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
         if let uiImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             //image = uiImage
             let imageObjectDetector = ImageObjectDetector(image: UIImage(named: "catdog"))
+            let croppedImages = imageObjectDetector.cropObjectsOnImage()
+            // TODO: 获取词库中name匹配的词语完整信息
             if imageObjectDetector.predictObjects.count > 0 {
                 image = imageObjectDetector.drawRectanglesOnImage()
-                croppedImages = imageObjectDetector.cropObjectsOnImage()
+                for i in 0...(imageObjectDetector.predictObjects.count - 1) {
+                    // TODO: 填充词语信息
+                    imageRecogResults.append(ImageRecogResult(img: croppedImages[i], word: Word(DBKey: -1, name: "NULL", urlToImage: "", type: WordType.Subject, isSelected: false)))
+                }
             } else {
                 image = uiImage
-                croppedImages = [UIImage]()
+                imageRecogResults = [ImageRecogResult]()
             }
             isShown = false
             isShowCameraView = true
@@ -62,6 +67,7 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         image = nil
+        imageRecogResults = [ImageRecogResult]()
         isShown = false
         isShowCameraView = false
     }
@@ -75,7 +81,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     typealias Coordinator = ImagePickerCoordinator
     
     @Binding var image: UIImage?
-    @Binding var croppedImages: [UIImage]
+    @Binding var imageRecogResults: [ImageRecogResult]
     @Binding var isShown: Bool
     @Binding var isShowCameraView: Bool
     var sourceType: UIImagePickerController.SourceType = .camera
@@ -84,7 +90,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
     
     func makeCoordinator() -> ImagePicker.Coordinator {
-        return ImagePickerCoordinator(image: $image, croppedImages: $croppedImages, isShown: $isShown, isShowCameraView: $isShowCameraView)
+        return ImagePickerCoordinator(image: $image, imageRecogResults: $imageRecogResults, isShown: $isShown, isShowCameraView: $isShowCameraView)
     }
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {

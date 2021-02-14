@@ -45,7 +45,6 @@ enum AddableType: String {
 
 
 
-// TODO: 学习网络拦截数据 (调试同一行词语有重复时后端接口的问题)
 // -------------------用于数据加载的类型-------------------
 // 加载词语列表 (父类)
 class Words: ObservableObject, RandomAccessCollection {
@@ -645,6 +644,13 @@ struct Phrase: Codable {
         case DBKey = "_id"
         case name = "_name"
     }
+}
+
+// 拍照识别结果
+struct ImageRecogResult: Identifiable {
+    var id = UUID()
+    var img: UIImage // 抠图
+    var word: Word // 词语信息
 }
 
 
