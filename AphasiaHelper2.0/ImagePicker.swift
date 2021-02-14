@@ -33,6 +33,7 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
                 image = imageObjectDetector.drawRectanglesOnImage()
                 for i in 0...(imageObjectDetector.predictObjects.count - 1) {
                     // TODO: 填充词语信息
+                    // TODO: isSelected 需要检查是否在当前组成的一句话中
                     imageRecogResults.append(ImageRecogResult(img: croppedImages[i], word: Word(DBKey: -1, name: "NULL", urlToImage: "", type: WordType.Subject, isSelected: false)))
                 }
             } else {
