@@ -58,7 +58,7 @@ struct MainView: View {
     @State var showCameraView: Bool = false
     @State var showImagePicker: Bool = false
     @State var image: UIImage?
-    @State var croppedImages = [UIImage]()
+    @State var croppedImages = [UIImage]() // TODO: 修改数据结构 {img,word}
     @State var showImageSaveToLocalResult: Bool = false
     
     
@@ -102,7 +102,9 @@ struct MainView: View {
                                     // 拍照识别
                                     showCameraView = true
                                     showImagePicker = true
+                                    
                                     showAddView = false
+                                    
                                     // TODO: 语音
                                 }){
                                     Image(systemName: "camera.fill").font(.system(size: 18, weight: .regular))
@@ -164,7 +166,14 @@ struct MainView: View {
                             withAnimation {
                                 showCameraView = false
                                 showImagePicker = false
+                                
+                                name = ""
+                                type = AddableType.UNSET
+                                expanded = false
+                                selectedCategory = Category(DBKey: -1, name: "null", isSelected: false)
+                                // TODO: 照片初始化为空
                                 showAddView = true
+                                
                                 // TODO: 语音
                             }
                         }){
