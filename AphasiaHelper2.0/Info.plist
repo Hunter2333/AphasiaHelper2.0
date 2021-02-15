@@ -28,7 +28,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires usage of camera to function property!</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Want to determine your voice waves.</string>
+	<string>This app requires usage of microphone to function property!</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We want to save the filtered photo.</string>
 	<key>UIApplicationSceneManifest</key>

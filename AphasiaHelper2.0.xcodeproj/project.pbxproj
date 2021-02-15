@@ -13,7 +13,7 @@
 		F45080CC25885718007892E3 /* DataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45080CB25885718007892E3 /* DataModels.swift */; };
 		F4579BBB25DA1F11000C11B0 /* MicrophoneMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4579BBA25DA1F11000C11B0 /* MicrophoneMonitor.swift */; };
 		F4579BBE25DA20FA000C11B0 /* SoundVisualizerBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4579BBD25DA20FA000C11B0 /* SoundVisualizerBarView.swift */; };
-		F46C672325D9641000EF5D70 /* SpeechRecogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C672225D9641000EF5D70 /* SpeechRecogView.swift */; };
+		F4810CB525DA953000FA5391 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4C5AEBB257D0D57008C2D4A /* AVFoundation.framework */; };
 		F4831E9A2586EE39008D04C4 /* ComponentWordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4831E992586EE39008D04C4 /* ComponentWordView.swift */; };
 		F4B901A225CE58A70096D594 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B901A125CE58A70096D594 /* ImagePicker.swift */; };
 		F4C5AEA3257CDF48008C2D4A /* AphasiaHelper2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C5AEA2257CDF48008C2D4A /* AphasiaHelper2_0App.swift */; };
@@ -30,7 +30,6 @@
 		F45080CB25885718007892E3 /* DataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModels.swift; sourceTree = "<group>"; };
 		F4579BBA25DA1F11000C11B0 /* MicrophoneMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrophoneMonitor.swift; sourceTree = "<group>"; };
 		F4579BBD25DA20FA000C11B0 /* SoundVisualizerBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundVisualizerBarView.swift; sourceTree = "<group>"; };
-		F46C672225D9641000EF5D70 /* SpeechRecogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecogView.swift; sourceTree = "<group>"; };
 		F4831E992586EE39008D04C4 /* ComponentWordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentWordView.swift; sourceTree = "<group>"; };
 		F4B901A125CE58A70096D594 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		F4C5AE9F257CDF48008C2D4A /* AphasiaHelper2.0.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AphasiaHelper2.0.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -47,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4810CB525DA953000FA5391 /* AVFoundation.framework in Frameworks */,
 				F4C5AEBC257D0D57008C2D4A /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,7 +76,6 @@
 			children = (
 				F4C5AEA2257CDF48008C2D4A /* AphasiaHelper2_0App.swift */,
 				F418BF0725A086A10042B65B /* MainView.swift */,
-				F46C672225D9641000EF5D70 /* SpeechRecogView.swift */,
 				F4C5AEA6257CDF49008C2D4A /* Assets.xcassets */,
 				F4C5AEAB257CDF49008C2D4A /* Info.plist */,
 				F4C5AEA8257CDF49008C2D4A /* Preview Content */,
@@ -185,7 +184,6 @@
 				F4B901A225CE58A70096D594 /* ImagePicker.swift in Sources */,
 				F4579BBE25DA20FA000C11B0 /* SoundVisualizerBarView.swift in Sources */,
 				F45080CC25885718007892E3 /* DataModels.swift in Sources */,
-				F46C672325D9641000EF5D70 /* SpeechRecogView.swift in Sources */,
 				F4579BBB25DA1F11000C11B0 /* MicrophoneMonitor.swift in Sources */,
 				F4457241257DDB9A00E4A509 /* functions.swift in Sources */,
 			);

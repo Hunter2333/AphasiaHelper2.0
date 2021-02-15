@@ -15,7 +15,7 @@ class MicrophoneMonitor: ObservableObject {
     private var timer: Timer?
     
     private var currentSample: Int
-    public let numberOfSamples: Int
+    private let numberOfSamples: Int
     
     // 2
     @Published public var soundSamples: [Float]
@@ -27,16 +27,9 @@ class MicrophoneMonitor: ObservableObject {
         
         // 3
         let audioSession = AVAudioSession.sharedInstance()
-        if audioSession.recordPermission != .granted {
-            audioSession.requestRecordPermission { (isGranted) in
-                if !isGranted {
-                    fatalError("You must allow audio recording for this app to work")
-                }
-            }
-        }
         
         // 4
-        let url = URL(fileURLWithPath: NSHomeDirectory() + "/AudioRecords", isDirectory: true)
+        let url = URL(fileURLWithPath: "/dev/null", isDirectory: true)
         let recorderSettings: [String:Any] = [
             AVFormatIDKey: NSNumber(value: kAudioFormatLinearPCM),
             AVSampleRateKey: 44100.0,

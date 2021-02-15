@@ -8,6 +8,8 @@
 import SwiftUI
 
 
+let numberOfSamples: Int = 50
+
 struct MainView: View {
     
     // 主语
@@ -64,6 +66,9 @@ struct MainView: View {
     
     // 语音识别相关
     @State var showSpeechRecogView: Bool = false
+    @State var isRecording: Bool = false
+    @State var speechRecogResultWords = [Word]()
+    @ObservedObject var mic = MicrophoneMonitor(numberOfSamples: numberOfSamples)
     
     
     
@@ -94,13 +99,22 @@ struct MainView: View {
                                 
                                 Button(action: {
                                     // TODO: 语音识别
+                                    withAnimation {
+                                        showCameraView = false
+                                        showImagePicker = false
+                                        
+                                        showAddView = false
+                                        
+                                        showSpeechRecogView = true
+                                    }
+                                    
                                 }){
                                     Image(systemName: "mic.fill").font(.system(size: 18, weight: .regular))
                                 }
-                                .foregroundColor(Color.secondary)
-                                // TODO: 选中改为黑色
+                                .foregroundColor(showSpeechRecogView ? Color(red: 26/255, green: 26/255, blue: 55/255) : Color.secondary)
                                 .padding(10)
                                 .padding(.leading, 10)
+                                .disabled(showSpeechRecogView)
                                 
                                 Button(action: {
                                     // 拍照识别
@@ -110,6 +124,7 @@ struct MainView: View {
                                     showAddView = false
                                     
                                     // TODO: 语音
+                                    showSpeechRecogView = false
                                 }){
                                     Image(systemName: "camera.fill").font(.system(size: 18, weight: .regular))
                                 }
@@ -179,6 +194,7 @@ struct MainView: View {
                                 showAddView = true
                                 
                                 // TODO: 语音
+                                showSpeechRecogView = false
                             }
                         }){
                             Image(systemName: "plus").font(.system(size: 36, weight: .regular))
@@ -769,6 +785,131 @@ struct MainView: View {
                         Spacer()
                     }
                 }
+                
+                if showSpeechRecogView {
+                    VStack {
+                        HStack {
+                            VStack {
+                                VStack(spacing: 0) {
+                                    HStack(spacing: 0) {
+                                        HStack(spacing: 4) {
+                                            ForEach(mic.soundSamples, id: \.self) { level in
+                                                SoundVisualizerBarView(value: normalizeSoundLevel(level: level))
+                                            }
+                                        }.padding(.leading, 285)
+                                        Spacer()
+                                        Button(action: {
+                                            withAnimation {
+                                                isRecording.toggle()
+                                            }
+                                            if isRecording {
+                                                // 开始录音
+                                                mic.startMonitoring()
+                                            } else {
+                                                // 停止录音
+                                                mic.stopMonitoring()
+                                            }
+                                        }){
+                                            if isRecording {
+                                                Image(systemName: "stop.circle.fill")
+                                                    .font(.system(size: 26, weight: .bold))
+                                                    .foregroundColor(Color.red)
+                                            } else {
+                                                Image(systemName: "record.circle")
+                                                    .font(.system(size: 26, weight: .bold))
+                                                    .foregroundColor(Color.black)
+                                            }
+                                        }.padding(.trailing, 10)
+                                        Button(action: {
+                                            // TODO: 重置
+                                        }){
+                                            Image(systemName: "arrow.triangle.2.circlepath")
+                                                .font(.system(size: 23, weight: .bold))
+                                                .foregroundColor(Color.black)
+                                        }.padding(.trailing, 16)
+                                    }.frame(height: 70).padding(.bottom, 10)
+                                    
+                                    HStack(spacing: 0) {
+                                        VStack(spacing: 0) {
+                                            Text("我")
+                                                .foregroundColor(Color.black)
+                                                .font(.caption)
+                                                .bold()
+                                                .frame(width: 60, height: 30)
+                                                .background(Color(red: 233/255, green: 238/255, blue: 251/255))
+                                                .cornerRadius(10)
+                                            Button(action: {
+                                                // TODO
+                                            }){
+                                                VStack {
+                                                    UrlImageView(urlString: "")
+                                                    Text("我")
+                                                        .foregroundColor(Color.black)
+                                                        .font(.caption)
+                                                        .bold()
+                                                }
+                                                .frame(width: 60, height: 90)
+                                                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                            }
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 5)
+                                        }
+                                        VStack(spacing: 0) {
+                                            Text("要")
+                                                .foregroundColor(Color.black)
+                                                .font(.caption)
+                                                .bold()
+                                                .frame(width: 60, height: 30)
+                                                .background(Color(red: 233/255, green: 238/255, blue: 251/255))
+                                                .cornerRadius(10)
+                                            Button(action: {
+                                                // TODO: 加入待办事项
+                                            }){
+                                                VStack(spacing: 0) {
+                                                    Image(systemName: "plus")
+                                                        .font(.system(size: 28, weight: .bold))
+                                                    Text("加入待办事项")
+                                                        .font(.system(size: 8))
+                                                        .bold()
+                                                        .padding(.top, 8)
+                                                }
+                                                .frame(width: 60, height: 90)
+                                                .foregroundColor(Color.black)
+                                                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                            }
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 5)
+                                        }
+                                    }
+                                }
+                                .frame(width: 870, height: 240, alignment: .top)
+                                .background(RoundedRectangle(cornerRadius: 20).fill(Color.white))
+                                
+                                HStack {
+                                    Spacer()
+                                    Button(action: {
+                                        showSpeechRecogView = false
+                                    }){
+                                        Text("退出语音")
+                                            .font(.footnote)
+                                            .bold()
+                                            .padding(.vertical, 10)
+                                            .padding(.horizontal, 50)
+                                            .foregroundColor(Color.red)
+                                            .background(RoundedRectangle(cornerRadius: 8).fill(Color.white))
+                                    }
+                                }
+                            }
+                            .frame(width: 870, height: 300)
+                            .background(Color.black)
+                            .padding(.top, 140)
+                            .padding(.leading, 15)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                }
+                
             }.fullScreenCover(isPresented: $showImagePicker) {
                 // 调用摄像头拍照
                 ImagePicker(image: self.$image, imageRecogResults: self.$imageRecogResults, isShown: self.$showImagePicker, isShowCameraView: self.$showCameraView, sourceType: .camera)

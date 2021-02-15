@@ -13,7 +13,7 @@ struct SoundVisualizerBarView: View {
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 1)
                 .fill(LinearGradient(gradient: Gradient(colors: [.purple, .blue]),
                                      startPoint: .top,
                                      endPoint: .bottom))
