@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct MainView: View {
     
     // 主语
@@ -60,6 +61,9 @@ struct MainView: View {
     @State var image: UIImage?
     @State var imageRecogResults = [ImageRecogResult]()
     @State var showImageSaveToLocalResult: Bool = false
+    
+    // 语音识别相关
+    @State var showSpeechRecogView: Bool = false
     
     
     
