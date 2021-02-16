@@ -78,254 +78,218 @@ struct MainView: View {
             ZStack {
                 
                 VStack {
-                    
-                    // 组成的一句话
-                    HStack {
-                        
-                        Spacer()
-                        
+                    if showCameraView && !showImagePicker && (image != nil) {
+                        // 呈现拍照识别的结果
                         HStack {
-                            HStack {
-                                
-                                ScrollView(.horizontal, showsIndicators: true) {
-                                    HStack {
-                                        ForEach(componentWords, id: \.id) { componentWord in
-                                            ComponentWordView(word: componentWord)
-                                        }
-                                    }
-                                }
-                                .frame(width: geo.size.width - geo.size.height / 10 - 320)
-                                .padding(.leading, 8)
-                                
-                                Button(action: {
-                                    // TODO: 语音识别
-                                    withAnimation {
-                                        showCameraView = false
-                                        showImagePicker = false
-                                        
-                                        showAddView = false
-                                        
-                                        showSpeechRecogView = true
-                                    }
-                                    
-                                }){
-                                    Image(systemName: "mic.fill").font(.system(size: 18, weight: .regular))
-                                }
-                                .foregroundColor(showSpeechRecogView ? Color(red: 26/255, green: 26/255, blue: 55/255) : Color.secondary)
-                                .padding(10)
-                                .padding(.leading, 10)
-                                .disabled(showSpeechRecogView)
-                                
-                                Button(action: {
-                                    // 拍照识别
-                                    showCameraView = true
-                                    showImagePicker = true
-                                    
-                                    showAddView = false
-                                    
-                                    // TODO: 语音
-                                    showSpeechRecogView = false
-                                }){
-                                    Image(systemName: "camera.fill").font(.system(size: 18, weight: .regular))
-                                }
-                                .foregroundColor(showCameraView ? Color(red: 26/255, green: 26/255, blue: 55/255) : Color.secondary)
-                                .padding(10)
-                                .padding(.trailing, 20)
-                                .disabled(showCameraView)
-                            }
-                            .frame(height: geo.size.height / 10 - 40)
-                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                            .cornerRadius(10)
-                            .padding(.leading, 10)
-                            
-                            
-                            Button(action: {
-                                // 朗读句子 & 添加到常用短语
-                                if(sentence.count > 0) {
-                                    read(text: sentence)
-                                    addItemToDB(type: AddableType.sentence, name: sentence, categoryDBKey: -1)
-                                    // 更新前端常用短语显示
-                                    phrases.clearOld()
-                                    phrases.loadMorePhrases()
-                                }
-                            }){
-                                Image(systemName: "speaker.wave.2").font(.system(size: 22, weight: .regular))
-                            }
-                            .foregroundColor(Color.white)
-                            .padding(5)
-                            .padding(.leading, 5)
-                            
-                            
-                            Button(action: {
-                                // 一次只清除一个词
-                                removeLastWord()
-                            }){
-                                Image(systemName: "clear").font(.system(size: 20, weight: .regular))
-                            }
-                            .foregroundColor(Color.white)
-                            .padding(5)
-                            
-                            Button(action: {
-                                // 清空组成的句子
-                                removeAllWords()
-                            }){
-                                Image(systemName: "arrow.triangle.2.circlepath").font(.system(size: 18, weight: .regular))
-                            }
-                            .foregroundColor(Color.white)
-                            .padding(5)
-                            .padding(.trailing, 20)
-                        }
-                        .frame(width: geo.size.width - 20 - geo.size.height / 10, height: geo.size.height / 10 - 20)
-                        .background(Color(red: 41/255, green: 118/255, blue: 224/255))
-                        .cornerRadius(20)
-                        
-                        
-                        Button(action: {
-                            // 添加词语 & 待办事项
-                            withAnimation {
-                                showCameraView = false
-                                showImagePicker = false
-                                
-                                name = ""
-                                type = AddableType.UNSET
-                                expanded = false
-                                selectedCategory = Category(DBKey: -1, name: "null", isSelected: false)
-                                // TODO: 照片初始化为空
-                                showAddView = true
-                                
-                                // TODO: 语音
-                                showSpeechRecogView = false
-                            }
-                        }){
-                            Image(systemName: "plus").font(.system(size: 36, weight: .regular))
-                        }
-                        .frame(width: geo.size.height / 10 - 20, height: geo.size.height / 10 - 20, alignment: .center)
-                        .foregroundColor(Color.white)
-                        .background(Color(red: 26/255, green: 26/255, blue: 55/255))
-                        .cornerRadius(20)
-                        
-                        Spacer()
-                    }
-                    .frame(width: geo.size.width, height: geo.size.height / 10)
-                    
-                    
-                    Spacer()
-                    
-                    
-                    VStack {
-                        if showCameraView && !showImagePicker && (image != nil) {
-                            // 呈现拍照识别的结果
-                            HStack {
-                                VStack(spacing: 0) {
-                                    ScrollView(.vertical, showsIndicators: true) {
-                                        VStack(spacing: 15) {
-                                            ForEach(imageRecogResults, id: \.id) { result in
-                                                HStack {
-                                                    Image(uiImage: result.img)
-                                                        .resizable()
-                                                        .frame(width: 60, height: 90)
-                                                        .cornerRadius(10)
-                                                        .padding(10)
-                                                    // TODO: 获取词库中name匹配的词语完整信息
-                                                    Button(action: {
-                                                        read(text: result.word.name)
-                                                        // TODO: 主/谓/宾语常用词修改 isSelected 后, 要检查是否在当前组成的一句话中 -> 改Words类
-                                                        addWord(type: result.word.type, DBKey: result.word.DBKey)
-                                                    }){
-                                                        VStack {
-                                                            UrlImageView(urlString: result.word.urlToImage)
-                                                            Text(result.word.name)
-                                                                .foregroundColor(Color.black)
-                                                                .font(.caption)
-                                                                .bold()
-                                                        }
-                                                        .frame(width: 60, height: 90)
-                                                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
-                                                        .overlay(result.word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
-                                                    }.padding(10)
-                                                }
-                                                .padding(10)
-                                                .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                                                .cornerRadius(20)
+                            VStack(spacing: 0) {
+                                ScrollView(.vertical, showsIndicators: true) {
+                                    VStack(spacing: 15) {
+                                        ForEach(imageRecogResults, id: \.id) { result in
+                                            HStack {
+                                                Image(uiImage: result.img)
+                                                    .resizable()
+                                                    .frame(width: 60, height: 90)
+                                                    .cornerRadius(10)
+                                                    .padding(10)
+                                                // TODO: 获取词库中name匹配的词语完整信息
+                                                Button(action: {
+                                                    read(text: result.word.name)
+                                                    // TODO: 主/谓/宾语常用词修改 isSelected 后, 要检查是否在当前组成的一句话中 -> 改Words类
+                                                    addWord(type: result.word.type, DBKey: result.word.DBKey)
+                                                }){
+                                                    VStack {
+                                                        UrlImageView(urlString: result.word.urlToImage)
+                                                        Text(result.word.name)
+                                                            .foregroundColor(Color.black)
+                                                            .font(.caption)
+                                                            .bold()
+                                                    }
+                                                    .frame(width: 60, height: 90)
+                                                    .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                                    .overlay(result.word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
+                                                }.padding(10)
                                             }
+                                            .padding(10)
+                                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                                            .cornerRadius(20)
                                         }
-                                    }.padding(.top, 36).padding(.bottom, 28)
-                                    HStack {
-                                        Button(action: {
-                                            let imageSaver = ImageSaver()
-                                            imageSaver.writeToPhotoAlbum(image: image!)
-                                            // 提示图片保存成功
-                                            showImageSaveToLocalResult = true
-                                        }) {
-                                            Text("保存照片")
-                                                .font(.footnote)
-                                                .bold()
-                                                .padding(.vertical, 12)
-                                                .padding(.horizontal, 16)
-                                                .foregroundColor(Color.white)
-                                                .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 41/255, green: 118/255, blue: 224/255)))
-                                        }.alert(isPresented: $showImageSaveToLocalResult) { () -> Alert in Alert(title: Text("✅图片保存成功"), message: Text("图片已成功保存至本地相册"), dismissButton: .default(Text("确定")))
-                                        }
-                                        Button(action: {
-                                            showImagePicker = true
-                                        }) {
-                                            Text("重新取词")
-                                                .font(.footnote)
-                                                .bold()
-                                                .padding(.vertical, 12)
-                                                .padding(.horizontal, 16)
-                                                .foregroundColor(Color.white)
-                                                .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 41/255, green: 118/255, blue: 224/255)))
-                                                .padding(.leading, 10)
-                                        }
-                                    }.padding(.bottom, 15)
+                                    }
+                                }.padding(.top, 36).padding(.bottom, 28)
+                                HStack {
                                     Button(action: {
-                                        showCameraView = false
-                                        showImagePicker = false
+                                        let imageSaver = ImageSaver()
+                                        imageSaver.writeToPhotoAlbum(image: image!)
+                                        // 提示图片保存成功
+                                        showImageSaveToLocalResult = true
                                     }) {
-                                        Text("退出相机")
+                                        Text("保存照片")
                                             .font(.footnote)
                                             .bold()
                                             .padding(.vertical, 12)
-                                            .padding(.horizontal, 68)
-                                            .foregroundColor(Color.red)
-                                            .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 245/255, green: 246/255, blue: 251/255)))
-                                    }.padding(.bottom, 36)
-                                }
-                                .frame(width: geo.size.width / 5 + 22, height: geo.size.height / 10 * 9 - 40)
-                                .background(Color(red: 233/255, green: 238/255, blue:  251/255))
-                                .cornerRadius(20)
-                                .padding(.leading, 30)
+                                            .padding(.horizontal, 16)
+                                            .foregroundColor(Color.white)
+                                            .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 41/255, green: 118/255, blue: 224/255)))
+                                    }.alert(isPresented: $showImageSaveToLocalResult) { () -> Alert in Alert(title: Text("✅图片保存成功"), message: Text("图片已成功保存至本地相册"), dismissButton: .default(Text("确定")))
+                                    }
+                                    Button(action: {
+                                        showImagePicker = true
+                                    }) {
+                                        Text("重新取词")
+                                            .font(.footnote)
+                                            .bold()
+                                            .padding(.vertical, 12)
+                                            .padding(.horizontal, 16)
+                                            .foregroundColor(Color.white)
+                                            .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 41/255, green: 118/255, blue: 224/255)))
+                                            .padding(.leading, 10)
+                                    }
+                                }.padding(.bottom, 15)
+                                Button(action: {
+                                    showCameraView = false
+                                    showImagePicker = false
+                                }) {
+                                    Text("退出相机")
+                                        .font(.footnote)
+                                        .bold()
+                                        .padding(.vertical, 12)
+                                        .padding(.horizontal, 68)
+                                        .foregroundColor(Color.red)
+                                        .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 245/255, green: 246/255, blue: 251/255)))
+                                }.padding(.bottom, 36)
+                            }
+                            //.frame(width: geo.size.width / 5 + 22, height: geo.size.height / 10 * 9 - 40)
+                            .background(Color(red: 233/255, green: 238/255, blue:  251/255))
+                            .cornerRadius(20)
+                            .padding(.leading, 30)
+                            .padding(.bottom, 30)
+                            Spacer()
+                            // 画出了识别框的Image
+                            Image(uiImage: image ?? UIImage(named: "PlaceHolder")!)
+                                .resizable()
+                                .scaledToFit()
+                                //.frame(width: geo.size.width / 5 * 4 - 32, height: geo.size.height / 10 * 9 - 40)
                                 .padding(.bottom, 30)
-                                Spacer()
-                                // 画出了识别框的Image
-                                Image(uiImage: image ?? UIImage(named: "PlaceHolder")!)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: geo.size.width / 5 * 4 - 32, height: geo.size.height / 10 * 9 - 40)
-                                    .padding(.bottom, 30)
-                            }
-                        } else {
-                            // 主语
+                        }
+                    } else {
+                        // 主语
+                        HStack {
+
                             HStack {
-                                
-                                HStack {
-                                    Text("主语")
-                                        .font(.headline)
-                                        .bold()
-                                        .padding(.vertical, 6)
-                                        .padding(.horizontal, 16)
-                                        .foregroundColor(Color.white)
-                                        .background(Color.black)
-                                        .cornerRadius(15)
-                                        .padding(.leading, 10)
-                                        .padding(.top, 10)
+                                Text("主语")
+                                    .font(.headline)
+                                    .bold()
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 16)
+                                    .foregroundColor(Color.white)
+                                    .background(Color.black)
+                                    .cornerRadius(15)
+                                    .padding(.leading, 10)
+                                    .padding(.top, 10)
+                            }
+                            //.frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
+
+                            ScrollView(.horizontal, showsIndicators: true) {
+                                LazyHStack {
+                                    ForEach(subjects, id: \.id) { word in
+                                        Button(action: {
+                                            read(text: "\(word.name)")
+                                            addWord(type: word.type, DBKey: word.DBKey)
+                                        }){
+                                            VStack {
+                                                UrlImageView(urlString: word.urlToImage)
+                                                Text("\(word.name)")
+                                                    .foregroundColor(Color.black)
+                                                    .font(.caption)
+                                                    .bold()
+                                            }
+                                            .frame(width: 60, height: 90)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                            .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
+                                        }
+                                        .padding(10)
+                                        .onAppear { subjects.loadMoreWords(currentItem: word) }
+                                    }
                                 }
-                                .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
-                                
+                            }
+                        }
+                        //.frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
+                        .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                        .cornerRadius(20)
+
+
+                        Spacer()
+
+
+                        // 谓语
+                        HStack {
+
+                            HStack {
+                                Text("谓语")
+                                    .font(.headline)
+                                    .bold()
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 16)
+                                    .foregroundColor(Color.white)
+                                    .background(Color.black)
+                                    .cornerRadius(15)
+                                    .padding(.leading, 10)
+                                    .padding(.top, 10)
+                            }
+                            //.frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
+
+                            ScrollView(.horizontal, showsIndicators: true) {
+                                LazyHStack {
+                                    ForEach(predicates, id: \.id) { word in
+                                        Button(action: {
+                                            read(text: "\(word.name)")
+                                            addWord(type: word.type, DBKey: word.DBKey)
+                                        }){
+                                            VStack {
+                                                UrlImageView(urlString: word.urlToImage)
+                                                Text("\(word.name)")
+                                                    .foregroundColor(Color.black)
+                                                    .font(.caption)
+                                                    .bold()
+                                            }
+                                            .frame(width: 60, height: 90)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
+                                            .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
+                                        }
+                                        .padding(10)
+                                        .onAppear { predicates.loadMoreWords(currentItem: word) }
+                                    }
+                                }
+                            }
+                        }
+                        //.frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
+                        .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                        .cornerRadius(20)
+
+
+                        Spacer()
+
+
+                        // 宾语
+                        HStack {
+
+                            HStack {
+                                Text("宾语")
+                                    .font(.headline)
+                                    .bold()
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 16)
+                                    .foregroundColor(Color.white)
+                                    .background(Color.black)
+                                    .cornerRadius(15)
+                                    .padding(.leading, 10)
+                                    .padding(.top, 10)
+                            }
+                            //.frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 * 2 - 20, alignment: .topLeading)
+
+                            VStack {
                                 ScrollView(.horizontal, showsIndicators: true) {
                                     LazyHStack {
-                                        ForEach(subjects, id: \.id) { word in
+                                        ForEach(frequentObjects, id: \.id) { word in
                                             Button(action: {
                                                 read(text: "\(word.name)")
                                                 addWord(type: word.type, DBKey: word.DBKey)
@@ -342,89 +306,32 @@ struct MainView: View {
                                                 .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
                                             }
                                             .padding(10)
-                                            .onAppear { subjects.loadMoreWords(currentItem: word) }
+                                            .onAppear { frequentObjects.loadMoreWords(currentItem: word) }
                                         }
                                     }
-                                }
-                            }
-                            .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
-                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                            .cornerRadius(20)
-                            
-                            
-                            Spacer()
-                            
-                            
-                            // 谓语
-                            HStack {
-                                
-                                HStack {
-                                    Text("谓语")
-                                        .font(.headline)
-                                        .bold()
-                                        .padding(.vertical, 6)
-                                        .padding(.horizontal, 16)
-                                        .foregroundColor(Color.white)
-                                        .background(Color.black)
-                                        .cornerRadius(15)
-                                        .padding(.leading, 10)
-                                        .padding(.top, 10)
-                                }
-                                .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
-                                
+                                }.padding(.top, 15)
                                 ScrollView(.horizontal, showsIndicators: true) {
-                                    LazyHStack {
-                                        ForEach(predicates, id: \.id) { word in
+                                    HStack {
+                                        ForEach(categories, id: \.id) { category in
                                             Button(action: {
-                                                read(text: "\(word.name)")
-                                                addWord(type: word.type, DBKey: word.DBKey)
+                                                updateCategoryBtnViews(selectedCategoryDBKey: category.DBKey)
                                             }){
-                                                VStack {
-                                                    UrlImageView(urlString: word.urlToImage)
-                                                    Text("\(word.name)")
-                                                        .foregroundColor(Color.black)
-                                                        .font(.caption)
-                                                        .bold()
-                                                }
-                                                .frame(width: 60, height: 90)
-                                                .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
-                                                .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
-                                            }
-                                            .padding(10)
-                                            .onAppear { predicates.loadMoreWords(currentItem: word) }
+                                                Text("\(category.name)")
+                                                    .font(.caption2)
+                                                    .padding(.horizontal, 18)
+                                                    .padding(.vertical, 4)
+                                                    .foregroundColor(category.isSelected ? Color.white : Color.black)
+                                                    .background(category.isSelected ? Color.black : Color(red: 233/255, green: 238/255, blue: 251/255))
+                                                    .cornerRadius(5)
+                                            }.padding(5)
                                         }
                                     }
                                 }
-                            }
-                            .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
-                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                            .cornerRadius(20)
-                            
-                            
-                            Spacer()
-                            
-                            
-                            // 宾语
-                            HStack {
-                                
-                                HStack {
-                                    Text("宾语")
-                                        .font(.headline)
-                                        .bold()
-                                        .padding(.vertical, 6)
-                                        .padding(.horizontal, 16)
-                                        .foregroundColor(Color.white)
-                                        .background(Color.black)
-                                        .cornerRadius(15)
-                                        .padding(.leading, 10)
-                                        .padding(.top, 10)
-                                }
-                                .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 * 2 - 20, alignment: .topLeading)
-                                
-                                VStack {
+                                // 确保加载完categories再加载Lv2ObjectsView
+                                if categories.doneLoading {
                                     ScrollView(.horizontal, showsIndicators: true) {
                                         LazyHStack {
-                                            ForEach(frequentObjects, id: \.id) { word in
+                                            ForEach(lv2Objects, id: \.id) { word in
                                                 Button(action: {
                                                     read(text: "\(word.name)")
                                                     addWord(type: word.type, DBKey: word.DBKey)
@@ -441,98 +348,191 @@ struct MainView: View {
                                                     .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
                                                 }
                                                 .padding(10)
-                                                .onAppear { frequentObjects.loadMoreWords(currentItem: word) }
+                                                .onAppear { lv2Objects.loadMoreWords(currentItem: word) }
                                             }
                                         }
-                                    }.padding(.top, 15)
-                                    ScrollView(.horizontal, showsIndicators: true) {
-                                        HStack {
-                                            ForEach(categories, id: \.id) { category in
-                                                Button(action: {
-                                                    updateCategoryBtnViews(selectedCategoryDBKey: category.DBKey)
-                                                }){
-                                                    Text("\(category.name)")
-                                                        .font(.caption2)
-                                                        .padding(.horizontal, 18)
-                                                        .padding(.vertical, 4)
-                                                        .foregroundColor(category.isSelected ? Color.white : Color.black)
-                                                        .background(category.isSelected ? Color.black : Color(red: 233/255, green: 238/255, blue: 251/255))
-                                                        .cornerRadius(5)
-                                                }.padding(5)
-                                            }
-                                        }
-                                    }
-                                    // 确保加载完categories再加载Lv2ObjectsView
-                                    if categories.doneLoading {
-                                        ScrollView(.horizontal, showsIndicators: true) {
-                                            LazyHStack {
-                                                ForEach(lv2Objects, id: \.id) { word in
-                                                    Button(action: {
-                                                        read(text: "\(word.name)")
-                                                        addWord(type: word.type, DBKey: word.DBKey)
-                                                    }){
-                                                        VStack {
-                                                            UrlImageView(urlString: word.urlToImage)
-                                                            Text("\(word.name)")
-                                                                .foregroundColor(Color.black)
-                                                                .font(.caption)
-                                                                .bold()
-                                                        }
-                                                        .frame(width: 60, height: 90)
-                                                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 233/255, green: 238/255, blue:  251/255)))
-                                                        .overlay(word.isSelected ? RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2) : RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0)))
-                                                    }
-                                                    .padding(10)
-                                                    .onAppear { lv2Objects.loadMoreWords(currentItem: word) }
-                                                }
-                                            }
-                                            Spacer()
-                                        }
-                                    } else {
                                         Spacer()
                                     }
+                                } else {
+                                    Spacer()
                                 }
-                                .frame(alignment: .topLeading)
                             }
-                            .frame(width: geo.size.width - 30, height: geo.size.height / 5 * 2 - 20)
-                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                            .cornerRadius(20)
-                            
-                            
-                            Spacer()
-                            
-                            
-                            // 常用短语
+                            .frame(alignment: .topLeading)
+                        }
+                        //.frame(width: geo.size.width - 30, height: geo.size.height / 5 * 2 - 20)
+                        .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                        .cornerRadius(20)
+
+
+                        Spacer()
+
+
+                        // 常用短语
+                        HStack {
+
                             HStack {
-                                
-                                HStack {
-                                    Text("常用短语")
-                                        .font(.headline)
-                                        .bold()
-                                        .padding(.vertical, 6)
-                                        .padding(.horizontal, 16)
-                                        .foregroundColor(Color.white)
-                                        .background(Color.black)
-                                        .cornerRadius(15)
-                                        .padding(.leading, 10)
-                                        .padding(.top, 10)
-                                }
-                                .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 10, alignment: .topLeading)
-                                
-                                ScrollView(.horizontal, showsIndicators: true) {
-                                    LazyHStack {
-                                        ForEach(phrases, id: \.id) { phrase in
-                                            PhraseBtnView(phrase: phrase).padding(.trailing, 10).onAppear { phrases.loadMorePhrases(currentItem: phrase) }
-                                        }
+                                Text("常用短语")
+                                    .font(.headline)
+                                    .bold()
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 16)
+                                    .foregroundColor(Color.white)
+                                    .background(Color.black)
+                                    .cornerRadius(15)
+                                    .padding(.leading, 10)
+                                    .padding(.top, 10)
+                            }
+                            //.frame(width: geo.size.height / 5 - 20, height: geo.size.height / 10, alignment: .topLeading)
+
+                            ScrollView(.horizontal, showsIndicators: true) {
+                                LazyHStack {
+                                    ForEach(phrases, id: \.id) { phrase in
+                                        PhraseBtnView(phrase: phrase).padding(.trailing, 10).onAppear { phrases.loadMorePhrases(currentItem: phrase) }
                                     }
                                 }
                             }
-                            .frame(width: geo.size.width - 30, height: geo.size.height / 10)
-                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
-                            .cornerRadius(20)
-                            .padding(.bottom, 20)
                         }
+                        //.frame(width: geo.size.width - 30, height: geo.size.height / 10)
+                        .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                        .cornerRadius(20)
+                        .padding(.bottom, 20)
                     }
+                }.padding(.top, geo.size.height / 10)
+                
+                if showSpeechRecogView {
+                    Rectangle().fill(Color.black.opacity(0.3))
+                }
+                
+                // 组成的一句话
+                VStack {
+                    HStack {
+
+                        Spacer()
+
+                        HStack {
+                            HStack {
+
+                                ScrollView(.horizontal, showsIndicators: true) {
+                                    HStack {
+                                        ForEach(componentWords, id: \.id) { componentWord in
+                                            ComponentWordView(word: componentWord)
+                                        }
+                                    }
+                                }
+                                //.frame(width: geo.size.width - geo.size.height / 10 - 320)
+                                .padding(.leading, 8)
+
+                                Button(action: {
+                                    // TODO: 语音识别
+                                    withAnimation {
+                                        showCameraView = false
+                                        showImagePicker = false
+
+                                        showAddView = false
+
+                                        showSpeechRecogView = true
+                                    }
+
+                                }){
+                                    Image(systemName: "mic.fill").font(.system(size: 18, weight: .regular))
+                                }
+                                .foregroundColor(showSpeechRecogView ? Color(red: 26/255, green: 26/255, blue: 55/255) : Color.secondary)
+                                .padding(10)
+                                .padding(.leading, 10)
+                                .disabled(showSpeechRecogView)
+
+                                Button(action: {
+                                    // 拍照识别
+                                    showCameraView = true
+                                    showImagePicker = true
+
+                                    showAddView = false
+
+                                    // TODO: 语音
+                                    showSpeechRecogView = false
+                                }){
+                                    Image(systemName: "camera.fill").font(.system(size: 18, weight: .regular))
+                                }
+                                .foregroundColor(showCameraView ? Color(red: 26/255, green: 26/255, blue: 55/255) : Color.secondary)
+                                .padding(10)
+                                .padding(.trailing, 20)
+                                .disabled(showCameraView)
+                            }
+                            //.frame(height: geo.size.height / 10 - 40)
+                            .background(Color(red: 245/255, green: 246/255, blue: 251/255))
+                            .cornerRadius(10)
+                            .padding(.leading, 10)
+
+
+                            Button(action: {
+                                // 朗读句子 & 添加到常用短语
+                                if(sentence.count > 0) {
+                                    read(text: sentence)
+                                    addItemToDB(type: AddableType.sentence, name: sentence, categoryDBKey: -1)
+                                    // 更新前端常用短语显示
+                                    phrases.clearOld()
+                                    phrases.loadMorePhrases()
+                                }
+                            }){
+                                Image(systemName: "speaker.wave.2").font(.system(size: 22, weight: .regular))
+                            }
+                            .foregroundColor(Color.white)
+                            .padding(5)
+                            .padding(.leading, 5)
+
+
+                            Button(action: {
+                                // 一次只清除一个词
+                                removeLastWord()
+                            }){
+                                Image(systemName: "clear").font(.system(size: 20, weight: .regular))
+                            }
+                            .foregroundColor(Color.white)
+                            .padding(5)
+
+                            Button(action: {
+                                // 清空组成的句子
+                                removeAllWords()
+                            }){
+                                Image(systemName: "arrow.triangle.2.circlepath").font(.system(size: 18, weight: .regular))
+                            }
+                            .foregroundColor(Color.white)
+                            .padding(5)
+                            .padding(.trailing, 20)
+                        }
+                        //.frame(width: geo.size.width - 20 - geo.size.height / 10, height: geo.size.height / 10 - 20)
+                        .background(Color(red: 41/255, green: 118/255, blue: 224/255))
+                        .cornerRadius(20)
+
+
+                        Button(action: {
+                            // 添加词语 & 待办事项
+                            withAnimation {
+                                showCameraView = false
+                                showImagePicker = false
+
+                                name = ""
+                                type = AddableType.UNSET
+                                expanded = false
+                                selectedCategory = Category(DBKey: -1, name: "null", isSelected: false)
+                                // TODO: 照片初始化为空
+                                showAddView = true
+
+                                // TODO: 语音
+                                showSpeechRecogView = false
+                            }
+                        }){
+                            Image(systemName: "plus").font(.system(size: 36, weight: .regular))
+                        }
+                        //.frame(width: geo.size.height / 10 - 20, height: geo.size.height / 10 - 20, alignment: .center)
+                        .foregroundColor(Color.white)
+                        .background(Color(red: 26/255, green: 26/255, blue: 55/255))
+                        .cornerRadius(20)
+
+                        Spacer()
+                    }
+                    //.frame(height: geo.size.height / 10)
+                    Spacer()
                 }
                 
                 if showAddView {
@@ -901,7 +901,6 @@ struct MainView: View {
                                 }
                             }
                             .frame(width: 870, height: 300)
-                            .background(Color.black)
                             .padding(.top, 140)
                             .padding(.leading, 15)
                             Spacer()
