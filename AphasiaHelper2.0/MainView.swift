@@ -133,6 +133,8 @@ struct MainView: View {
                                     }
                                     Button(action: {
                                         showImagePicker = true
+                                        image = nil
+                                        imageRecogResults = [ImageRecogResult]()
                                     }) {
                                         Text("重新取词")
                                             .font(.footnote)
@@ -157,7 +159,7 @@ struct MainView: View {
                                         .background(RoundedRectangle(cornerRadius: 8).fill(Color(red: 245/255, green: 246/255, blue: 251/255)))
                                 }.padding(.bottom, 36)
                             }
-                            //.frame(width: geo.size.width / 5 + 22, height: geo.size.height / 10 * 9 - 40)
+                            .frame(width: geo.size.width / 5 + 22, height: geo.size.height / 10 * 9 - 40)
                             .background(Color(red: 233/255, green: 238/255, blue:  251/255))
                             .cornerRadius(20)
                             .padding(.leading, 30)
@@ -167,7 +169,7 @@ struct MainView: View {
                             Image(uiImage: image ?? UIImage(named: "PlaceHolder")!)
                                 .resizable()
                                 .scaledToFit()
-                                //.frame(width: geo.size.width / 5 * 4 - 32, height: geo.size.height / 10 * 9 - 40)
+                                .frame(width: geo.size.width / 5 * 4 - 32, height: geo.size.height / 10 * 9 - 40)
                                 .padding(.bottom, 30)
                         }
                     } else {
@@ -186,7 +188,7 @@ struct MainView: View {
                                     .padding(.leading, 10)
                                     .padding(.top, 10)
                             }
-                            //.frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
+                            .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
 
                             ScrollView(.horizontal, showsIndicators: true) {
                                 LazyHStack {
@@ -212,7 +214,7 @@ struct MainView: View {
                                 }
                             }
                         }
-                        //.frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
+                        .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
                         .background(Color(red: 245/255, green: 246/255, blue: 251/255))
                         .cornerRadius(20)
 
@@ -235,7 +237,7 @@ struct MainView: View {
                                     .padding(.leading, 10)
                                     .padding(.top, 10)
                             }
-                            //.frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
+                            .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 - 20, alignment: .topLeading)
 
                             ScrollView(.horizontal, showsIndicators: true) {
                                 LazyHStack {
@@ -261,7 +263,7 @@ struct MainView: View {
                                 }
                             }
                         }
-                        //.frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
+                        .frame(width: geo.size.width - 30, height: geo.size.height / 5 - 20)
                         .background(Color(red: 245/255, green: 246/255, blue: 251/255))
                         .cornerRadius(20)
 
@@ -284,7 +286,7 @@ struct MainView: View {
                                     .padding(.leading, 10)
                                     .padding(.top, 10)
                             }
-                            //.frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 * 2 - 20, alignment: .topLeading)
+                            .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 5 * 2 - 20, alignment: .topLeading)
 
                             VStack {
                                 ScrollView(.horizontal, showsIndicators: true) {
@@ -359,7 +361,7 @@ struct MainView: View {
                             }
                             .frame(alignment: .topLeading)
                         }
-                        //.frame(width: geo.size.width - 30, height: geo.size.height / 5 * 2 - 20)
+                        .frame(width: geo.size.width - 30, height: geo.size.height / 5 * 2 - 20)
                         .background(Color(red: 245/255, green: 246/255, blue: 251/255))
                         .cornerRadius(20)
 
@@ -382,7 +384,7 @@ struct MainView: View {
                                     .padding(.leading, 10)
                                     .padding(.top, 10)
                             }
-                            //.frame(width: geo.size.height / 5 - 20, height: geo.size.height / 10, alignment: .topLeading)
+                            .frame(width: geo.size.height / 5 - 20, height: geo.size.height / 10, alignment: .topLeading)
 
                             ScrollView(.horizontal, showsIndicators: true) {
                                 LazyHStack {
@@ -392,7 +394,7 @@ struct MainView: View {
                                 }
                             }
                         }
-                        //.frame(width: geo.size.width - 30, height: geo.size.height / 10)
+                        .frame(width: geo.size.width - 30, height: geo.size.height / 10)
                         .background(Color(red: 245/255, green: 246/255, blue: 251/255))
                         .cornerRadius(20)
                         .padding(.bottom, 20)
@@ -419,7 +421,7 @@ struct MainView: View {
                                         }
                                     }
                                 }
-                                //.frame(width: geo.size.width - geo.size.height / 10 - 320)
+                                .frame(width: geo.size.width - geo.size.height / 10 - 320)
                                 .padding(.leading, 8)
 
                                 Button(action: {
@@ -445,6 +447,8 @@ struct MainView: View {
                                     // 拍照识别
                                     showCameraView = true
                                     showImagePicker = true
+                                    image = nil
+                                    imageRecogResults = [ImageRecogResult]()
 
                                     showAddView = false
 
@@ -458,7 +462,7 @@ struct MainView: View {
                                 .padding(.trailing, 20)
                                 .disabled(showCameraView)
                             }
-                            //.frame(height: geo.size.height / 10 - 40)
+                            .frame(height: geo.size.height / 10 - 40)
                             .background(Color(red: 245/255, green: 246/255, blue: 251/255))
                             .cornerRadius(10)
                             .padding(.leading, 10)
@@ -500,7 +504,7 @@ struct MainView: View {
                             .padding(5)
                             .padding(.trailing, 20)
                         }
-                        //.frame(width: geo.size.width - 20 - geo.size.height / 10, height: geo.size.height / 10 - 20)
+                        .frame(width: geo.size.width - 20 - geo.size.height / 10, height: geo.size.height / 10 - 20)
                         .background(Color(red: 41/255, green: 118/255, blue: 224/255))
                         .cornerRadius(20)
 
@@ -524,19 +528,19 @@ struct MainView: View {
                         }){
                             Image(systemName: "plus").font(.system(size: 36, weight: .regular))
                         }
-                        //.frame(width: geo.size.height / 10 - 20, height: geo.size.height / 10 - 20, alignment: .center)
+                        .frame(width: geo.size.height / 10 - 20, height: geo.size.height / 10 - 20, alignment: .center)
                         .foregroundColor(Color.white)
                         .background(Color(red: 26/255, green: 26/255, blue: 55/255))
                         .cornerRadius(20)
 
                         Spacer()
                     }
-                    //.frame(height: geo.size.height / 10)
+                    .frame(width: geo.size.width, height: geo.size.height / 10)
                     Spacer()
                 }
                 
                 if showAddView {
-                    VStack {
+                    /*VStack {
                         Spacer().frame(height: geo.size.height / 10)
                         HStack {
                             Spacer()
@@ -783,7 +787,7 @@ struct MainView: View {
                             .padding(.trailing, 15)
                         }
                         Spacer()
-                    }
+                    }*/
                 }
                 
                 if showSpeechRecogView {
