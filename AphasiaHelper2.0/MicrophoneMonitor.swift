@@ -8,6 +8,23 @@
 import Foundation
 import AVFoundation
 
+
+func getDocumentsDirectory() -> URL {
+    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+    return paths[0]
+}
+
+extension Date
+{
+    func toString( dateFormat format  : String ) -> String
+    {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.string(from: self)
+    }
+}
+
+
 class MicrophoneMonitor: ObservableObject {
     
     // 1
@@ -29,7 +46,7 @@ class MicrophoneMonitor: ObservableObject {
         let audioSession = AVAudioSession.sharedInstance()
         
         // 4
-        let url = URL(fileURLWithPath: "/dev/null", isDirectory: true)
+        let url = getDocumentsDirectory().appendingPathComponent("\(Date().toString(dateFormat: "dd-MM-YY_'at'_HH:mm:ss")).wav")
         let recorderSettings: [String:Any] = [
             AVFormatIDKey: NSNumber(value: kAudioFormatLinearPCM),
             AVSampleRateKey: 44100.0,
@@ -48,6 +65,7 @@ class MicrophoneMonitor: ObservableObject {
     
     // 6
     func startMonitoring() {
+        print(audioRecorder.url)
         audioRecorder.isMeteringEnabled = true
         audioRecorder.record()
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true, block: { (timer) in

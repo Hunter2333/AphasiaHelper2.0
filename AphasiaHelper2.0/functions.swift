@@ -21,9 +21,8 @@ func read(text: String) {
 
 // 语音识别: Sound Visualizer 相关
 func normalizeSoundLevel(level: Float) -> CGFloat {
-    //let level = max(0.2, CGFloat(level) + 50) / 2 // between 0.1 and 25
+    let level = max(0.2, CGFloat(level) + 50) / 2 // between 0.1 and 25
     //return CGFloat(level * (300 / 25)) // scaled to max at 300 (our height of our bar)
-    let level = max(0.2, CGFloat(level) + 50) / 2
     return CGFloat(level * (50 / 25))
 }
 

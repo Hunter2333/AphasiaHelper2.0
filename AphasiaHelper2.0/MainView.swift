@@ -13,13 +13,13 @@ let numberOfSamples: Int = 50
 struct MainView: View {
     
     // 主语
-    @ObservedObject var subjects = Subjects()
+    @ObservedObject var subjects = Subjects(component_words: [Word]())
     
     // 谓语
-    @ObservedObject var predicates = Predicates()
+    @ObservedObject var predicates = Predicates(component_words: [Word]())
     
     // 宾语常用词
-    @ObservedObject var frequentObjects = FrequentObjects()
+    @ObservedObject var frequentObjects = FrequentObjects(component_words: [Word]())
     
     // 当前选中的那个宾语二级分类标签在categories中的下标
     @State var selectedCategoryIndex: Int = 0
@@ -29,12 +29,6 @@ struct MainView: View {
     // 二级宾语
     // TODO: default 80?
     @ObservedObject var lv2Objects = Lv2Objects(category_dbkey: 80, component_words: [Word]())
-    
-    // 形容词
-    @ObservedObject var adjectives = Adjectives()
-    
-    // 其他词库词语
-    @ObservedObject var otherWords = OtherWords()
     
     // 常用短语
     @ObservedObject var phrases = Phrases()
@@ -91,10 +85,10 @@ struct MainView: View {
                                                     .frame(width: 60, height: 90)
                                                     .cornerRadius(10)
                                                     .padding(10)
-                                                // TODO: 获取词库中name匹配的词语完整信息
+                                                // 获取词库中name匹配的词语完整信息
                                                 Button(action: {
                                                     read(text: result.word.name)
-                                                    // TODO: 主/谓/宾语常用词修改 isSelected 后, 要检查是否在当前组成的一句话中 -> 改Words类
+                                                    // 主/谓/宾语常用词修改 isSelected 后, 检查是否在当前组成的一句话中 -> Words类
                                                     addWord(type: result.word.type, DBKey: result.word.DBKey)
                                                 }){
                                                     VStack {
@@ -742,13 +736,13 @@ struct MainView: View {
                                             // 刷新界面数据
                                             switch type {
                                             case AddableType.subject:
-                                                subjects.clearOld()
+                                                subjects.clearOld(component_words: componentWords)
                                                 subjects.loadMoreWords()
                                             case AddableType.predicate:
-                                                predicates.clearOld()
+                                                predicates.clearOld(component_words: componentWords)
                                                 predicates.loadMoreWords()
                                             case AddableType.second_object:
-                                                frequentObjects.clearOld()
+                                                frequentObjects.clearOld(component_words: componentWords)
                                                 frequentObjects.loadMoreWords()
                                                 if(selectedCategory.DBKey == categories[selectedCategoryIndex].DBKey){
                                                     lv2Objects.clearOld(category_dbkey: selectedCategory.DBKey, component_words: componentWords)
@@ -842,7 +836,7 @@ struct MainView: View {
                                                 .background(Color(red: 233/255, green: 238/255, blue: 251/255))
                                                 .cornerRadius(10)
                                             Button(action: {
-                                                // TODO
+                                                // TODO: 改ScrollView
                                             }){
                                                 VStack {
                                                     UrlImageView(urlString: "")
@@ -914,7 +908,7 @@ struct MainView: View {
                 
             }.fullScreenCover(isPresented: $showImagePicker) {
                 // 调用摄像头拍照
-                ImagePicker(image: self.$image, imageRecogResults: self.$imageRecogResults, isShown: self.$showImagePicker, isShowCameraView: self.$showCameraView, sourceType: .camera)
+                ImagePicker(image: self.$image, imageRecogResults: self.$imageRecogResults, isShown: self.$showImagePicker, isShowCameraView: self.$showCameraView, componentWords: self.componentWords, sourceType: .camera)
             }
         }
     }
@@ -955,18 +949,12 @@ struct MainView: View {
                         break
                     }
                 }
-            case .Adjective:
-                for i in 0..<adjectives.count {
-                    if(adjectives[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
-                        adjectives.setIsSelected(pos: i, val: false)
-                        break
-                    }
-                }
-            case .Other:
-                for i in 0..<otherWords.count {
-                    if(otherWords[i].DBKey == componentWords[componentWords.count - 1].DBKey) {
-                        otherWords.setIsSelected(pos: i, val: false)
-                        break
+            }
+            
+            if(imageRecogResults.count > 0) {
+                for i in 0..<imageRecogResults.count {
+                    if(imageRecogResults[i].word.type == componentWords[componentWords.count - 1].type && imageRecogResults[i].word.DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        imageRecogResults[i].word.isSelected = false
                     }
                 }
             }
@@ -1004,14 +992,12 @@ struct MainView: View {
                     lv2Objects.setIsSelected(pos: i, val: false)
                 }
             }
-            for i in 0..<adjectives.count {
-                if(adjectives[i].isSelected) {
-                    adjectives.setIsSelected(pos: i, val: false)
-                }
-            }
-            for i in 0..<otherWords.count {
-                if(otherWords[i].isSelected) {
-                    otherWords.setIsSelected(pos: i, val: false)
+            
+            if(imageRecogResults.count > 0) {
+                for i in 0..<imageRecogResults.count {
+                    if(imageRecogResults[i].word.isSelected) {
+                        imageRecogResults[i].word.isSelected = false
+                    }
                 }
             }
             
@@ -1045,6 +1031,8 @@ struct MainView: View {
     // 向组成的句子末添加词语
     func addWord(type: WordType, DBKey: Int) -> Void {
         
+        var isWordLoadedOnHomePage: Bool = false
+        
         switch type {
         case .Subject:
             for i in 0..<subjects.count {
@@ -1053,8 +1041,8 @@ struct MainView: View {
                         // 该词语未被选中, 更改 button 样式
                         subjects.setIsSelected(pos: i, val: true)
                         sentence.append("\(subjects[i].name)")
-                        // TODO: 存在用户点击的词语还未加载到首页的词语列表中的情况!!!!! componentWords.append(subjects[i]) 改成 componentWords.append(用户点击的词语完整信息), 同时本func的参数改成一个word
                         componentWords.append(subjects[i])
+                        isWordLoadedOnHomePage = true
                     }
                     break
                 }
@@ -1067,6 +1055,7 @@ struct MainView: View {
                         predicates.setIsSelected(pos: i, val: true)
                         sentence.append("\(predicates[i].name)")
                         componentWords.append(predicates[i])
+                        isWordLoadedOnHomePage = true
                     }
                     break
                 }
@@ -1083,6 +1072,7 @@ struct MainView: View {
                         frequentObjects.setIsSelected(pos: i, val: true)
                         sentence.append("\(frequentObjects[i].name)")
                         componentWords.append(frequentObjects[i])
+                        isWordLoadedOnHomePage = true
                         // 检查当前二级宾语中是否有该词语, 保持 button 样式统一
                         for j in 0..<lv2Objects.count {
                             if(lv2Objects[j].DBKey == DBKey) {
@@ -1105,6 +1095,7 @@ struct MainView: View {
                             lv2Objects.setIsSelected(pos: i, val: true)
                             sentence.append("\(lv2Objects[i].name)")
                             componentWords.append(lv2Objects[i])
+                            isWordLoadedOnHomePage = true
                             // To Test 后端词频加一 (对于用户点击前为未选中状态的宾语词)
                             addFrequency(type: FrequencyUpdateType.object, DBKey: DBKey)
                         }
@@ -1112,28 +1103,22 @@ struct MainView: View {
                     }
                 }
             }
-        case .Adjective:
-            for i in 0..<adjectives.count {
-                if(adjectives[i].DBKey == DBKey) {
-                    if(!adjectives[i].isSelected) {
-                        // 该词语未被选中, 更改 button 样式
-                        adjectives.setIsSelected(pos: i, val: true)
-                        sentence.append("\(adjectives[i].name)")
-                        componentWords.append(adjectives[i])
+        }
+        
+        if(imageRecogResults.count > 0) {
+            var repeatCount = 0
+            for i in 0..<imageRecogResults.count {
+                if(!imageRecogResults[i].word.isSelected && imageRecogResults[i].word.type == type && imageRecogResults[i].word.DBKey == DBKey) {
+                    imageRecogResults[i].word.isSelected = true
+                    repeatCount += 1
+                    // To Test 存在用户点击的词语还未加载到首页词语列表中的情况
+                    if(repeatCount < 2 && !isWordLoadedOnHomePage) {
+                        sentence.append("\(imageRecogResults[i].word.name)")
+                        componentWords.append(imageRecogResults[i].word)
+                        if(imageRecogResults[i].word.type == WordType.Object) {
+                            addFrequency(type: FrequencyUpdateType.object, DBKey: DBKey)
+                        }
                     }
-                    break
-                }
-            }
-        case .Other:
-            for i in 0..<otherWords.count {
-                if(otherWords[i].DBKey == DBKey) {
-                    if(!otherWords[i].isSelected) {
-                        // 该词语未被选中, 更改 button 样式
-                        otherWords.setIsSelected(pos: i, val: true)
-                        sentence.append("\(otherWords[i].name)")
-                        componentWords.append(otherWords[i])
-                    }
-                    break
                 }
             }
         }

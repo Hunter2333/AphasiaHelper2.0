@@ -24,8 +24,6 @@ enum WordType: String, Codable {
     case Subject
     case Predicate
     case Object
-    case Adjective
-    case Other
 }
 
 // 可更新频率的类型
@@ -68,11 +66,11 @@ class Words: ObservableObject, RandomAccessCollection {
     
     var componentWords: [Word]  // mainController中组成的一句话
     
-    init(urlWordType: String, type: WordType, category_dbkey: Int? = nil, component_words: [Word]? = nil) {
+    init(urlWordType: String, type: WordType, category_dbkey: Int? = nil, component_words: [Word]) {
         urlBase.append(urlWordType)
         wordType = type
         categoryDBKey = category_dbkey ?? -1  // 一级词语默认分类标签DBKey为-1 (无分类)
-        componentWords = component_words ?? [Word]()
+        componentWords = component_words
         loadMoreWords()
     }
     
@@ -80,14 +78,14 @@ class Words: ObservableObject, RandomAccessCollection {
         return words[position]
     }
     
-    func clearOld(category_dbkey: Int? = nil, component_words: [Word]? = nil) {
+    func clearOld(category_dbkey: Int? = nil, component_words: [Word]) {
         words.removeAll()
         nextPageToLoad = 1
         currentlyLoading = false
         doneLoading = false
         
         categoryDBKey = category_dbkey ?? -1  // 一级词语默认分类标签DBKey为-1 (无分类)
-        componentWords = component_words ?? [Word]()
+        componentWords = component_words
     }
     
     func setIsSelected(pos: Int, val: Bool) {
@@ -147,15 +145,13 @@ class Words: ObservableObject, RandomAccessCollection {
             for i in 0..<decodedResponse.list.count {
                 decodedResponse.list[i].type = wordType
             }
-            // 检查是否在当前组成的一句话中，若在，修改isSelected为true (TODO: 仅对二级宾语？)
-            if(categoryDBKey != -1 && componentWords.count > 0) {
+            // 检查是否在当前组成的一句话中，若在，修改isSelected为true
+            if(componentWords.count > 0) {
                 for i in 0..<componentWords.count {
-                    if(componentWords[i].type == WordType.Object) {
-                        for j in 0..<decodedResponse.list.count {
-                            if(decodedResponse.list[j].DBKey == componentWords[i].DBKey) {
-                                decodedResponse.list[j].isSelected = true
-                                break
-                            }
+                    for j in 0..<decodedResponse.list.count {
+                        if(decodedResponse.list[j].type == componentWords[i].type && decodedResponse.list[j].DBKey == componentWords[i].DBKey) {
+                            decodedResponse.list[j].isSelected = true
+                            break
                         }
                     }
                 }
@@ -318,51 +314,39 @@ class Categories: ObservableObject, RandomAccessCollection {
 // 加载主语列表 (子类)
 class Subjects: Words {
     
-    init() {
-        super.init(urlWordType: "subject", type: WordType.Subject)
+    // 检查是否在当前组成的一句话中，若在，修改isSelected为true
+    init(component_words: [Word]) {
+        super.init(urlWordType: "subject", type: WordType.Subject, component_words: component_words)
     }
 }
 
 // 加载谓语列表 (子类)
 class Predicates: Words {
     
-    init() {
-        super.init(urlWordType: "predicate", type: WordType.Predicate)
+    // 检查是否在当前组成的一句话中，若在，修改isSelected为true
+    init(component_words: [Word]) {
+        super.init(urlWordType: "predicate", type: WordType.Predicate, component_words: component_words)
     }
 }
 
 // 加载宾语常用词列表 (子类)
 class FrequentObjects: Words {
     
-    init() {
-        super.init(urlWordType: "usual_object", type: WordType.Object)
+    // 检查是否在当前组成的一句话中，若在，修改isSelected为true
+    init(component_words: [Word]) {
+        super.init(urlWordType: "usual_object", type: WordType.Object, component_words: component_words)
     }
 }
 
 // 加载指定分类标签下的二级宾语列表 (子类)
 class Lv2Objects: Words {
     
-    // 检查是否在当前组成的一句话中，若在，修改isSelected为true (TODO: 仅对二级宾语？)
+    // 检查是否在当前组成的一句话中，若在，修改isSelected为true
     init(category_dbkey: Int, component_words: [Word]) {
         super.init(urlWordType: "second_object", type: WordType.Object, category_dbkey: category_dbkey, component_words: component_words)
     }
 }
 
-// 加载形容词列表 (子类)
-class Adjectives: Words {
-    
-    init() {
-        super.init(urlWordType: "adj", type: WordType.Adjective)
-    }
-}
-
-// 加载其他词库词语列表 (子类)
-class OtherWords: Words {
-    
-    init() {
-        super.init(urlWordType: "other", type: WordType.Other)
-    }
-}
 
 // 加载词语图片
 class UrlImageModel: ObservableObject {
@@ -468,15 +452,15 @@ class ImageObjectDetector {
     
     init(image: UIImage?) {
         self.image = image
-        // getPredictResult()
+        getPredictResult()
         // 正常坐标系: x轴向右越来越大, y轴向上越来越大
-        self.predictObjects = [PredictObject(name: "狗", x1: 47, y1: 71, x2: 456, y2: 428), PredictObject(name: "猫", x1: 55, y1: 117, x2: 374, y2: 428)]
+        //self.predictObjects = [PredictObject(name: "狗", x1: 204, y1: 44, x2: 450, y2: 452, specInfo: SpecInfo(category: "动物", name: "狗", id: 524, url: "http://image.uniskare.xyz/image/object/动物/狗.png", wordType: "宾语")), PredictObject(name: "猫", x1: 38, y1: 121, x2: 290, y2: 400, specInfo: SpecInfo(category: "动物", name: "猫", id: 548, url: "http://image.uniskare.xyz/image/object/动物/猫.png", wordType: "宾语"))]
     }
     
     // 抠图
     func cropObjectsOnImage() -> [UIImage] {
         var result = [UIImage]()
-        for i in 0...(predictObjects.count - 1) {
+        for i in 0..<predictObjects.count {
             let rect = CGRect(x: predictObjects[i].x1, y: Int(image!.size.height) - predictObjects[i].y2, width: abs(predictObjects[i].x2 - predictObjects[i].x1), height: abs(predictObjects[i].y2 - predictObjects[i].y1))
             let cgImage = image!.cgImage
             let croppedCGImage = cgImage!.cropping(to: rect)
@@ -500,7 +484,7 @@ class ImageObjectDetector {
         // Draw rectangles
         context.setLineWidth(3.0)
         // WARNING: 须确保 predictObjects.count > 0 !!!!
-        for i in 0...(predictObjects.count - 1) {
+        for i in 0..<predictObjects.count {
             // 正常坐标系转图片坐标系
             // 图片坐标系: x轴向右越来越大, y轴向下越来越大
             let new_y1 = Int(image!.size.height) - predictObjects[i].y1
@@ -564,8 +548,6 @@ class ImageObjectDetector {
         let dataString = String(data: data, encoding: .utf8)
         print("——————TODO: 拍照识别结果——————")
         print(dataString!)
-        // TODO 2
-        //            {"isSuccess":true,"rel":[{"name":"狗","x1":47,"y1":71,"x2":456,"y2":428},{"name":"猫","x1":55,"y1":117,"x2":374,"y2":428}]}
         
         if let decodedResponse = try? JSONDecoder().decode(PredictResponse.self, from: data) {
             DispatchQueue.main.async {
@@ -684,4 +666,13 @@ struct PredictObject: Codable {
     var y1: Int
     var x2: Int
     var y2: Int
+    var specInfo: SpecInfo
+}
+
+struct SpecInfo: Codable {
+    var category: String
+    var name: String
+    var id: Int
+    var url: String
+    var wordType: String
 }
