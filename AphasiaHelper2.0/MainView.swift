@@ -540,8 +540,7 @@ struct MainView: View {
                 }
                 
                 if showAddView {
-                    /*VStack {
-                        Spacer().frame(height: geo.size.height / 10)
+                    VStack {
                         HStack {
                             Spacer()
                             VStack(spacing: 0) {
@@ -555,7 +554,7 @@ struct MainView: View {
                                             .padding(5)
                                             .foregroundColor(Color(red: 26/255, green: 26/255, blue: 55/255))
                                             .background(Color.white.opacity(0.4))
-                                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                                            .clipShape(Circle())
                                     }.padding(10)
                                 }
                                 
@@ -785,9 +784,9 @@ struct MainView: View {
                             .background(Color(red: 26/255, green: 26/255, blue: 55/255))
                             .cornerRadius(20)
                             .padding(.trailing, 15)
-                        }
+                        }.padding(.top, 100)
                         Spacer()
-                    }*/
+                    }
                 }
                 
                 if showSpeechRecogView {
@@ -905,7 +904,7 @@ struct MainView: View {
                                 }
                             }
                             .frame(width: 870, height: 300)
-                            .padding(.top, 140)
+                            .padding(.top, 95)
                             .padding(.leading, 15)
                             Spacer()
                         }
