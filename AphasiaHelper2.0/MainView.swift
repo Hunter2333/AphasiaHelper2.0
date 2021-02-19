@@ -55,8 +55,6 @@ struct MainView: View {
     @State var showCameraView: Bool = false
     @State var showImagePicker: Bool = false
     @ObservedObject var imageObjectDetector = ImageObjectDetector(image: nil)
-//    @State var image: UIImage?
-//    @State var imageRecogResults = [ImageRecogResult]()
     @State var showImageSaveToLocalResult: Bool = false
     
     // 语音识别相关

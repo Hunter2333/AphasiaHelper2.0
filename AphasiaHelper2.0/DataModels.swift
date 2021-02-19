@@ -455,9 +455,8 @@ class ImageObjectDetector: ObservableObject, RandomAccessCollection {
     var startIndex: Int { imageRecogResults.startIndex }
     var endIndex: Int { imageRecogResults.endIndex }
     
-    var componentWords = [Word]()
-    
     var url: String = "http://47.102.158.185:8899/alg/predict"
+    var componentWords = [Word]()
     var predictObjects = [PredictObject]()
     
     init(image: UIImage?) {
