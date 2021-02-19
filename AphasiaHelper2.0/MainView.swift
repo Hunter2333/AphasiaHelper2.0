@@ -54,8 +54,9 @@ struct MainView: View {
     // 拍照识别相关
     @State var showCameraView: Bool = false
     @State var showImagePicker: Bool = false
-    @State var image: UIImage?
-    @State var imageRecogResults = [ImageRecogResult]()
+    @ObservedObject var imageObjectDetector = ImageObjectDetector(image: nil)
+//    @State var image: UIImage?
+//    @State var imageRecogResults = [ImageRecogResult]()
     @State var showImageSaveToLocalResult: Bool = false
     
     // 语音识别相关
@@ -72,13 +73,13 @@ struct MainView: View {
             ZStack {
                 
                 VStack {
-                    if showCameraView && !showImagePicker && (image != nil) {
+                    if showCameraView && !showImagePicker && (imageObjectDetector.image != nil) {
                         // 呈现拍照识别的结果
                         HStack {
                             VStack(spacing: 0) {
                                 ScrollView(.vertical, showsIndicators: true) {
                                     VStack(spacing: 15) {
-                                        ForEach(imageRecogResults, id: \.id) { result in
+                                        ForEach(imageObjectDetector, id: \.id) { result in
                                             HStack {
                                                 Image(uiImage: result.img)
                                                     .resizable()
@@ -112,7 +113,7 @@ struct MainView: View {
                                 HStack {
                                     Button(action: {
                                         let imageSaver = ImageSaver()
-                                        imageSaver.writeToPhotoAlbum(image: image!)
+                                        imageSaver.writeToPhotoAlbum(image: imageObjectDetector.image!)
                                         // 提示图片保存成功
                                         showImageSaveToLocalResult = true
                                     }) {
@@ -126,9 +127,9 @@ struct MainView: View {
                                     }.alert(isPresented: $showImageSaveToLocalResult) { () -> Alert in Alert(title: Text("✅图片保存成功"), message: Text("图片已成功保存至本地相册"), dismissButton: .default(Text("确定")))
                                     }
                                     Button(action: {
+                                        imageObjectDetector.clearOld()
+                                        imageObjectDetector.updateComponentWords(componentWords: componentWords)
                                         showImagePicker = true
-                                        image = nil
-                                        imageRecogResults = [ImageRecogResult]()
                                     }) {
                                         Text("重新取词")
                                             .font(.footnote)
@@ -160,7 +161,7 @@ struct MainView: View {
                             .padding(.bottom, 30)
                             Spacer()
                             // 画出了识别框的Image
-                            Image(uiImage: image ?? UIImage(named: "PlaceHolder")!)
+                            Image(uiImage: imageObjectDetector.image ?? UIImage(named: "PlaceHolder")!)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: geo.size.width / 5 * 4 - 32, height: geo.size.height / 10 * 9 - 40)
@@ -439,10 +440,10 @@ struct MainView: View {
 
                                 Button(action: {
                                     // 拍照识别
+                                    imageObjectDetector.clearOld()
+                                    imageObjectDetector.updateComponentWords(componentWords: componentWords)
                                     showCameraView = true
                                     showImagePicker = true
-                                    image = nil
-                                    imageRecogResults = [ImageRecogResult]()
 
                                     showAddView = false
 
@@ -908,7 +909,7 @@ struct MainView: View {
                 
             }.fullScreenCover(isPresented: $showImagePicker) {
                 // 调用摄像头拍照
-                ImagePicker(image: self.$image, imageRecogResults: self.$imageRecogResults, isShown: self.$showImagePicker, isShowCameraView: self.$showCameraView, componentWords: self.componentWords, sourceType: .camera)
+                ImagePicker(imageObjectDetector: self.imageObjectDetector, isShown: self.$showImagePicker, isShowCameraView: self.$showCameraView, sourceType: .camera)
             }
         }
     }
@@ -951,10 +952,10 @@ struct MainView: View {
                 }
             }
             
-            if(imageRecogResults.count > 0) {
-                for i in 0..<imageRecogResults.count {
-                    if(imageRecogResults[i].word.type == componentWords[componentWords.count - 1].type && imageRecogResults[i].word.DBKey == componentWords[componentWords.count - 1].DBKey) {
-                        imageRecogResults[i].word.isSelected = false
+            if(imageObjectDetector.imageRecogResults.count > 0) {
+                for i in 0..<imageObjectDetector.imageRecogResults.count {
+                    if(imageObjectDetector[i].word.type == componentWords[componentWords.count - 1].type && imageObjectDetector[i].word.DBKey == componentWords[componentWords.count - 1].DBKey) {
+                        imageObjectDetector.setIsSelected(pos: i, val: false)
                     }
                 }
             }
@@ -993,10 +994,10 @@ struct MainView: View {
                 }
             }
             
-            if(imageRecogResults.count > 0) {
-                for i in 0..<imageRecogResults.count {
-                    if(imageRecogResults[i].word.isSelected) {
-                        imageRecogResults[i].word.isSelected = false
+            if(imageObjectDetector.imageRecogResults.count > 0) {
+                for i in 0..<imageObjectDetector.imageRecogResults.count {
+                    if(imageObjectDetector[i].word.isSelected) {
+                        imageObjectDetector.setIsSelected(pos: i, val: false)
                     }
                 }
             }
@@ -1105,17 +1106,17 @@ struct MainView: View {
             }
         }
         
-        if(imageRecogResults.count > 0) {
+        if(imageObjectDetector.imageRecogResults.count > 0) {
             var repeatCount = 0
-            for i in 0..<imageRecogResults.count {
-                if(!imageRecogResults[i].word.isSelected && imageRecogResults[i].word.type == type && imageRecogResults[i].word.DBKey == DBKey) {
-                    imageRecogResults[i].word.isSelected = true
+            for i in 0..<imageObjectDetector.imageRecogResults.count {
+                if(!imageObjectDetector[i].word.isSelected && imageObjectDetector[i].word.type == type && imageObjectDetector[i].word.DBKey == DBKey) {
+                    imageObjectDetector.setIsSelected(pos: i, val: true)
                     repeatCount += 1
                     // To Test 存在用户点击的词语还未加载到首页词语列表中的情况
                     if(repeatCount < 2 && !isWordLoadedOnHomePage) {
-                        sentence.append("\(imageRecogResults[i].word.name)")
-                        componentWords.append(imageRecogResults[i].word)
-                        if(imageRecogResults[i].word.type == WordType.Object) {
+                        sentence.append("\(imageObjectDetector[i].word.name)")
+                        componentWords.append(imageObjectDetector[i].word)
+                        if(imageObjectDetector[i].word.type == WordType.Object) {
                             addFrequency(type: FrequencyUpdateType.object, DBKey: DBKey)
                         }
                     }

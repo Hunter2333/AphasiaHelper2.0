@@ -445,16 +445,33 @@ class ImageSaver: NSObject {
 }
 
 // TODO: 获取图片目标检测的结果
-class ImageObjectDetector {
-    var image: UIImage?
+class ImageObjectDetector: ObservableObject, RandomAccessCollection {
+    
+    typealias Element = ImageRecogResult
+    
+    @Published var image: UIImage?
+    @Published var imageRecogResults = [ImageRecogResult]()
+    
+    var startIndex: Int { imageRecogResults.startIndex }
+    var endIndex: Int { imageRecogResults.endIndex }
+    
+    var componentWords = [Word]()
+    
     var url: String = "http://47.102.158.185:8899/alg/predict"
     var predictObjects = [PredictObject]()
     
     init(image: UIImage?) {
-        self.image = image
-        getPredictResult()
+        if(image != nil) {
+            self.image = image
+        } else {
+            self.image = nil
+        }
         // 正常坐标系: x轴向右越来越大, y轴向上越来越大
         //self.predictObjects = [PredictObject(name: "狗", x1: 204, y1: 44, x2: 450, y2: 452, specInfo: SpecInfo(category: "动物", name: "狗", id: 524, url: "http://image.uniskare.xyz/image/object/动物/狗.png", wordType: "宾语")), PredictObject(name: "猫", x1: 38, y1: 121, x2: 290, y2: 400, specInfo: SpecInfo(category: "动物", name: "猫", id: 548, url: "http://image.uniskare.xyz/image/object/动物/猫.png", wordType: "宾语"))]
+    }
+    
+    subscript(position: Int) -> ImageRecogResult {
+        return imageRecogResults[position]
     }
     
     // 抠图
@@ -506,6 +523,25 @@ class ImageObjectDetector {
         return newImage!
     }
     
+    func setIsSelected(pos: Int, val: Bool) {
+        imageRecogResults[pos].word.isSelected = val
+    }
+    
+    func updateImage(image: UIImage) {
+        self.image = image
+    }
+
+    func updateComponentWords(componentWords: [Word]) {
+        self.componentWords = componentWords
+    }
+    
+    func clearOld() {
+        self.image = nil
+        self.imageRecogResults = [ImageRecogResult]()
+        self.componentWords = [Word]()
+        self.predictObjects = [PredictObject]()
+    }
+    
     func getPredictResult() {
         guard let endpoint = URL(string: url) else {
             print("Error creating endpoint")
@@ -516,16 +552,16 @@ class ImageObjectDetector {
         
         let boundary = "Boundary-\(UUID().uuidString)"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        let mimeType = "image/jpg" // TODO........
+        let mimeType = "image/jpg"
         
         let body = NSMutableData()
-        let imageData = image!.jpegData(compressionQuality: 1.0)! // TODO.........
-        let filename = "imageForObjectDetection.jpg" // TODO.........
+        let imageData = image!.jpegData(compressionQuality: 1.0)!
+        let filename = "imageForObjectDetection.jpg"
         
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"pic\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
         body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
-        body.append(imageData) // TODO.........
+        body.append(imageData)
         body.append("\r\n".data(using: .utf8)!)
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         
@@ -546,12 +582,39 @@ class ImageObjectDetector {
         }
         
         let dataString = String(data: data, encoding: .utf8)
-        print("——————TODO: 拍照识别结果——————")
+        print("——————————拍照识别结果——————————")
         print(dataString!)
         
         if let decodedResponse = try? JSONDecoder().decode(PredictResponse.self, from: data) {
             DispatchQueue.main.async {
                 self.predictObjects = decodedResponse.rel
+                // TODO: 拍照识别结果的页面展示-predictObjects未返回时显示加载页面, 返回predictObjects=[]为空时页面显示"未识别出任何目标"文字-因为需要明显的页面提示告诉用户等待的网络请求已返回结果
+                if self.predictObjects.count > 0 {
+                    self.image = self.drawRectanglesOnImage()
+                    let croppedImages = self.cropObjectsOnImage()
+                    for i in 0..<self.predictObjects.count {
+                        // 填充词语的类型
+                        var wordType = WordType.Subject
+                        switch self.predictObjects[i].specInfo.wordType {
+                        case "主语":
+                            wordType = WordType.Subject
+                        case "谓语":
+                            wordType = WordType.Predicate
+                        case "宾语":
+                            wordType = WordType.Object
+                        default:
+                            break
+                        }
+                        // isSelected: 需要检查是否在当前组成的一句话中
+                        var isSelected = false
+                        for componentWord in self.componentWords {
+                            if(wordType == componentWord.type && self.predictObjects[i].specInfo.id == componentWord.DBKey) {
+                                isSelected = true
+                            }
+                        }
+                        self.imageRecogResults.append(ImageRecogResult(img: croppedImages[i], word: Word(DBKey: self.predictObjects[i].specInfo.id, name: self.predictObjects[i].specInfo.name, urlToImage: self.predictObjects[i].specInfo.url, type: wordType, isSelected: isSelected)))
+                    }
+                }
             }
         } else {
             print(error ?? "")
