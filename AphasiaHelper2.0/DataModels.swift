@@ -444,13 +444,14 @@ class ImageSaver: NSObject {
     }
 }
 
-// TODO: 获取图片目标检测的结果
+// 获取图片目标检测的结果
 class ImageObjectDetector: ObservableObject, RandomAccessCollection {
     
     typealias Element = ImageRecogResult
     
     @Published var image: UIImage?
     @Published var imageRecogResults = [ImageRecogResult]()
+    @Published var isResponseReturned = false
     
     var startIndex: Int { imageRecogResults.startIndex }
     var endIndex: Int { imageRecogResults.endIndex }
@@ -458,6 +459,7 @@ class ImageObjectDetector: ObservableObject, RandomAccessCollection {
     var url: String = "http://47.102.158.185:8899/alg/predict"
     var componentWords = [Word]()
     var predictObjects = [PredictObject]()
+    
     
     init(image: UIImage?) {
         if(image != nil) {
@@ -537,6 +539,7 @@ class ImageObjectDetector: ObservableObject, RandomAccessCollection {
     func clearOld() {
         self.image = nil
         self.imageRecogResults = [ImageRecogResult]()
+        self.isResponseReturned = false
         self.componentWords = [Word]()
         self.predictObjects = [PredictObject]()
     }
@@ -587,7 +590,7 @@ class ImageObjectDetector: ObservableObject, RandomAccessCollection {
         if let decodedResponse = try? JSONDecoder().decode(PredictResponse.self, from: data) {
             DispatchQueue.main.async {
                 self.predictObjects = decodedResponse.rel
-                // TODO: 拍照识别结果的页面展示-predictObjects未返回时显示加载页面, 返回predictObjects=[]为空时页面显示"未识别出任何目标"文字-因为需要明显的页面提示告诉用户等待的网络请求已返回结果
+                self.isResponseReturned = true // 网络请求未返回结果时显示加载页面, 返回结果为空[]时显示"未识别出任何目标"
                 if self.predictObjects.count > 0 {
                     self.image = self.drawRectanglesOnImage()
                     let croppedImages = self.cropObjectsOnImage()

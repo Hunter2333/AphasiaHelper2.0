@@ -77,6 +77,15 @@ struct MainView: View {
                             VStack(spacing: 0) {
                                 ScrollView(.vertical, showsIndicators: true) {
                                     VStack(spacing: 15) {
+                                        if(!imageObjectDetector.isResponseReturned) {
+                                            LoadingView().padding()
+                                        }
+                                        if(imageObjectDetector.isResponseReturned && imageObjectDetector.predictObjects.count == 0) {
+                                            Text("未识别出任何目标")
+                                                .foregroundColor(Color.gray)
+                                                .font(.title2)
+                                                .bold()
+                                        }
                                         ForEach(imageObjectDetector, id: \.id) { result in
                                             HStack {
                                                 Image(uiImage: result.img)
